@@ -2275,8 +2275,10 @@ function generateCostInputs() {
                 <div class="field">
                     <label>${measureLabels[m]}</label>
                     <div class="cost-input-group">
-                        <input type="number" id="cost_${m}" value="${currentVal}" min="0" step="500"
-                            onchange="state.costs['${m}']=parseInt(this.value)||0; updateTotalCost()">
+                        <input type="text" id="cost_${m}" value="${formatNumber(currentVal)}" inputmode="numeric"
+                            onfocus="this.value=this.value.replace(/\\./g,'')"
+                            onblur="parseCostInput(this,'${m}')"
+                            onkeydown="if(event.key==='Enter'){this.blur();}">
                         <span class="cost-suffix">€</span>
                     </div>
                 </div>`;
@@ -2290,6 +2292,14 @@ function updateTotalCost() {
     const total = state.measures.reduce((s, m) => s + (state.costs[m] || 0), 0);
     const el = document.getElementById('totalCostDisplay');
     if (el) el.textContent = formatCurrency(total);
+}
+
+function parseCostInput(input, measure) {
+    const raw = input.value.replace(/\./g, '').replace(/,/g, '').replace(/[^\d]/g, '');
+    const val = parseInt(raw) || 0;
+    state.costs[measure] = val;
+    input.value = val > 0 ? formatNumber(val) : '0';
+    updateTotalCost();
 }
 
 function formatNumber(n) {
