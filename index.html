@@ -1202,8 +1202,8 @@
             </div>
             <div class="measure-card" data-measure="basement_insulation" onclick="toggleMeasure(this)">
                 <div class="measure-icon">🔲</div>
-                <span class="measure-label">Kellerdämmung</span>
-                <span class="measure-sub">Kellerdecke / Perimeter</span>
+                <span class="measure-label">Keller / Boden</span>
+                <span class="measure-sub">Kellerdecke / Perimeter / Bodenplatte</span>
             </div>
             <div class="measure-card" data-measure="windows" onclick="toggleMeasure(this)">
                 <div class="measure-icon">🪟</div>
@@ -1294,16 +1294,29 @@
         <!-- Kellerdämmung Detail -->
         <div id="detail_basement_insulation" class="measure-detail" style="display:none;">
             <div class="card" style="background:#f8fdf8; margin:0.5rem 0 1rem; padding:1.2rem;">
-                <strong>Kellerdämmung – Details</strong>
+                <strong>Keller- / Bodenplattendämmung – Details</strong>
                 <div class="field" style="margin-top:0.8rem;">
+                    <label>Gebäudesituation</label>
+                    <select id="basement_situation" onchange="updateBasementOptions(); updateBasementMaterialOptions(); recalcCosts()">
+                        <option value="unbeheizt" selected>Unbeheizter Keller vorhanden</option>
+                        <option value="beheizt">Beheizter / bewohnter Keller</option>
+                        <option value="kein_keller">Kein Keller (nur Bodenplatte auf Erdreich)</option>
+                    </select>
+                    <div class="field-hint" id="basement_situation_hint">Wählen Sie Ihre Gebäudesituation – die passenden Dämmoptionen werden automatisch angezeigt.</div>
+                </div>
+                <div class="field" id="basement_type_field">
                     <label>Ausführungsart</label>
                     <select id="basement_type" onchange="updateBasementMaterialOptions(); recalcCosts()">
-                        <option value="kellerdecke" selected>Kellerdeckendämmung von unten (unbeheizter Keller)</option>
-                        <option value="kellerdecke_oben">Kellerdeckendämmung von oben (bei Bodenaufbau-Erneuerung)</option>
-                        <option value="perimeter">Perimeterdämmung Kellerwand außen (beheizter Keller)</option>
-                        <option value="bodenplatte">Bodenplattendämmung (beheizter Keller)</option>
+                        <!-- Wird dynamisch per updateBasementOptions() befüllt -->
                     </select>
-                    <div class="field-hint" id="basement_type_hint">Häufigste Variante: Kellerdecke von unten dämmen bei unbeheiztem Keller. Sehr kosteneffektiv.</div>
+                    <div class="field-hint" id="basement_type_hint"></div>
+                </div>
+                <div class="field" id="basement_boden_extra_field" style="display:none;">
+                    <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <input type="checkbox" id="basement_incl_bodenplatte" onchange="recalcCosts()" style="width:auto;">
+                        Zusätzlich Bodenplatte dämmen (bei beheiztem Keller empfohlen)
+                    </label>
+                    <div class="field-hint">Perimeterdämmung schützt die Wände, aber Wärme geht auch über die Bodenplatte verloren. Kombination für optimalen Schutz.</div>
                 </div>
                 <div class="field">
                     <label>Dämmmaterial</label>
@@ -1311,7 +1324,7 @@
                         <!-- Wird dynamisch per updateBasementMaterialOptions() befüllt -->
                     </select>
                 </div>
-                <div class="field">
+                <div class="field" id="basement_thickness_field">
                     <label>Dämmstoffdicke</label>
                     <select id="basement_thickness" onchange="recalcCosts()">
                         <option value="60">60 mm (Minimum)</option>
@@ -1759,7 +1772,7 @@ const state = {
 const measureLabels = {
     wall_insulation: 'Fassadendämmung',
     roof_insulation: 'Dachdämmung',
-    basement_insulation: 'Kellerdämmung',
+    basement_insulation: 'Keller-/Bodenplattendämmung',
     windows: 'Fenster & Türen',
     heat_pump: 'Wärmepumpe',
     biomass: 'Biomasse-Heizung',
@@ -1868,8 +1881,9 @@ function updateState() {
         updateWallThicknessOptions();
     }
 
-    // Kellerdämmung: Materialien initialisieren
+    // Kellerdämmung: Optionen + Materialien initialisieren
     if (state.measures.includes('basement_insulation')) {
+        updateBasementOptions();
         updateBasementMaterialOptions();
     }
 
@@ -1964,6 +1978,53 @@ const BASEMENT_MATERIALS = {
     eps_perimeter:{ label: 'EPS Perimeter – WLG 035, druckfest & hydrophob', lambda: 0.035, types: ['perimeter'] }
 };
 
+function updateBasementOptions() {
+    const situation = document.getElementById('basement_situation').value;
+    const typeSel = document.getElementById('basement_type');
+    const bodenExtraField = document.getElementById('basement_boden_extra_field');
+    const thicknessField = document.getElementById('basement_thickness_field');
+    const situationHint = document.getElementById('basement_situation_hint');
+
+    typeSel.innerHTML = '';
+    let options = [];
+
+    if (situation === 'unbeheizt') {
+        options = [
+            { value: 'kellerdecke', label: 'Kellerdecke von unten dämmen (Standardverfahren)' },
+            { value: 'kellerdecke_oben', label: 'Kellerdecke von oben dämmen (bei Bodenaufbau-Erneuerung)' }
+        ];
+        bodenExtraField.style.display = 'none';
+        document.getElementById('basement_incl_bodenplatte').checked = false;
+        if (situationHint) situationHint.textContent = 'Häufigster Fall: Der Keller wird nicht beheizt. Die Kellerdecke ist die thermische Grenze. Sehr kosteneffektiv!';
+    } else if (situation === 'beheizt') {
+        options = [
+            { value: 'perimeter', label: 'Perimeterdämmung (Kellerwände von außen, inkl. Erdarbeiten)' },
+            { value: 'kellerdecke', label: 'Nur Kellerdecke von unten (falls Keller teilbeheizt)' }
+        ];
+        bodenExtraField.style.display = 'block';
+        if (situationHint) situationHint.textContent = 'Beheizter Keller: Die Kellerwände müssen in die thermische Hülle einbezogen werden. Perimeterdämmung + Bodenplatte empfohlen.';
+    } else { // kein_keller
+        options = [
+            { value: 'bodenplatte', label: 'Bodenplattendämmung (auf/unter der Bodenplatte)' }
+        ];
+        bodenExtraField.style.display = 'none';
+        document.getElementById('basement_incl_bodenplatte').checked = false;
+        if (situationHint) situationHint.textContent = 'Ohne Keller: Die Bodenplatte grenzt direkt ans Erdreich und muss gedämmt werden.';
+    }
+
+    options.forEach((o, i) => {
+        const opt = document.createElement('option');
+        opt.value = o.value;
+        opt.textContent = o.label;
+        if (i === 0) opt.selected = true;
+        typeSel.appendChild(opt);
+    });
+
+    // Dickenfeld bei Perimeter ausblenden (Komplettpreis)
+    const bType = typeSel.value;
+    thicknessField.style.display = (bType === 'perimeter') ? 'none' : 'block';
+}
+
 function updateBasementMaterialOptions() {
     const bType = document.getElementById('basement_type').value;
     const sel = document.getElementById('basement_material');
@@ -1983,14 +2044,18 @@ function updateBasementMaterialOptions() {
     }
     sel.value = prevStillAvailable ? prevVal : firstVal;
 
+    // Dickenfeld bei Perimeter ausblenden
+    const thicknessField = document.getElementById('basement_thickness_field');
+    if (thicknessField) thicknessField.style.display = (bType === 'perimeter') ? 'none' : 'block';
+
     // Hinweistext je nach Ausführungsart
     const hint = document.getElementById('basement_type_hint');
     if (hint) {
         const hints = {
-            kellerdecke: 'Häufigste Variante: Kellerdecke von unten dämmen bei unbeheiztem Keller. Sehr kosteneffektiv (ca. 25–65 €/m²).',
-            kellerdecke_oben: 'Nur sinnvoll, wenn der Fußbodenaufbau im EG ohnehin erneuert wird. Deutlich aufwändiger als von unten.',
-            perimeter: '⚠️ Aufwändig: Erdreich muss freigelegt werden! Nur bei beheiztem/bewohntem Keller nötig. Inkl. Erdarbeiten ca. 150–350 €/m².',
-            bodenplatte: 'Dämmung unter/auf der Bodenplatte. Nur bei beheiztem Keller sinnvoll, oft in Kombination mit Perimeterdämmung.'
+            kellerdecke: 'Dämmplatten werden von unten an die Kellerdecke geklebt/gedübelt. Ca. 25–65 €/m².',
+            kellerdecke_oben: 'Nur sinnvoll wenn EG-Bodenaufbau ohnehin erneuert wird. Ca. 85–120 €/m².',
+            perimeter: '⚠️ Inkl. Erdarbeiten, Abdichtung und Drainage. Ca. 195–310 €/m². Komplettpreis – keine Dickenauswahl nötig.',
+            bodenplatte: 'Dämmung auf/unter der Bodenplatte. Ca. 75–145 €/m².'
         };
         hint.textContent = hints[bType] || '';
     }
@@ -2210,26 +2275,62 @@ function recalcCosts() {
             <span style="font-size:0.78rem;">${rType === 'aufsparren' ? 'Aufsparrendämmung inkl. Neueindeckung – teuerste aber effektivste Variante.' : rType === 'ogd' ? 'Oberste Geschossdecke – günstigste Variante wenn DG nicht ausgebaut.' : ''}</span>${solarHinweis}`;
     }
 
-    // Basement
+    // Basement / Bodenplatte
     if (state.measures.includes('basement_insulation')) {
         const bType = document.getElementById('basement_type')?.value || 'kellerdecke';
         const bMat = document.getElementById('basement_material')?.value || 'eps';
         const bThick = parseInt(document.getElementById('basement_thickness')?.value) || 80;
-        const basePrice = (PRICES.basement[bType] && PRICES.basement[bType][bMat]) || 35;
-        // Perimeterdämmung: Preise sind Komplettpreise inkl. Erdarbeiten, keine Dickenkorrektur
         const isPerimeter = (bType === 'perimeter');
+        const inclBoden = document.getElementById('basement_incl_bodenplatte')?.checked || false;
+
+        const basePrice = (PRICES.basement[bType] && PRICES.basement[bType][bMat]) || 35;
         const tMult = isPerimeter ? 1 : thicknessMultiplier(bThick, 80);
         const pricePerSqm = Math.round(basePrice * tMult);
-        const total = Math.round(g.keller * pricePerSqm);
+
+        // Grundfläche für Berechnung
+        const grundflaeche = g.keller; // Kellerdecke ≈ Grundfläche
+
+        // Perimeterdämmung: Fläche = Umfang × Kellerhöhe (ca. 2,4m)
+        let periFlaeche = 0;
+        if (isPerimeter) {
+            const umfang = 2 * (state.geo.breite + state.geo.laenge);
+            periFlaeche = Math.round(umfang * 2.4); // ca. 2,4m Kellerhöhe
+        }
+        const mainFlaeche = isPerimeter ? periFlaeche : grundflaeche;
+        let total = Math.round(mainFlaeche * pricePerSqm);
+
+        // Zusätzliche Bodenplattendämmung bei beheiztem Keller
+        let bodenTotal = 0;
+        let bodenPricePerSqm = 0;
+        if (inclBoden && isPerimeter) {
+            bodenPricePerSqm = (PRICES.basement.bodenplatte && PRICES.basement.bodenplatte[bMat === 'eps_perimeter' ? 'xps' : bMat]) || PRICES.basement.bodenplatte.xps || 85;
+            const bodenTMult = thicknessMultiplier(bThick, 80);
+            bodenPricePerSqm = Math.round(bodenPricePerSqm * bodenTMult);
+            bodenTotal = Math.round(grundflaeche * bodenPricePerSqm);
+            total += bodenTotal;
+        }
+
         state.costs.basement_insulation = total;
         const preview = document.getElementById('basement_cost_preview');
-        let hinweis = '';
-        if (bType === 'kellerdecke') hinweis = 'Günstigste und häufigste Variante. Dämmplatten werden von unten an die Kellerdecke geklebt/gedübelt.';
-        else if (bType === 'kellerdecke_oben') hinweis = 'Aufwändiger: Neuer Fußbodenaufbau im EG nötig. Nur wenn EG-Boden ohnehin erneuert wird.';
-        else if (bType === 'perimeter') hinweis = '⚠️ Inkl. Erdarbeiten, Abdichtung und Drainage. Sehr aufwändig – nur bei beheiztem Keller sinnvoll!';
-        else if (bType === 'bodenplatte') hinweis = 'Dämmung auf/unter der Bodenplatte. Oft in Kombination mit Perimeterdämmung bei beheiztem Keller.';
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.keller)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong><br>
-            <span style="font-size:0.78rem;">${hinweis}</span>`;
+        let html = '';
+        if (isPerimeter) {
+            html = `<strong>Geschätzte Kosten Perimeterdämmung:</strong><br>
+                ${formatNumber(periFlaeche)} m² Kellerwand × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(Math.round(periFlaeche * pricePerSqm))}</strong>
+                <br><span style="font-size:0.78rem;">Umfang ${formatNumber(2*(state.geo.breite+state.geo.laenge))} m × 2,4 m Kellerhöhe = ${formatNumber(periFlaeche)} m² · Inkl. Erdarbeiten, Abdichtung, Drainage.</span>`;
+            if (inclBoden) {
+                html += `<br><br><strong>+ Bodenplattendämmung:</strong><br>
+                    ${formatNumber(grundflaeche)} m² × ca. ${formatNumber(bodenPricePerSqm)} €/m² = <strong>${formatCurrency(bodenTotal)}</strong>`;
+            }
+            html += `<br><br><strong style="font-size:1.05rem;">Gesamt: ${formatCurrency(total)}</strong>`;
+        } else {
+            let hinweis = '';
+            if (bType === 'kellerdecke') hinweis = 'Günstigste und häufigste Variante. Dämmplatten von unten an die Kellerdecke geklebt/gedübelt.';
+            else if (bType === 'kellerdecke_oben') hinweis = 'Neuer Fußbodenaufbau im EG nötig. Nur wenn EG-Boden ohnehin erneuert wird.';
+            else if (bType === 'bodenplatte') hinweis = 'Dämmung auf/unter der Bodenplatte gegen das Erdreich.';
+            html = `<strong>Geschätzte Kosten:</strong> ${formatNumber(grundflaeche)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong><br>
+                <span style="font-size:0.78rem;">${hinweis}</span>`;
+        }
+        if (preview) preview.innerHTML = html;
     }
 
     // Windows
