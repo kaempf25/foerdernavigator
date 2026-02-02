@@ -1211,7 +1211,7 @@
                 <strong>Fassadendämmung – Details</strong>
                 <div class="field" style="margin-top:0.8rem;">
                     <label>Ausführungsart</label>
-                    <select id="wall_type" onchange="recalcCosts()">
+                    <select id="wall_type" onchange="updateWallMaterialOptions(); updateWallThicknessOptions(); recalcCosts()">
                         <option value="wdvs" selected>WDVS (Wärmedämmverbundsystem)</option>
                         <option value="kerndaemmung">Kerndämmung (Hohlschicht-Einblasung)</option>
                         <option value="vhf">VHF (Vorgehängte hinterlüftete Fassade)</option>
@@ -1220,25 +1220,27 @@
                 </div>
                 <div class="field">
                     <label>Dämmmaterial</label>
-                    <select id="wall_material" onchange="recalcCosts()">
-                        <option value="eps">EPS (Styropor) – Standard, gutes P/L</option>
-                        <option value="mineralwolle" selected>Mineralwolle – nicht brennbar, Schallschutz</option>
-                        <option value="pur">PUR/PIR – schlank, hohe Dämmleistung</option>
-                        <option value="holzfaser">Holzfaserdämmplatte – ökologisch, sommerl. Wärmeschutz</option>
-                        <option value="zellulose">Zellulose (Einblasung) – ökologisch, für Kerndämmung</option>
-                        <option value="resol">Resolhartschaum – sehr schlank (WLG 021)</option>
+                    <select id="wall_material" onchange="updateWallThicknessOptions(); recalcCosts()">
+                        <!-- Options werden dynamisch per updateWallMaterialOptions() befüllt -->
                     </select>
                 </div>
-                <div class="field">
+                <div class="field" id="wall_thickness_field">
                     <label>Dämmstoffdicke</label>
                     <select id="wall_thickness" onchange="recalcCosts()">
-                        <option value="80">80 mm (Minimum, oft nicht förderfähig)</option>
-                        <option value="120">120 mm (Mindestanforderung GEG)</option>
-                        <option value="160" selected>160 mm (Empfohlen für Förderung U ≤ 0,20)</option>
-                        <option value="200">200 mm (Gute Fördervoraussetzung)</option>
-                        <option value="240">240 mm (Passivhaus-Niveau)</option>
+                        <!-- Options werden dynamisch per updateWallThicknessOptions() befüllt -->
                     </select>
-                    <div class="field-hint">Für BEG-Förderung: U-Wert ≤ 0,20 W/(m²K) erforderlich. Bei WLG 035 = mind. 140-160 mm.</div>
+                    <div class="field-hint" id="wall_thickness_hint">Für BEG-Förderung: U-Wert ≤ 0,20 W/(m²K) erforderlich.</div>
+                </div>
+                <div class="field" id="wall_cavity_field" style="display:none;">
+                    <label>Hohlschichtbreite</label>
+                    <select id="wall_cavity" onchange="recalcCosts()">
+                        <option value="40">ca. 40 mm (Altbau, schmal)</option>
+                        <option value="60" selected>ca. 60 mm (typisch Altbau)</option>
+                        <option value="80">ca. 80 mm (breitere Hohlschicht)</option>
+                        <option value="100">ca. 100 mm (neuerer Bau)</option>
+                        <option value="120">ca. 120 mm (breite Hohlschicht)</option>
+                    </select>
+                    <div class="field-hint">Die Dämmstoffdicke entspricht der vorhandenen Hohlschichtbreite. BEG-Förderung: Vollständige Füllung reicht, U ≤ 0,20 muss nicht erreicht werden.</div>
                 </div>
                 <div class="info-box" id="wall_cost_preview">Kostenschätzung wird berechnet...</div>
             </div>
@@ -1853,6 +1855,12 @@ function updateState() {
         el.style.display = state.measures.includes(measure) ? 'block' : 'none';
     });
 
+    // Fassadendämmung: Materialien + Dicken initialisieren
+    if (state.measures.includes('wall_insulation')) {
+        updateWallMaterialOptions();
+        updateWallThicknessOptions();
+    }
+
     // Recalculate costs based on details
     recalcCosts();
 
@@ -1910,15 +1918,127 @@ function calcGeometry() {
 }
 
 // ============================================================
+// MATERIAL-DATEN MIT LAMBDA-WERTEN UND AUSFÜHRUNGSART-ZUORDNUNG
+// ============================================================
+const WALL_MATERIALS = {
+    // WDVS-Materialien (Plattenware)
+    eps:          { label: 'EPS (Styropor) – WLG 035, Standard', lambda: 0.035, types: ['wdvs', 'innendaemmung'] },
+    eps032:       { label: 'EPS (Styropor) – WLG 032, verbessert', lambda: 0.032, types: ['wdvs', 'innendaemmung'] },
+    mineralwolle: { label: 'Mineralwolle – WLG 035, nicht brennbar', lambda: 0.035, types: ['wdvs', 'vhf', 'innendaemmung'] },
+    mw032:        { label: 'Mineralwolle – WLG 032, verbessert', lambda: 0.032, types: ['wdvs', 'vhf', 'innendaemmung'] },
+    pur:          { label: 'PUR/PIR – WLG 024, schlank', lambda: 0.024, types: ['wdvs', 'vhf', 'innendaemmung'] },
+    holzfaser:    { label: 'Holzfaserplatte – WLG 040, ökologisch', lambda: 0.040, types: ['wdvs', 'vhf', 'innendaemmung'] },
+    holzfaser045: { label: 'Holzfaserplatte – WLG 045, Standard', lambda: 0.045, types: ['wdvs', 'vhf'] },
+    resol:        { label: 'Resolhartschaum – WLG 021, sehr schlank', lambda: 0.021, types: ['wdvs'] },
+    resol023:     { label: 'Resolhartschaum – WLG 023', lambda: 0.023, types: ['wdvs'] },
+    // Kerndämmung-Materialien (Einblasdämmstoffe)
+    eps_granulat:   { label: 'EPS-Granulat – WLG 033, hydrophob', lambda: 0.033, types: ['kerndaemmung'] },
+    mw_granulat:    { label: 'Mineralwolle-Granulat – WLG 040, nicht brennbar', lambda: 0.040, types: ['kerndaemmung'] },
+    glaswolle_gran: { label: 'Glaswolle-Granulat (Supafil) – WLG 034', lambda: 0.034, types: ['kerndaemmung'] },
+    zellulose:      { label: 'Zellulose-Flocken – WLG 040, ökologisch', lambda: 0.040, types: ['kerndaemmung'] },
+    pur_schaum:     { label: 'PUR-Ortschaum – WLG 028, injiziert', lambda: 0.028, types: ['kerndaemmung'] },
+    perlite:        { label: 'Perlite-Granulat – WLG 045, mineralisch', lambda: 0.045, types: ['kerndaemmung'] }
+};
+
+// Materialien nach Ausführungsart filtern und in <select> einfügen
+function updateWallMaterialOptions() {
+    const wType = document.getElementById('wall_type').value;
+    const sel = document.getElementById('wall_material');
+    const prevVal = sel.value;
+    sel.innerHTML = '';
+    let firstVal = null;
+    let prevStillAvailable = false;
+    for (const [key, mat] of Object.entries(WALL_MATERIALS)) {
+        if (mat.types.includes(wType)) {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = mat.label;
+            sel.appendChild(opt);
+            if (!firstVal) firstVal = key;
+            if (key === prevVal) prevStillAvailable = true;
+        }
+    }
+    sel.value = prevStillAvailable ? prevVal : firstVal;
+
+    // Kerndämmung: Dicke-Feld ausblenden, Hohlschicht-Feld einblenden
+    const thicknessField = document.getElementById('wall_thickness_field');
+    const cavityField = document.getElementById('wall_cavity_field');
+    if (wType === 'kerndaemmung') {
+        thicknessField.style.display = 'none';
+        cavityField.style.display = '';
+    } else {
+        thicknessField.style.display = '';
+        cavityField.style.display = 'none';
+    }
+}
+
+// Dämmstoffdicken dynamisch an Lambda-Wert des Materials anpassen
+function updateWallThicknessOptions() {
+    const wType = document.getElementById('wall_type').value;
+    if (wType === 'kerndaemmung') return; // Kerndämmung hat eigenes Feld
+
+    const wMat = document.getElementById('wall_material').value;
+    const matData = WALL_MATERIALS[wMat];
+    if (!matData) return;
+
+    const lambda = matData.lambda;
+    const targetU = 0.20; // BEG-Anforderung
+    // Mindestdicke für U ≤ 0,20: d = lambda / U (in Metern), *1000 für mm
+    const dMin = Math.ceil((lambda / targetU) * 1000);
+    // Auf 10mm aufrunden
+    const dMinRounded = Math.ceil(dMin / 10) * 10;
+
+    const sel = document.getElementById('wall_thickness');
+    const prevVal = parseInt(sel.value) || 160;
+    sel.innerHTML = '';
+
+    // Optionen generieren: eine unter Förder-Minimum, Förder-Minimum, zwei darüber
+    const steps = [];
+    // Schritt 1: eine Stufe unter Minimum (GEG-Minimum / nicht förderfähig)
+    const belowMin = Math.max(60, dMinRounded - 40);
+    if (belowMin < dMinRounded) {
+        steps.push({ mm: belowMin, label: `${belowMin} mm (unter Förder-Anforderung)` });
+    }
+    // Schritt 2: knapp am Minimum
+    if (dMinRounded - 20 > belowMin && dMinRounded - 20 >= 60) {
+        steps.push({ mm: dMinRounded - 20, label: `${dMinRounded - 20} mm (knapp unter U ≤ 0,20)` });
+    }
+    // Schritt 3: Förder-Minimum (empfohlen)
+    steps.push({ mm: dMinRounded, label: `${dMinRounded} mm (Empfohlen – erreicht U ≤ 0,20)` });
+    // Schritt 4: darüber
+    steps.push({ mm: dMinRounded + 20, label: `${dMinRounded + 20} mm (Gute Fördervoraussetzung)` });
+    steps.push({ mm: dMinRounded + 60, label: `${dMinRounded + 60} mm (Passivhaus-Niveau)` });
+
+    let bestMatch = dMinRounded;
+    for (const s of steps) {
+        const opt = document.createElement('option');
+        opt.value = s.mm;
+        opt.textContent = s.label;
+        if (s.mm === dMinRounded) opt.selected = true;
+        sel.appendChild(opt);
+        // Versuche vorherige Auswahl beizubehalten falls passend
+        if (Math.abs(s.mm - prevVal) < Math.abs(bestMatch - prevVal)) bestMatch = s.mm;
+    }
+    // Falls vorheriger Wert nahe genug, diesen auswählen
+    if (Math.abs(bestMatch - prevVal) <= 20) sel.value = bestMatch;
+
+    // Hinweistext aktualisieren
+    const hint = document.getElementById('wall_thickness_hint');
+    if (hint) {
+        hint.innerHTML = `Für BEG-Förderung: U-Wert ≤ 0,20 W/(m²K) erforderlich. Bei ${matData.label.split('–')[0].trim()} (λ=${lambda}) = mind. ${dMinRounded} mm.`;
+    }
+}
+
+// ============================================================
 // COST ESTIMATION FROM GEOMETRY + MATERIALS
 // ============================================================
 // Alle Preise BRUTTO (inkl. 19% MwSt) – das zahlt der Endkunde
 const PRICES = {
     wall: {
-        wdvs:           { eps: 155, mineralwolle: 179, pur: 226, holzfaser: 214, zellulose: 143, resol: 262 },
-        kerndaemmung:   { eps: 42, mineralwolle: 48, pur: 60, holzfaser: 54, zellulose: 36, resol: 65 },
-        vhf:            { eps: 238, mineralwolle: 262, pur: 298, holzfaser: 286, zellulose: 214, resol: 321 },
-        innendaemmung:  { eps: 107, mineralwolle: 119, pur: 155, holzfaser: 143, zellulose: 95, resol: 179 }
+        wdvs:           { eps: 155, eps032: 170, mineralwolle: 179, mw032: 195, pur: 226, holzfaser: 214, holzfaser045: 195, resol: 262, resol023: 245 },
+        kerndaemmung:   { eps_granulat: 38, mw_granulat: 45, glaswolle_gran: 42, zellulose: 36, pur_schaum: 58, perlite: 32 },
+        vhf:            { mineralwolle: 262, mw032: 280, pur: 298, holzfaser: 286, holzfaser045: 268 },
+        innendaemmung:  { eps: 107, eps032: 119, mineralwolle: 119, mw032: 131, pur: 155, holzfaser: 143 }
     },
     roof: {
         zwischensparren: { mineralwolle: 95, holzfaser: 131, pur: 143, zellulose: 71, eps: 83 },
@@ -1974,14 +2094,28 @@ function recalcCosts() {
     if (state.measures.includes('wall_insulation')) {
         const wType = document.getElementById('wall_type')?.value || 'wdvs';
         const wMat = document.getElementById('wall_material')?.value || 'mineralwolle';
-        const wThick = parseInt(document.getElementById('wall_thickness')?.value) || 160;
         const basePrice = (PRICES.wall[wType] && PRICES.wall[wType][wMat]) || 150;
-        const tMult = wType === 'kerndaemmung' ? 1 : thicknessMultiplier(wThick, 160);
-        const total = Math.round(g.fassade * basePrice * tMult);
+        let tMult, pricePerSqm, hinweis;
+        if (wType === 'kerndaemmung') {
+            const cavity = parseInt(document.getElementById('wall_cavity')?.value) || 60;
+            tMult = 1; // Kerndämmung: Preis unabhängig von Dicke (Einblasverfahren)
+            pricePerSqm = basePrice;
+            const matData = WALL_MATERIALS[wMat];
+            const lambda = matData ? matData.lambda : 0.035;
+            const uAchievable = Math.round((lambda / (cavity / 1000)) * 100) / 100;
+            hinweis = `Kerndämmung (Einblasverfahren) bei ${cavity} mm Hohlschicht. Erreichbarer U-Wert der Dämmschicht: ca. ${uAchievable.toFixed(2)} W/(m²K). `
+                + (uAchievable > 0.20 ? 'U ≤ 0,20 wird nicht erreicht – BEG fördert Kerndämmung trotzdem bei vollständiger Füllung.' : 'U ≤ 0,20 wird erreicht – BEG-förderfähig.');
+        } else {
+            const wThick = parseInt(document.getElementById('wall_thickness')?.value) || 160;
+            tMult = thicknessMultiplier(wThick, 160); // Basispreis in PRICES bezieht sich auf 160mm
+            pricePerSqm = Math.round(basePrice * tMult);
+            hinweis = `Alle Preise brutto inkl. MwSt, Material + Montage.`;
+        }
+        const total = Math.round(g.fassade * pricePerSqm);
         state.costs.wall_insulation = total;
         const preview = document.getElementById('wall_cost_preview');
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${g.fassade} m² × ca. ${Math.round(basePrice * tMult)} €/m² = <strong>${formatCurrency(total)}</strong><br>
-            <span style="font-size:0.78rem;">Alle Preise brutto inkl. MwSt, Material + Montage. ${wType === 'kerndaemmung' ? 'Kerndämmung ist deutlich günstiger (Einblasverfahren), aber nur bei vorh. Hohlschicht möglich.' : ''}</span>`;
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${g.fassade} m² × ca. ${pricePerSqm} €/m² = <strong>${formatCurrency(total)}</strong><br>
+            <span style="font-size:0.78rem;">${hinweis}</span>`;
     }
 
     // Roof
