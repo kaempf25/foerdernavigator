@@ -804,6 +804,18 @@
             white-space: nowrap;
         }
 
+        /* Grid helpers */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+        .grid-3col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.8rem;
+        }
+
         /* Responsive */
         @media (max-width: 640px) {
             .card { padding: 1.2rem; }
@@ -816,6 +828,23 @@
             .bar-label { width: 80px; font-size: 0.75rem; }
             .comparison-table { font-size: 0.8rem; }
             .comparison-table th, .comparison-table td { padding: 0.5rem; }
+            .stepper { gap: 0; padding: 1rem 0.5rem; }
+            .step-item { padding: 0.3rem 0.4rem; font-size: 0.8rem; }
+            .step-connector { width: 16px; margin: 0; }
+        }
+        @media (max-width: 480px) {
+            .grid-3col { grid-template-columns: 1fr 1fr; }
+            .grid-2col { grid-template-columns: 1fr; }
+            .option-grid { grid-template-columns: 1fr; }
+            .measure-grid { grid-template-columns: 1fr; }
+            .result-cards { grid-template-columns: 1fr; }
+            .bar-label { width: 60px; font-size: 0.7rem; }
+            .stepper { padding: 0.8rem 0.3rem; }
+            .step-item { padding: 0.2rem 0.3rem; font-size: 0.75rem; }
+            .step-connector { width: 10px; }
+            .step-circle { width: 24px; height: 24px; font-size: 0.7rem; }
+            .card { padding: 1rem; margin-bottom: 1rem; }
+            .container { padding: 0 0.6rem; }
         }
 
         /* Print */
@@ -1058,7 +1087,7 @@
 
         <div class="field" id="we-split-field" style="display:none;">
             <label>Nutzungsaufteilung der Wohneinheiten</label>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
+            <div class="grid-2col">
                 <div class="field">
                     <label style="font-size:0.85rem;">Davon eigengenutzt</label>
                     <div class="cost-input-group">
@@ -1146,7 +1175,7 @@
         <div class="card-title" style="margin-top:1.5rem;">Gebäudeabmessungen</div>
         <div class="card-subtitle">3 Angaben genügen – Flächen und Fensteranzahl werden automatisch geschätzt.</div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem;">
+        <div class="grid-3col">
             <div class="field">
                 <label>Hausbreite</label>
                 <div class="cost-input-group">
@@ -1433,7 +1462,7 @@
                 </div>
                 <div class="field">
                     <label>Zusatzkomponenten</label>
-                    <div class="measure-grid" style="grid-template-columns:1fr 1fr;">
+                    <div class="measure-grid grid-2col">
                         <div class="measure-card" data-detail="hp_puffer" onclick="toggleDetailCard(this)" style="padding:0.6rem;">
                             <span class="measure-label" style="font-size:0.8rem;">Pufferspeicher</span>
                             <span class="measure-sub">ca. 1.500 – 2.500 €</span>
