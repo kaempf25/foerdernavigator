@@ -1,0 +1,3240 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AK Energy Consulting Fördernavigator - Energetische Sanierung</title>
+    <style>
+        :root {
+            --primary: #1a6b3c;
+            --primary-light: #2d9e5a;
+            --primary-dark: #0f4525;
+            --secondary: #f0a500;
+            --secondary-light: #ffc633;
+            --accent: #e8f5e9;
+            --bg: #f7f9fc;
+            --card: #ffffff;
+            --text: #1a1a2e;
+            --text-light: #5a5a7a;
+            --border: #e0e4ea;
+            --success: #27ae60;
+            --info: #2980b9;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --gradient-start: #1a6b3c;
+            --gradient-end: #2d9e5a;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 3rem 1.5rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 50%);
+            animation: heroGlow 8s ease-in-out infinite;
+        }
+        @keyframes heroGlow {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(5%, 3%); }
+        }
+        .hero h1 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.92;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        /* Container */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Stepper */
+        .stepper {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            padding: 1.5rem 1rem;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            transition: var(--transition);
+            cursor: pointer;
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+        }
+        .step-item:hover { background: var(--accent); }
+        .step-item.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .step-item.completed { color: var(--success); }
+        .step-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            background: var(--border);
+            color: var(--text-light);
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .step-item.active .step-circle {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(26,107,60,0.15);
+        }
+        .step-item.completed .step-circle {
+            background: var(--success);
+            color: white;
+        }
+        .step-connector {
+            width: 30px;
+            height: 2px;
+            background: var(--border);
+            margin: 0 0.2rem;
+            align-self: center;
+            transition: var(--transition);
+        }
+        .step-connector.active { background: var(--primary); }
+        .step-label { display: none; }
+        @media (min-width: 640px) {
+            .step-label { display: inline; }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            animation: fadeInUp 0.4s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            color: var(--text);
+        }
+        .card-subtitle {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Form elements */
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+        }
+        .field { margin-bottom: 1.2rem; }
+        .field-hint {
+            font-size: 0.82rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+        select, input[type="number"], input[type="text"], input[type="range"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background: white;
+            transition: var(--transition);
+            font-family: inherit;
+            -webkit-appearance: none;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(26,107,60,0.1);
+        }
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235a5a7a'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        /* Option cards (selectable tiles) */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .option-card {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            background: white;
+            position: relative;
+        }
+        .option-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        .option-card.selected {
+            border-color: var(--primary);
+            background: var(--accent);
+            box-shadow: 0 0 0 3px rgba(26,107,60,0.15);
+        }
+        .option-card.selected::after {
+            content: '\2713';
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: var(--primary);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .option-icon {
+            font-size: 2rem;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+        .option-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: block;
+        }
+        .option-desc {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+        }
+
+        /* Checkbox tiles for measures */
+        .measure-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .measure-card {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            background: white;
+            position: relative;
+        }
+        .measure-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-1px);
+        }
+        .measure-card.selected {
+            border-color: var(--primary);
+            background: var(--accent);
+        }
+        .measure-card.selected::before {
+            content: '\2713';
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: var(--primary);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .measure-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+        .measure-label { font-weight: 600; font-size: 0.85rem; display: block; }
+        .measure-sub { font-size: 0.75rem; color: var(--text-light); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 14px rgba(26,107,60,0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26,107,60,0.4);
+        }
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-secondary:hover {
+            background: var(--accent);
+        }
+        .btn-group {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Toggle */
+        .toggle-group {
+            display: flex;
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 4px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+        .toggle-btn {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            color: var(--text-light);
+        }
+        .toggle-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        /* Range slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            outline: none;
+            padding: 0;
+            border: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .range-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Results */
+        .result-hero {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .result-hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+        .result-hero .big-number {
+            font-size: clamp(2.5rem, 6vw, 3.5rem);
+            font-weight: 800;
+            display: block;
+            position: relative;
+        }
+        .result-hero .big-label {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .result-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .result-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .result-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .result-card .rc-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .result-card .rc-label {
+            font-size: 0.82rem;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+        }
+
+        /* Funding program list */
+        .program-list { list-style: none; }
+        .program-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.4rem;
+            margin-bottom: 0.8rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .program-item:hover {
+            box-shadow: var(--shadow);
+        }
+        .program-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+        }
+        .program-item.kfw::before { background: #0066cc; }
+        .program-item.bafa::before { background: #e74c3c; }
+        .program-item.state::before { background: #f39c12; }
+        .program-item.tax::before { background: #8e44ad; }
+
+        .program-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .program-name {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .program-badge {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-kfw { background: #e6f0ff; color: #0066cc; }
+        .badge-bafa { background: #fde8e8; color: #e74c3c; }
+        .badge-state { background: #fff3e0; color: #e65100; }
+        .badge-tax { background: #f3e5f5; color: #8e44ad; }
+        .program-amount {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .program-details {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.4rem;
+        }
+        .program-tip {
+            background: #fffde7;
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.82rem;
+            margin-top: 0.6rem;
+            border-left: 3px solid var(--secondary);
+        }
+        .calculation-box {
+            background: #f0f4f8;
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            font-size: 0.82rem;
+            margin-top: 0.6rem;
+            border-left: 3px solid var(--info);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .calculation-box strong {
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+        .validation-banner {
+            background: linear-gradient(90deg, #e8f5e9, #f1f8e9);
+            border: 1px solid #c8e6c9;
+            border-radius: var(--radius);
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+        .validation-dot {
+            width: 10px; height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.4rem;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .validation-stale .validation-dot { background: var(--warning); }
+        .tax-explanation {
+            background: #faf5ff;
+            border-radius: var(--radius);
+            padding: 1rem 1.2rem;
+            border-left: 4px solid #8e44ad;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+        .tax-explanation .calc-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.2rem 0;
+            border-bottom: 1px dashed #e0d4ec;
+        }
+        .tax-explanation .calc-line:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            color: #8e44ad;
+        }
+
+        /* Comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .comparison-table td {
+            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table tr:nth-child(even) td { background: #fafbfc; }
+        .comparison-table .highlight-row td {
+            background: var(--accent);
+            font-weight: 600;
+        }
+        .comparison-table .winner { color: var(--success); font-weight: 700; }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+        .timeline-step {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+        .timeline-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* Tip box */
+        .tip-box {
+            background: linear-gradient(135deg, #fff8e1, #fff3c4);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            border-left: 4px solid var(--secondary);
+            margin-bottom: 1rem;
+        }
+        .tip-box-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        .tip-box p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .info-box {
+            background: #e8f4fd;
+            border-radius: var(--radius);
+            padding: 1rem;
+            border-left: 4px solid var(--info);
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+        .warning-box {
+            background: #fef3e2;
+            border-radius: var(--radius);
+            padding: 1rem;
+            border-left: 4px solid var(--warning);
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* Bar chart */
+        .bar-chart { margin: 1rem 0; }
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.6rem;
+            gap: 0.8rem;
+        }
+        .bar-label {
+            width: 120px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .bar-track {
+            flex: 1;
+            height: 28px;
+            background: #f0f2f5;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            transition: width 1s ease-out;
+            min-width: fit-content;
+        }
+        .bar-fill.kfw { background: linear-gradient(90deg, #0066cc, #3399ff); }
+        .bar-fill.bafa { background: linear-gradient(90deg, #e74c3c, #ff6b6b); }
+        .bar-fill.state { background: linear-gradient(90deg, #f39c12, #ffc107); }
+        .bar-fill.tax { background: linear-gradient(90deg, #8e44ad, #a569bd); }
+        .bar-fill.eigen { background: linear-gradient(90deg, #95a5a6, #bdc3c7); }
+
+        /* Donut chart */
+        .donut-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+        .donut-svg {
+            width: 180px;
+            height: 180px;
+            transform: rotate(-90deg);
+        }
+        .donut-legend { font-size: 0.85rem; }
+        .donut-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+        .donut-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        /* Section */
+        .section { display: none; padding: 1.5rem 0; }
+        .section.active { display: block; }
+
+        /* Cost input group */
+        .cost-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .cost-input-group input {
+            flex: 1;
+        }
+        .cost-suffix {
+            font-weight: 600;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .card { padding: 1.2rem; }
+            .hero { padding: 2rem 1rem 1.5rem; }
+            .option-grid { grid-template-columns: 1fr 1fr; }
+            .measure-grid { grid-template-columns: 1fr 1fr; }
+            .result-cards { grid-template-columns: 1fr 1fr; }
+            .btn-group { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .bar-label { width: 80px; font-size: 0.75rem; }
+            .comparison-table { font-size: 0.8rem; }
+            .comparison-table th, .comparison-table td { padding: 0.5rem; }
+        }
+
+        /* Print */
+        @media print {
+            .stepper, .btn-group, .hero { display: none !important; }
+            .section { display: block !important; }
+            .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        .footer a { color: var(--primary); text-decoration: none; }
+
+        /* Accordion for details */
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .accordion-header:hover { color: var(--primary); }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.open {
+            max-height: 2000px;
+        }
+        .accordion-arrow {
+            transition: transform 0.3s;
+            font-size: 0.8rem;
+        }
+        .accordion-arrow.open { transform: rotate(180deg); }
+
+        /* Animated counter */
+        @keyframes countUp {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .count-animate {
+            animation: countUp 0.5s ease-out;
+        }
+
+        /* Savings highlight */
+        .savings-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(26,107,60,0.3); }
+            50% { box-shadow: 0 0 0 12px rgba(26,107,60,0); }
+        }
+
+        /* Tab switch for comparison */
+        .tab-bar {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1rem;
+        }
+        .tab-btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            background: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Hidden counter */
+        .counter-z {
+            position: fixed;
+            bottom: 8px;
+            right: 8px;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: rgba(0,0,0,0.10);
+            cursor: default;
+            z-index: 9999;
+            border-radius: 4px;
+            transition: all 0.3s;
+            user-select: none;
+        }
+        .counter-z:hover {
+            color: var(--primary);
+            background: var(--accent);
+            transform: scale(1.3);
+        }
+        .counter-tooltip {
+            display: none;
+            position: fixed;
+            bottom: 36px;
+            right: 8px;
+            background: var(--text);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 10000;
+            box-shadow: var(--shadow-lg);
+        }
+        .counter-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            right: 10px;
+            width: 10px;
+            height: 10px;
+            background: var(--text);
+            transform: rotate(45deg);
+        }
+        .counter-z:hover + .counter-tooltip { display: block; }
+    </style>
+</head>
+<body>
+
+<!-- Hidden visitor counter -->
+<div class="counter-z" id="counterZ">Z</div>
+<div class="counter-tooltip" id="counterTooltip">Seitenaufrufe: ...</div>
+
+<div class="hero">
+    <div class="hero-badge" id="validationBadge">Letzte Validierung: 01.02.2026 &middot; BEG / KfW / BAFA</div>
+    <h1>AK Energy Consulting<br>Fördernavigator</h1>
+    <p>Finden Sie in 4 Schritten die optimale Förderstrategie für Ihre energetische Sanierung</p>
+</div>
+
+<div class="stepper" id="stepper">
+    <div class="step-item active" data-step="1" onclick="goToStep(1)">
+        <div class="step-circle">1</div>
+        <span class="step-label">Gebäude</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-step="2" onclick="goToStep(2)">
+        <div class="step-circle">2</div>
+        <span class="step-label">Maßnahmen</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-step="3" onclick="goToStep(3)">
+        <div class="step-circle">3</div>
+        <span class="step-label">Details</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-step="4" onclick="goToStep(4)">
+        <div class="step-circle">4</div>
+        <span class="step-label">Ergebnis</span>
+    </div>
+</div>
+
+<div class="container">
+
+<!-- ===================== STEP 1: GEBÄUDE ===================== -->
+<div class="section active" id="section-1">
+    <div class="card">
+        <div class="card-title">Ihr Gebäude</div>
+        <div class="card-subtitle">Bitte geben Sie die Eckdaten Ihres Gebäudes ein</div>
+
+        <div class="field">
+            <label>Gebäudetyp</label>
+            <div class="option-grid">
+                <div class="option-card selected" data-field="buildingType" data-value="efh" onclick="selectOption(this)">
+                    <span class="option-icon">🏠</span>
+                    <span class="option-label">Einfamilienhaus</span>
+                </div>
+                <div class="option-card" data-field="buildingType" data-value="zfh" onclick="selectOption(this)">
+                    <span class="option-icon">🏡</span>
+                    <span class="option-label">Zweifamilienhaus</span>
+                </div>
+                <div class="option-card" data-field="buildingType" data-value="mfh" onclick="selectOption(this)">
+                    <span class="option-icon">🏢</span>
+                    <span class="option-label">Mehrfamilienhaus</span>
+                </div>
+                <div class="option-card" data-field="buildingType" data-value="denkmal" onclick="selectOption(this)">
+                    <span class="option-icon">🏛️</span>
+                    <span class="option-label">Denkmal</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="field" id="mfh-units-field" style="display:none;">
+            <label>Anzahl Wohneinheiten</label>
+            <input type="number" id="unitCount" value="4" min="3" max="100" onchange="updateState()">
+        </div>
+
+        <div class="field" id="ownership-field">
+            <label>Eigentumsverhältnis</label>
+            <div class="option-grid">
+                <div class="option-card selected" data-field="ownership" data-value="owner" onclick="selectOption(this)">
+                    <span class="option-icon">🔑</span>
+                    <span class="option-label">Selbstnutzend</span>
+                    <span class="option-desc">Eigentümer & Bewohner</span>
+                </div>
+                <div class="option-card" data-field="ownership" data-value="landlord" onclick="selectOption(this)">
+                    <span class="option-icon">📋</span>
+                    <span class="option-label">Vermieter</span>
+                    <span class="option-desc">Komplett vermietet</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="field" id="we-split-field" style="display:none;">
+            <label>Nutzungsaufteilung der Wohneinheiten</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
+                <div class="field">
+                    <label style="font-size:0.85rem;">Davon eigengenutzt</label>
+                    <div class="cost-input-group">
+                        <input type="number" id="weEigengenutzt" value="1" min="0" max="100" step="1" onchange="updateState()">
+                        <span class="cost-suffix">WE</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label style="font-size:0.85rem;">Davon vermietet</label>
+                    <div class="cost-input-group">
+                        <input type="number" id="weVermietet" value="1" min="0" max="100" step="1" onchange="updateState()">
+                        <span class="cost-suffix">WE</span>
+                    </div>
+                </div>
+            </div>
+            <div class="field-hint" id="we-split-hint">Boni (Klimageschwindigkeit, Einkommen) gelten nur für eigengenutzte WE. §35c nur für Eigennutzung.</div>
+        </div>
+
+        <div class="field">
+            <label>Baujahr des Gebäudes</label>
+            <select id="buildYear" onchange="updateState()">
+                <option value="pre1957">Vor 1957</option>
+                <option value="1957-1978" selected>1957 - 1978</option>
+                <option value="1979-1994">1979 - 1994</option>
+                <option value="1995-2001">1995 - 2001</option>
+                <option value="2002-2014">2002 - 2014</option>
+                <option value="post2014">Nach 2014</option>
+            </select>
+            <div class="field-hint">Das Baujahr beeinflusst Bonus-Möglichkeiten (z.B. Worst Performing Building)</div>
+        </div>
+
+        <div class="field">
+            <label>Bundesland</label>
+            <select id="bundesland" onchange="updateState()">
+                <option value="bw">Baden-Württemberg</option>
+                <option value="by">Bayern</option>
+                <option value="be">Berlin</option>
+                <option value="bb">Brandenburg</option>
+                <option value="hb">Bremen</option>
+                <option value="hh">Hamburg</option>
+                <option value="he">Hessen</option>
+                <option value="mv">Mecklenburg-Vorpommern</option>
+                <option value="ni">Niedersachsen</option>
+                <option value="nw" selected>Nordrhein-Westfalen</option>
+                <option value="rp">Rheinland-Pfalz</option>
+                <option value="sl">Saarland</option>
+                <option value="sn">Sachsen</option>
+                <option value="st">Sachsen-Anhalt</option>
+                <option value="sh">Schleswig-Holstein</option>
+                <option value="th">Thüringen</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Bisherige energetische Sanierung</label>
+            <div class="option-grid">
+                <div class="option-card selected" data-field="priorRenovation" data-value="none" onclick="selectOption(this)">
+                    <span class="option-icon">❌</span>
+                    <span class="option-label">Unsaniert</span>
+                    <span class="option-desc">Keine bisherigen Maßnahmen</span>
+                </div>
+                <div class="option-card" data-field="priorRenovation" data-value="partial" onclick="selectOption(this)">
+                    <span class="option-icon">🔧</span>
+                    <span class="option-label">Bereits (teil-)saniert</span>
+                    <span class="option-desc">Einzelne oder mehrere Maßnahmen bereits durchgeführt</span>
+                </div>
+            </div>
+            <div class="field-hint">Unsanierte Altbauten (Baujahr vor 1979) qualifizieren sich als „Worst Performing Building" – das bringt +10% Bonus bei Effizienzhaussanierung.</div>
+        </div>
+
+        <div class="field">
+            <label>Aktuelle Heizung</label>
+            <select id="currentHeating" onchange="updateState()">
+                <option value="oil">Ölheizung</option>
+                <option value="gas" selected>Gasheizung</option>
+                <option value="coal">Kohleheizung</option>
+                <option value="nightstorage">Nachtspeicherheizung</option>
+                <option value="biomass_old">Biomasse (> 20 Jahre)</option>
+                <option value="biomass_new">Biomasse (< 20 Jahre)</option>
+                <option value="heatpump">Wärmepumpe</option>
+                <option value="district">Fernwärme</option>
+            </select>
+        </div>
+
+        <div class="card-title" style="margin-top:1.5rem;">Gebäudeabmessungen</div>
+        <div class="card-subtitle">3 Angaben genügen – Flächen und Fensteranzahl werden automatisch geschätzt.</div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem;">
+            <div class="field">
+                <label>Hausbreite</label>
+                <div class="cost-input-group">
+                    <input type="number" id="geoBreite" value="10" min="4" max="50" step="0.5" onchange="updateState()">
+                    <span class="cost-suffix">m</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Hauslänge</label>
+                <div class="cost-input-group">
+                    <input type="number" id="geoLaenge" value="12" min="4" max="50" step="0.5" onchange="updateState()">
+                    <span class="cost-suffix">m</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Geschosse</label>
+                <select id="geoGeschosse" onchange="updateState()">
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                    <option value="4">4+</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="geoEstimate" class="info-box" style="margin-top:0.6rem; font-size:0.85rem; line-height:1.6;"></div>
+
+        <div class="btn-group">
+            <div></div>
+            <button class="btn btn-primary" onclick="goToStep(2)">Weiter zu Maßnahmen →</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== STEP 2: MASSNAHMEN ===================== -->
+<div class="section" id="section-2">
+    <div class="card">
+        <div class="card-title">Geplante Maßnahmen</div>
+        <div class="card-subtitle">Wählen Sie Maßnahmen und konfigurieren Sie Material & Ausführung</div>
+
+        <!-- === FASSADENDÄMMUNG === -->
+        <label style="margin-bottom:0.8rem;">Gebäudehülle</label>
+        <div class="measure-grid">
+            <div class="measure-card" data-measure="wall_insulation" onclick="toggleMeasure(this)">
+                <div class="measure-icon">🧱</div>
+                <span class="measure-label">Fassadendämmung</span>
+                <span class="measure-sub">WDVS / Kerndämmung / VHF</span>
+            </div>
+            <div class="measure-card" data-measure="roof_insulation" onclick="toggleMeasure(this)">
+                <div class="measure-icon">🏠</div>
+                <span class="measure-label">Dachdämmung</span>
+                <span class="measure-sub">Aufsparren / Zwischen / oGD</span>
+            </div>
+            <div class="measure-card" data-measure="basement_insulation" onclick="toggleMeasure(this)">
+                <div class="measure-icon">🔲</div>
+                <span class="measure-label">Kellerdämmung</span>
+                <span class="measure-sub">Kellerdecke / Perimeter</span>
+            </div>
+            <div class="measure-card" data-measure="windows" onclick="toggleMeasure(this)">
+                <div class="measure-icon">🪟</div>
+                <span class="measure-label">Fenster & Türen</span>
+                <span class="measure-sub">2-fach / 3-fach / Haustür</span>
+            </div>
+        </div>
+
+        <!-- Detail-Panels für Gebäudehülle (erscheinen wenn Maßnahme gewählt) -->
+        <div id="detail_wall_insulation" class="measure-detail" style="display:none;">
+            <div class="card" style="background:#f8fdf8; margin:0.5rem 0 1rem; padding:1.2rem;">
+                <strong>Fassadendämmung – Details</strong>
+                <div class="field" style="margin-top:0.8rem;">
+                    <label>Ausführungsart</label>
+                    <select id="wall_type" onchange="recalcCosts()">
+                        <option value="wdvs" selected>WDVS (Wärmedämmverbundsystem)</option>
+                        <option value="kerndaemmung">Kerndämmung (Hohlschicht-Einblasung)</option>
+                        <option value="vhf">VHF (Vorgehängte hinterlüftete Fassade)</option>
+                        <option value="innendaemmung">Innendämmung (z.B. Denkmal)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Dämmmaterial</label>
+                    <select id="wall_material" onchange="recalcCosts()">
+                        <option value="eps">EPS (Styropor) – Standard, gutes P/L</option>
+                        <option value="mineralwolle" selected>Mineralwolle – nicht brennbar, Schallschutz</option>
+                        <option value="pur">PUR/PIR – schlank, hohe Dämmleistung</option>
+                        <option value="holzfaser">Holzfaserdämmplatte – ökologisch, sommerl. Wärmeschutz</option>
+                        <option value="zellulose">Zellulose (Einblasung) – ökologisch, für Kerndämmung</option>
+                        <option value="resol">Resolhartschaum – sehr schlank (WLG 021)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Dämmstoffdicke</label>
+                    <select id="wall_thickness" onchange="recalcCosts()">
+                        <option value="80">80 mm (Minimum, oft nicht förderfähig)</option>
+                        <option value="120">120 mm (Mindestanforderung GEG)</option>
+                        <option value="160" selected>160 mm (Empfohlen für Förderung U ≤ 0,20)</option>
+                        <option value="200">200 mm (Gute Fördervoraussetzung)</option>
+                        <option value="240">240 mm (Passivhaus-Niveau)</option>
+                    </select>
+                    <div class="field-hint">Für BEG-Förderung: U-Wert ≤ 0,20 W/(m²K) erforderlich. Bei WLG 035 = mind. 140-160 mm.</div>
+                </div>
+                <div class="info-box" id="wall_cost_preview">Kostenschätzung wird berechnet...</div>
+            </div>
+        </div>
+
+        <!-- Dachdämmung Detail -->
+        <div id="detail_roof_insulation" class="measure-detail" style="display:none;">
+            <div class="card" style="background:#f8fdf8; margin:0.5rem 0 1rem; padding:1.2rem;">
+                <strong>Dachdämmung – Details</strong>
+                <div class="field" style="margin-top:0.8rem;">
+                    <label>Ausführungsart</label>
+                    <select id="roof_type" onchange="recalcCosts()">
+                        <option value="zwischensparren" selected>Zwischensparrendämmung</option>
+                        <option value="aufsparren">Aufsparrendämmung (Neueindeckung)</option>
+                        <option value="ogd">Oberste Geschossdecke (nicht ausgebautes DG)</option>
+                        <option value="flachdach">Flachdachdämmung</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Dämmmaterial</label>
+                    <select id="roof_material" onchange="recalcCosts()">
+                        <option value="mineralwolle" selected>Mineralwolle – Standard, Brandschutz A1</option>
+                        <option value="holzfaser">Holzfaserdämmplatte – ökologisch, guter Hitzeschutz</option>
+                        <option value="pur">PUR/PIR – sehr schlank, gut für Aufsparren</option>
+                        <option value="zellulose">Zellulose (Einblasung) – günstig, Hohlraumfüllung</option>
+                        <option value="eps">EPS – für Flachdach / oGD</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Dämmstoffdicke</label>
+                    <select id="roof_thickness" onchange="recalcCosts()">
+                        <option value="140">140 mm (Minimum GEG)</option>
+                        <option value="180">180 mm</option>
+                        <option value="200" selected>200 mm (Empfohlen für U ≤ 0,14)</option>
+                        <option value="240">240 mm (Sehr gut)</option>
+                        <option value="300">300 mm (Passivhaus)</option>
+                    </select>
+                    <div class="field-hint">Für BEG-Förderung: U-Wert ≤ 0,14 W/(m²K) erforderlich.</div>
+                </div>
+                <div class="info-box" id="roof_cost_preview">Kostenschätzung wird berechnet...</div>
+            </div>
+        </div>
+
+        <!-- Kellerdämmung Detail -->
+        <div id="detail_basement_insulation" class="measure-detail" style="display:none;">
+            <div class="card" style="background:#f8fdf8; margin:0.5rem 0 1rem; padding:1.2rem;">
+                <strong>Kellerdämmung – Details</strong>
+                <div class="field" style="margin-top:0.8rem;">
+                    <label>Ausführungsart</label>
+                    <select id="basement_type" onchange="recalcCosts()">
+                        <option value="kellerdecke" selected>Kellerdecke von unten dämmen</option>
+                        <option value="perimeter">Perimeterdämmung (Außenwand Keller)</option>
+                        <option value="bodenplatte">Bodenplatte / Fußboden dämmen</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Dämmmaterial</label>
+                    <select id="basement_material" onchange="recalcCosts()">
+                        <option value="eps" selected>EPS / XPS – feuchtebeständig</option>
+                        <option value="mineralwolle">Mineralwolle (Kellerdecke)</option>
+                        <option value="pur">PUR/PIR – schlank, hohe Leistung</option>
+                        <option value="schaumglas">Schaumglas – Perimeter, druckfest</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Dämmstoffdicke</label>
+                    <select id="basement_thickness" onchange="recalcCosts()">
+                        <option value="60">60 mm (Minimum)</option>
+                        <option value="80" selected>80 mm (GEG-konform)</option>
+                        <option value="100">100 mm (Empfohlen, U ≤ 0,25)</option>
+                        <option value="120">120 mm (Sehr gut)</option>
+                    </select>
+                    <div class="field-hint">Für BEG-Förderung: U-Wert ≤ 0,25 W/(m²K) erforderlich.</div>
+                </div>
+                <div class="info-box" id="basement_cost_preview">Kostenschätzung wird berechnet...</div>
+            </div>
+        </div>
+
+        <!-- Fenster Detail -->
+        <div id="detail_windows" class="measure-detail" style="display:none;">
+            <div class="card" style="background:#f8fdf8; margin:0.5rem 0 1rem; padding:1.2rem;">
+                <strong>Fenster & Türen – Details</strong>
+                <div class="field" style="margin-top:0.8rem;">
+                    <label>Verglasung</label>
+                    <select id="window_glazing" onchange="recalcCosts()">
+                        <option value="2fach">2-fach Verglasung (Uw ca. 1,1 – nicht förderfähig)</option>
+                        <option value="3fach" selected>3-fach Verglasung (Uw ≤ 0,95 – förderfähig)</option>
+                        <option value="3fach_plus">3-fach mit Wärmeschutzbeschichtung (Uw ≤ 0,80)</option>
+                    </select>
+                    <div class="field-hint">Für BEG-Förderung: Uw ≤ 0,95 W/(m²K) erforderlich.</div>
+                </div>
+                <div class="field">
+                    <label>Rahmenmaterial</label>
+                    <select id="window_frame" onchange="recalcCosts()">
+                        <option value="kunststoff" selected>Kunststoff (PVC) – günstig, wartungsarm</option>
+                        <option value="holz">Holz – ökologisch, gute Dämmung</option>
+                        <option value="holz_alu">Holz-Aluminium – langlebig, Premium</option>
+                        <option value="alu">Aluminium – modern, langlebig</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Durchschnittliche Fenstergröße</label>
+                    <select id="window_size" onchange="recalcCosts()">
+                        <option value="small">Klein (ca. 0,8 m²) – Bad, Flur</option>
+                        <option value="medium" selected>Mittel (ca. 1,3 m²) – Standardfenster</option>
+                        <option value="large">Groß (ca. 2,5 m²) – Balkontür, bodentief</option>
+                        <option value="mixed">Gemischt (Durchschnitt ca. 1,5 m²)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Haustür mit erneuern?</label>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" onclick="toggleDetail(this,'haustuer',false)" id="haustuer_no">Nein</button>
+                        <button class="toggle-btn" onclick="toggleDetail(this,'haustuer',true)" id="haustuer_yes">Ja (+Haustür)</button>
+                    </div>
+                    <div class="field-hint">Haustüren: UD ≤ 1,3 W/(m²K) für Förderung. Kosten ca. 3.000-8.000 €.</div>
+                </div>
+                <div class="info-box" id="window_cost_preview">Kostenschätzung wird berechnet...</div>
+            </div>
+        </div>
+
+        <!-- === HEIZUNG === -->
+        <label style="margin-bottom:0.8rem; margin-top:1rem;">Heizung</label>
+        <div class="measure-grid">
+            <div class="measure-card" data-measure="heat_pump" onclick="toggleMeasure(this)">
+                <div class="measure-icon">♨️</div>
+                <span class="measure-label">Wärmepumpe</span>
+                <span class="measure-sub">Luft / Erd / Wasser</span>
+            </div>
+            <div class="measure-card" data-measure="biomass" onclick="toggleMeasure(this)">
+                <div class="measure-icon">🪵</div>
+                <span class="measure-label">Biomasse</span>
+                <span class="measure-sub">Pellet / Hackschnitzel</span>
+            </div>
+            <div class="measure-card" data-measure="solar_thermal" onclick="toggleMeasure(this)">
+                <div class="measure-icon">☀️</div>
+                <span class="measure-label">Solarthermie</span>
+                <span class="measure-sub">Warmwasser / Heizung</span>
+            </div>
+            <div class="measure-card" data-measure="district_heating" onclick="toggleMeasure(this)">
+                <div class="measure-icon">🏭</div>
+                <span class="measure-label">Fernwärme</span>
+                <span class="measure-sub">Anschluss Wärmenetz</span>
+            </div>
+        </div>
+
+        <!-- Wärmepumpe Detail -->
+        <div id="detail_heat_pump" class="measure-detail" style="display:none;">
+            <div class="card" style="background:#f8fdf8; margin:0.5rem 0 1rem; padding:1.2rem;">
+                <strong>Wärmepumpe – Details</strong>
+                <div class="field" style="margin-top:0.8rem;">
+                    <label>Wärmepumpen-Typ</label>
+                    <select id="hp_type" onchange="recalcCosts()">
+                        <option value="luft_split">Luft-Wasser Split (Außen + Inneneinheit)</option>
+                        <option value="luft_mono" selected>Luft-Wasser Monoblock</option>
+                        <option value="sole">Sole-Wasser (Erdwärme mit Sonde/Kollektor)</option>
+                        <option value="wasser">Wasser-Wasser (Grundwasser)</option>
+                    </select>
+                    <div class="field-hint">⚠️ Ab 01/2026: Förderung nur bei Schallleistung 10 dB unter EU-Ecodesign: ≤6 kW max. 55 dB(A), 6–12 kW max. 60 dB(A), 12–30 kW max. 68 dB(A). Sole/Wasser-WP: +5% Effizienzbonus möglich.</div>
+                </div>
+                <div class="field">
+                    <label>Geschätzte Heizlast / Leistung</label>
+                    <select id="hp_leistung" onchange="recalcCosts()">
+                        <option value="6">ca. 6 kW (gut gedämmtes EFH)</option>
+                        <option value="9">ca. 9 kW (mittleres EFH)</option>
+                        <option value="12" selected>ca. 12 kW (Standard-EFH)</option>
+                        <option value="16">ca. 16 kW (großes EFH / ZFH)</option>
+                        <option value="24">ca. 24 kW (MFH / schlecht gedämmt)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Zusatzkomponenten</label>
+                    <div class="measure-grid" style="grid-template-columns:1fr 1fr;">
+                        <div class="measure-card" data-detail="hp_puffer" onclick="toggleDetailCard(this)" style="padding:0.6rem;">
+                            <span class="measure-label" style="font-size:0.8rem;">Pufferspeicher</span>
+                            <span class="measure-sub">ca. 1.500 – 2.500 €</span>
+                        </div>
+                        <div class="measure-card" data-detail="hp_fussbodenheizung" onclick="toggleDetailCard(this)" style="padding:0.6rem;">
+                            <span class="measure-label" style="font-size:0.8rem;">Fußbodenheizung nachrüsten</span>
+                            <span class="measure-sub">ca. 60-95 €/m² brutto</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box" id="hp_cost_preview">Kostenschätzung wird berechnet...</div>
+            </div>
+        </div>
+
+        <!-- Biomasse Detail -->
+        <div id="detail_biomass" class="measure-detail" style="display:none;">
+            <div class="card" style="background:#f8fdf8; margin:0.5rem 0 1rem; padding:1.2rem;">
+                <strong>Biomasse-Heizung – Details</strong>
+                <div class="field" style="margin-top:0.8rem;">
+                    <label>Typ</label>
+                    <select id="bio_type" onchange="recalcCosts()">
+                        <option value="pellet" selected>Pelletheizung (automatisch)</option>
+                        <option value="hackschnitzel">Hackschnitzelheizung</option>
+                        <option value="scheitholz">Scheitholzkessel (Vergaser)</option>
+                        <option value="kombi">Kombikessel (Pellet + Scheitholz)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Leistung</label>
+                    <select id="bio_leistung" onchange="recalcCosts()">
+                        <option value="10">ca. 10 kW</option>
+                        <option value="15" selected>ca. 15 kW</option>
+                        <option value="20">ca. 20 kW</option>
+                        <option value="30">ca. 30 kW</option>
+                    </select>
+                </div>
+                <div class="info-box" id="bio_cost_preview">Kostenschätzung wird berechnet...</div>
+            </div>
+        </div>
+
+        <!-- Solarthermie Detail -->
+        <div id="detail_solar_thermal" class="measure-detail" style="display:none;">
+            <div class="card" style="background:#f8fdf8; margin:0.5rem 0 1rem; padding:1.2rem;">
+                <strong>Solarthermie – Details</strong>
+                <div class="field" style="margin-top:0.8rem;">
+                    <label>Nutzung</label>
+                    <select id="solar_type" onchange="recalcCosts()">
+                        <option value="ww" selected>Nur Warmwasser (ca. 4-6 m² Kollektorfläche)</option>
+                        <option value="heizung">Warmwasser + Heizungsunterstützung (ca. 8-15 m²)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Kollektortyp</label>
+                    <select id="solar_kollektor" onchange="recalcCosts()">
+                        <option value="flach" selected>Flachkollektor – Standard, gutes P/L</option>
+                        <option value="vakuum">Vakuumröhrenkollektor – höherer Ertrag, teurer</option>
+                    </select>
+                </div>
+                <div class="info-box" id="solar_cost_preview">Kostenschätzung wird berechnet...</div>
+            </div>
+        </div>
+
+        <!-- Fernwärme Detail -->
+        <div id="detail_district_heating" class="measure-detail" style="display:none;">
+            <div class="card" style="background:#f8fdf8; margin:0.5rem 0 1rem; padding:1.2rem;">
+                <strong>Fernwärme – Details</strong>
+                <div class="field" style="margin-top:0.8rem;">
+                    <label>Entfernung zum Anschlusspunkt</label>
+                    <select id="district_distance" onchange="recalcCosts()">
+                        <option value="short" selected>Kurz (< 10 m)</option>
+                        <option value="medium">Mittel (10-25 m)</option>
+                        <option value="long">Lang (> 25 m)</option>
+                    </select>
+                </div>
+                <div class="info-box" id="district_cost_preview">Kostenschätzung wird berechnet...</div>
+            </div>
+        </div>
+
+        <!-- === ANLAGENTECHNIK === -->
+        <label style="margin-bottom:0.8rem; margin-top:1rem;">Anlagentechnik & Sonstiges</label>
+        <div class="measure-grid">
+            <div class="measure-card" data-measure="ventilation" onclick="toggleMeasure(this)">
+                <div class="measure-icon">🌬️</div>
+                <span class="measure-label">Lüftungsanlage</span>
+                <span class="measure-sub">Zentral / Dezentral / WRG</span>
+            </div>
+            <div class="measure-card" data-measure="heating_optimization" onclick="toggleMeasure(this)">
+                <div class="measure-icon">⚙️</div>
+                <span class="measure-label">Heizungsoptimierung</span>
+                <span class="measure-sub">Hydraul. Abgleich etc.</span>
+            </div>
+            <div class="measure-card" data-measure="smart_home" onclick="toggleMeasure(this)">
+                <div class="measure-icon">📡</div>
+                <span class="measure-label">Gebäudeautomation</span>
+                <span class="measure-sub">Smart Home / Steuerung</span>
+            </div>
+        </div>
+
+        <!-- Lüftung Detail -->
+        <div id="detail_ventilation" class="measure-detail" style="display:none;">
+            <div class="card" style="background:#f8fdf8; margin:0.5rem 0 1rem; padding:1.2rem;">
+                <strong>Lüftungsanlage – Details</strong>
+                <div class="field" style="margin-top:0.8rem;">
+                    <label>Typ</label>
+                    <select id="vent_type" onchange="recalcCosts()">
+                        <option value="dezentral" selected>Dezentral (Einzelgeräte pro Raum) – einfacher Einbau</option>
+                        <option value="zentral">Zentral mit Kanalsystem – effizienteste Variante</option>
+                    </select>
+                </div>
+                <div class="info-box" id="vent_cost_preview">Kostenschätzung wird berechnet...</div>
+            </div>
+        </div>
+
+        <div class="field" style="margin-top:1.2rem;">
+            <label>Sanierungsziel</label>
+            <div class="option-grid">
+                <div class="option-card selected" data-field="renovGoal" data-value="einzeln" onclick="selectOption(this)">
+                    <span class="option-icon">🔧</span>
+                    <span class="option-label">Einzelmaßnahmen</span>
+                    <span class="option-desc">Schrittweise Sanierung</span>
+                </div>
+                <div class="option-card" data-field="renovGoal" data-value="effizienzhaus" onclick="selectOption(this)">
+                    <span class="option-icon">🏆</span>
+                    <span class="option-label">Effizienzhaus</span>
+                    <span class="option-desc">Komplettsanierung</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="effizienzhaus-options" style="display:none;">
+            <div class="field">
+                <label>Effizienzhaus-Standard (Ziel)</label>
+                <select id="ehStandard" onchange="updateState()">
+                    <option value="eh85">Effizienzhaus 85</option>
+                    <option value="eh70">Effizienzhaus 70</option>
+                    <option value="eh55" selected>Effizienzhaus 55</option>
+                    <option value="eh40">Effizienzhaus 40</option>
+                    <option value="ehDenkmal">Effizienzhaus Denkmal</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>EE- oder NH-Klasse?</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn" onclick="toggleEE(this, false)" id="toggleEE_no">Ohne</button>
+                    <button class="toggle-btn active" onclick="toggleEE(this, true)" id="toggleEE_yes">Mit EE/NH-Klasse</button>
+                </div>
+                <div class="field-hint">EE = Erneuerbare Energien (mind. 65% erneuerbar), NH = Nachhaltigkeitssiegel</div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goToStep(1)">← Zurück</button>
+            <button class="btn btn-primary" onclick="goToStep(3)">Weiter zu Details →</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== STEP 3: DETAILS ===================== -->
+<div class="section" id="section-3">
+    <div class="card">
+        <div class="card-title">Details & Kosten</div>
+        <div class="card-subtitle">Angaben für eine präzise Fördermittelberechnung</div>
+
+        <div class="field">
+            <label>Haben Sie einen individuellen Sanierungsfahrplan (iSFP)?</label>
+            <div class="toggle-group">
+                <button class="toggle-btn" onclick="toggleISFP(this, false)" id="toggleISFP_no">Nein</button>
+                <button class="toggle-btn active" onclick="toggleISFP(this, true)" id="toggleISFP_yes">Ja, iSFP vorhanden</button>
+            </div>
+            <div class="tip-box">
+                <div class="tip-box-title">Tipp: iSFP erstellen lassen!</div>
+                <p>Ein iSFP bringt +5% Förderbonus und verdoppelt die förderfähigen Kosten bei Einzelmaßnahmen von 30.000 € auf 60.000 € pro Wohneinheit. Die iSFP-Erstellung (EFH/ZFH ca. 1.607 € brutto, MFH ca. 2.797 € brutto) wird mit 50% auf netto bezuschusst (max. 650 €/850 €).</p>
+            </div>
+        </div>
+
+        <div class="field" id="income-field">
+            <label>Zu versteuerndes Haushaltseinkommen (pro Jahr)</label>
+            <select id="income" onchange="updateState()">
+                <option value="under40k">Bis 40.000 € (Einkommensbonus möglich)</option>
+                <option value="over40k" selected>Über 40.000 €</option>
+            </select>
+            <div class="field-hint">Bei Einkommen ≤ 40.000 € erhalten Selbstnutzer +30% Einkommensbonus bei Heizungstausch (KfW 458)</div>
+        </div>
+
+        <div id="cost-inputs">
+            <!-- Dynamisch generiert basierend auf gewählten Maßnahmen -->
+        </div>
+
+        <div class="field" id="total-cost-display" style="margin-top:1rem;">
+            <label>Geschätzte Gesamtkosten</label>
+            <div class="range-value" id="totalCostDisplay">0 €</div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-secondary" onclick="goToStep(2)">← Zurück</button>
+            <button class="btn btn-primary" onclick="calculateAndShow()">Förderung berechnen →</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== STEP 4: ERGEBNIS ===================== -->
+<div class="section" id="section-4">
+    <div id="results-content">
+        <!-- Dynamisch generiert -->
+    </div>
+
+    <div class="btn-group" style="margin-bottom:2rem;">
+        <button class="btn btn-secondary" onclick="goToStep(3)">← Eingaben ändern</button>
+        <button class="btn btn-secondary" onclick="window.print()">🖨️ Drucken / PDF</button>
+        <button class="btn btn-primary" onclick="goToStep(1)">Neue Berechnung</button>
+    </div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+    <p><strong>Hinweis:</strong> Dieser Fördernavigator bietet eine unverbindliche Orientierung. Die tatsächlichen Förderzusagen können abweichen.
+    Bitte lassen Sie sich vor Antragstellung durch einen zertifizierten Energieberater beraten.</p>
+    <p style="margin-top:0.5rem;"><strong>Datenstand & Validierung:</strong> Letzte Prüfung 01.02.2026 &middot; Nächste planm. Validierung: 01.03.2026</p>
+    <p style="margin-top:0.3rem;">Die Förderkonditionen werden monatlich gegen die offiziellen Quellen geprüft und aktualisiert.</p>
+    <p style="margin-top:0.3rem;">Quellen: <a href="https://www.kfw.de" target="_blank">KfW</a> &middot; <a href="https://www.bafa.de" target="_blank">BAFA</a> &middot; <a href="https://www.energiewechsel.de" target="_blank">Energiewechsel.de</a> &middot; Landesförderinstitute</p>
+    <table style="margin:1rem auto; text-align:left; font-size:0.78rem; border-collapse:collapse;">
+        <tr><td style="padding:0.2rem 1rem;"><strong>Validierte Parameter:</strong></td><td></td></tr>
+        <tr><td style="padding:0.2rem 1rem;">KfW 261 Tilgungszuschuss-Sätze</td><td>&#9989; 01.02.2026</td></tr>
+        <tr><td style="padding:0.2rem 1rem;">KfW 458 Heizungsförderung & Boni</td><td>&#9989; 01.02.2026</td></tr>
+        <tr><td style="padding:0.2rem 1rem;">BAFA BEG EM Fördersätze</td><td>&#9989; 01.02.2026</td></tr>
+        <tr><td style="padding:0.2rem 1rem;">iSFP-Förderung (50%, max. 650 €)</td><td>&#9989; 01.02.2026</td></tr>
+        <tr><td style="padding:0.2rem 1rem;">Baubegleitung (50%)</td><td>&#9989; 01.02.2026</td></tr>
+        <tr><td style="padding:0.2rem 1rem;">§35c EStG Steuersätze</td><td>&#9989; 01.02.2026</td></tr>
+        <tr><td style="padding:0.2rem 1rem;">Kumulierungsgrenze 60%</td><td>&#9989; 01.02.2026</td></tr>
+        <tr><td style="padding:0.2rem 1rem;">Landesförder-Programme</td><td>&#9989; 01.02.2026</td></tr>
+    </table>
+</div>
+
+<script>
+// ============================================================
+// FUNDING DATA – loaded from JSON, with hardcoded fallback
+// ============================================================
+// JSON_URL: Change this to your GitHub Pages URL after deployment
+const JSON_URL = 'data/foerderkonditionen.json';
+
+// Default/fallback data (embedded so app works offline)
+let FD = null; // Will be set after loading
+
+const FALLBACK_DATA = {
+    meta: { lastValidated: '2026-02-01', nextValidation: '2026-03-01', status: 'current' },
+    kfw261: {
+        maxCreditStandard: 120000, maxCreditEE: 150000,
+        rates: { eh40:{base:20,ee:25}, eh55:{base:15,ee:20}, eh70:{base:10,ee:15}, eh85:{base:5,ee:10}, ehDenkmal:{base:5,ee:10} },
+        bonuses: { isfp:5, wpb:10, serialMax:20 },
+        baubegleitung: { efhZfhPerUnit:10000, mfhPerUnit:4000, rate:50 }
+    },
+    kfw458: {
+        maxEligiblePerUnit: 30000, baseRate: 30,
+        klimageschwindigkeitsbonus: { rate:20, eligibleOldHeating:['oil','coal','nightstorage','biomass_old','gas'] },
+        einkommensbonus: { rate:30, incomeThreshold:40000 },
+        maxTotalRate: 70
+    },
+    bafaBegEM: { baseRate:15, isfpBonus:5, maxEligiblePerUnitBase:30000, maxEligiblePerUnitISFP:60000 },
+    isfp: { rate:50, costNetto:{ efh:1350, zfh:1350, mfh:2350 }, costBrutto:{ efh:1607, zfh:1607, mfh:2797 }, maxFunding:{ efh:650, zfh:650, mfh:850 } },
+    baubegleitungEM: { rate:50, maxCostPerUnit:{ efhZfh:5000, mfh:2000 } },
+    par35c: { year1Rate:7, year2Rate:7, year3Rate:6, maxYear1:14000, maxYear2:14000, maxYear3:12000, maxEligibleCost:200000, maxTotalReduction:40000 },
+    kumulierung: { maxPublicFundingRate:60 },
+    statePrograms: {
+        bw:{name:'Baden-Württemberg',programs:[{name:'Klimaschutz-Plus / Kombi-Darlehen Wohnen',desc:'Zusätzlicher BW-Bonus bis 25% auf Gebäudehülle.',bonusPercent:5,maxBonus:5000,applies:'envelope'}]},
+        by:{name:'Bayern',programs:[{name:'10.000-Häuser-Programm',desc:'Zusatzförderung für Heizungstausch und Gebäudehülle.',bonusPercent:3,maxBonus:3000,applies:'all'}]},
+        nw:{name:'Nordrhein-Westfalen',programs:[{name:'NRW.BANK Wohneigentum modernisieren',desc:'Zinsgünstiges Darlehen. Kombinierbar mit BEG.',bonusPercent:0,maxBonus:0,applies:'all',loanOnly:true,loanDesc:'Zinsgünstiges Darlehen bis 150.000 €'}]},
+        he:{name:'Hessen',programs:[{name:'WIBank Energetische Förderung',desc:'Modernisierungsfahrplan-Bonus +10%.',bonusPercent:3,maxBonus:4000,applies:'all'}]},
+        ni:{name:'Niedersachsen',programs:[{name:'NBank Klimaschutz & Energieeffizienz',desc:'Für Wohngebäude zinsgünstige Darlehen.',bonusPercent:0,maxBonus:0,applies:'all',loanOnly:true,loanDesc:'Zinsgünstiges Darlehen'}]},
+        sh:{name:'Schleswig-Holstein',programs:[{name:'IB.SH Energetische Sanierung',desc:'Ergänzungsdarlehen.',bonusPercent:0,maxBonus:0,applies:'all',loanOnly:true,loanDesc:'Ergänzungsdarlehen'}]},
+        hh:{name:'Hamburg',programs:[{name:'IFB Hamburg Energetische Modernisierung',desc:'Zuschüsse und Darlehen.',bonusPercent:4,maxBonus:5000,applies:'all'}]},
+        be:{name:'Berlin',programs:[{name:'IBB Energetische Gebäudesanierung',desc:'Zinsgünstige Darlehen.',bonusPercent:0,maxBonus:0,applies:'all',loanOnly:true,loanDesc:'Zinsgünstiges Darlehen'}]}
+    }
+};
+
+// Load JSON data
+async function loadFundingData() {
+    try {
+        const resp = await fetch(JSON_URL);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        FD = await resp.json();
+        console.log('Förderdaten geladen:', FD.meta.lastValidated);
+    } catch (e) {
+        console.warn('Förderdaten-JSON nicht verfügbar, verwende Fallback-Daten.', e);
+        FD = FALLBACK_DATA;
+    }
+    updateValidationDisplay();
+}
+
+function updateValidationDisplay() {
+    const badge = document.getElementById('validationBadge');
+    if (!badge || !FD) return;
+    const lastVal = FD.meta.lastValidated || '2026-02-01';
+    const nextVal = FD.meta.nextValidation || '?';
+    badge.textContent = `Letzte Validierung: ${formatDate(lastVal)} · BEG / KfW / BAFA`;
+    // Check staleness (>45 days)
+    const daysSince = (Date.now() - new Date(lastVal).getTime()) / 86400000;
+    if (daysSince > 45) {
+        badge.style.background = 'rgba(243,156,18,0.3)';
+        badge.textContent += ' ⚠️ Prüfung überfällig';
+    }
+}
+
+function formatDate(d) {
+    if (!d) return '–';
+    const p = d.split('-');
+    return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : d;
+}
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+    buildingType: 'efh',
+    ownership: 'owner',
+    buildYear: '1957-1978',
+    bundesland: 'nw',
+    priorRenovation: 'none',
+    currentHeating: 'gas',
+    measures: [],
+    renovGoal: 'einzeln',
+    ehStandard: 'eh55',
+    eeClass: true,
+    isfp: true,
+    income: 'over40k',
+    unitCount: 1,
+    weEigengenutzt: 1,
+    weVermietet: 0,
+    costs: {},
+    // Geometry
+    geo: { breite: 10, laenge: 12, geschosse: 2, flaeche: 204, fassade: 190, dach: 146, keller: 120, fenster: 19 },
+    // Detail options
+    details: { haustuer: false, hp_puffer: false, hp_fussbodenheizung: false }
+};
+
+const measureLabels = {
+    wall_insulation: 'Fassadendämmung',
+    roof_insulation: 'Dachdämmung',
+    basement_insulation: 'Kellerdämmung',
+    windows: 'Fenster & Türen',
+    heat_pump: 'Wärmepumpe',
+    biomass: 'Biomasse-Heizung',
+    solar_thermal: 'Solarthermie',
+    district_heating: 'Fernwärme-Anschluss',
+    ventilation: 'Lüftungsanlage',
+    heating_optimization: 'Heizungsoptimierung',
+    smart_home: 'Gebäudeautomation'
+};
+
+// Alle Default-Kosten BRUTTO (inkl. 19% MwSt)
+const defaultCosts = {
+    wall_insulation: 33900, roof_insulation: 13900, basement_insulation: 7850,
+    windows: 17850, heat_pump: 33320, biomass: 26180, solar_thermal: 9520,
+    district_heating: 14280, ventilation: 9520, heating_optimization: 3570, smart_home: 4760
+};
+
+const heatingMeasures = ['heat_pump', 'biomass', 'solar_thermal', 'district_heating'];
+const envelopeMeasures = ['wall_insulation', 'roof_insulation', 'basement_insulation', 'windows'];
+const techMeasures = ['ventilation', 'heating_optimization', 'smart_home'];
+
+// ============================================================
+// UI FUNCTIONS
+// ============================================================
+function selectOption(el) {
+    const field = el.dataset.field;
+    const value = el.dataset.value;
+    el.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    state[field] = value;
+    updateState();
+}
+
+function toggleMeasure(el) {
+    const measure = el.dataset.measure;
+    el.classList.toggle('selected');
+    if (el.classList.contains('selected')) {
+        if (!state.measures.includes(measure)) state.measures.push(measure);
+    } else {
+        state.measures = state.measures.filter(m => m !== measure);
+    }
+    updateState();
+}
+
+function toggleISFP(el, val) {
+    state.isfp = val;
+    document.getElementById('toggleISFP_yes').classList.toggle('active', val);
+    document.getElementById('toggleISFP_no').classList.toggle('active', !val);
+}
+
+function toggleEE(el, val) {
+    state.eeClass = val;
+    document.getElementById('toggleEE_yes').classList.toggle('active', val);
+    document.getElementById('toggleEE_no').classList.toggle('active', !val);
+}
+
+function updateState() {
+    state.buildYear = document.getElementById('buildYear').value;
+    state.bundesland = document.getElementById('bundesland').value;
+    state.currentHeating = document.getElementById('currentHeating').value;
+    state.income = document.getElementById('income').value;
+    state.ehStandard = document.getElementById('ehStandard').value;
+    state.unitCount = state.buildingType === 'mfh' ?
+        parseInt(document.getElementById('unitCount').value) || 4 :
+        (state.buildingType === 'zfh' ? 2 : 1);
+
+    // WE-Aufteilung eigengenutzt/vermietet
+    const showWeSplit = state.unitCount > 1;
+    document.getElementById('we-split-field').style.display = showWeSplit ? 'block' : 'none';
+    // Bei EFH: ownership bestimmt alles
+    if (!showWeSplit) {
+        state.weEigengenutzt = state.ownership === 'owner' ? 1 : 0;
+        state.weVermietet = state.ownership === 'owner' ? 0 : 1;
+        document.getElementById('ownership-field').style.display = 'block';
+    } else {
+        state.weEigengenutzt = Math.min(parseInt(document.getElementById('weEigengenutzt').value) || 0, state.unitCount);
+        state.weVermietet = state.unitCount - state.weEigengenutzt;
+        document.getElementById('weVermietet').value = state.weVermietet;
+        // ownership leitet sich ab
+        state.ownership = state.weEigengenutzt > 0 ? 'owner' : 'landlord';
+        document.getElementById('ownership-field').style.display = 'none';
+    }
+
+    // Geometry (calculated from breite × länge × geschosse)
+    calcGeometry();
+
+    // Show/hide MFH units
+    document.getElementById('mfh-units-field').style.display = state.buildingType === 'mfh' ? 'block' : 'none';
+
+    // Show/hide Effizienzhaus options
+    document.getElementById('effizienzhaus-options').style.display = state.renovGoal === 'effizienzhaus' ? 'block' : 'none';
+
+    // Show/hide income bonus field (only for owner + heating)
+    const hasHeating = state.measures.some(m => heatingMeasures.includes(m));
+    document.getElementById('income-field').style.display = (state.ownership === 'owner' && hasHeating) ? 'block' : 'none';
+
+    // Show/hide detail panels
+    document.querySelectorAll('.measure-detail').forEach(el => {
+        const measure = el.id.replace('detail_', '');
+        el.style.display = state.measures.includes(measure) ? 'block' : 'none';
+    });
+
+    // Recalculate costs based on details
+    recalcCosts();
+
+    // Generate cost inputs
+    generateCostInputs();
+}
+
+// ============================================================
+// GEOMETRY ESTIMATION FROM BREITE × LÄNGE × GESCHOSSE
+// ============================================================
+function calcGeometry() {
+    const b = parseFloat(document.getElementById('geoBreite')?.value) || 10;
+    const l = parseFloat(document.getElementById('geoLaenge')?.value) || 12;
+    const g = parseInt(document.getElementById('geoGeschosse')?.value) || 2;
+    const geschosshoehe = 2.7; // typische Geschosshöhe
+    const dachNeigung = 35; // Grad, typisches Satteldach
+
+    // Grundfläche
+    const grundflaeche = b * l;
+
+    // Wohnfläche: Grundfläche × Geschosse × 0.85 (Abzug Wände, Treppen)
+    const flaeche = Math.round(grundflaeche * g * 0.85);
+
+    // Fassadenfläche: Umfang × Gesamthöhe – ca. 20% Fensteranteil
+    const umfang = 2 * (b + l);
+    const gesamthoehe = g * geschosshoehe;
+    const fassadeBrutto = umfang * gesamthoehe;
+    const fensterAnteil = 0.20;
+    const fassade = Math.round(fassadeBrutto * (1 - fensterAnteil));
+
+    // Dachfläche: Satteldach mit Neigung
+    const dachTiefe = (b / 2) / Math.cos(dachNeigung * Math.PI / 180);
+    const dach = Math.round(2 * dachTiefe * l);
+
+    // Kellerdecke ≈ Grundfläche
+    const keller = Math.round(grundflaeche);
+
+    // Fensteranzahl: ca. 1 Fenster pro 10-12 m² Wohnfläche
+    const fenster = Math.round(flaeche / 11);
+
+    state.geo.breite = b;
+    state.geo.laenge = l;
+    state.geo.geschosse = g;
+    state.geo.flaeche = flaeche;
+    state.geo.fassade = fassade;
+    state.geo.dach = dach;
+    state.geo.keller = keller;
+    state.geo.fenster = fenster;
+
+    // Schätzung anzeigen
+    const el = document.getElementById('geoEstimate');
+    if (el) {
+        el.innerHTML = `<strong>Geschätzte Gebäudedaten:</strong> ca. ${flaeche} m² Wohnfläche · ${fassade} m² Fassade · ${dach} m² Dachfläche · ${keller} m² Kellerdecke · ca. ${fenster} Fenster`;
+    }
+}
+
+// ============================================================
+// COST ESTIMATION FROM GEOMETRY + MATERIALS
+// ============================================================
+// Alle Preise BRUTTO (inkl. 19% MwSt) – das zahlt der Endkunde
+const PRICES = {
+    wall: {
+        wdvs:           { eps: 155, mineralwolle: 179, pur: 226, holzfaser: 214, zellulose: 143, resol: 262 },
+        kerndaemmung:   { eps: 42, mineralwolle: 48, pur: 60, holzfaser: 54, zellulose: 36, resol: 65 },
+        vhf:            { eps: 238, mineralwolle: 262, pur: 298, holzfaser: 286, zellulose: 214, resol: 321 },
+        innendaemmung:  { eps: 107, mineralwolle: 119, pur: 155, holzfaser: 143, zellulose: 95, resol: 179 }
+    },
+    roof: {
+        zwischensparren: { mineralwolle: 95, holzfaser: 131, pur: 143, zellulose: 71, eps: 83 },
+        aufsparren:      { mineralwolle: 214, holzfaser: 250, pur: 238, zellulose: 179, eps: 190 },
+        ogd:             { mineralwolle: 48, holzfaser: 65, pur: 71, zellulose: 36, eps: 42 },
+        flachdach:       { mineralwolle: 143, holzfaser: 167, pur: 179, zellulose: 119, eps: 131 }
+    },
+    basement: {
+        kellerdecke: { eps: 54, mineralwolle: 65, pur: 83, schaumglas: 107 },
+        perimeter:   { eps: 95, mineralwolle: 83, pur: 119, schaumglas: 155 },
+        bodenplatte: { eps: 71, mineralwolle: 65, pur: 101, schaumglas: 131 }
+    },
+    window: {
+        glazing: { '2fach': 0, '3fach': 0, '3fach_plus': 95 },
+        frame: { kunststoff: 417, holz: 595, holz_alu: 774, alu: 714 },
+        size: { small: 0.8, medium: 1.3, large: 2.5, mixed: 1.5 },
+        perSqm: { '2fach': 333, '3fach': 452, '3fach_plus': 548 },
+        haustuer: 5950
+    },
+    hp: {
+        luft_split: { 6:14280, 9:17850, 12:21420, 16:28560, 24:41650 },
+        luft_mono:  { 6:16660, 9:20230, 12:24990, 16:32130, 24:45220 },
+        sole:       { 6:21420, 9:26180, 12:30940, 16:38080, 24:53550 },
+        wasser:     { 6:23800, 9:28560, 12:33320, 16:40460, 24:57120 },
+        puffer: 2380,
+        fbh_per_sqm: 77
+    },
+    biomass: {
+        pellet:       { 10:19040, 15:23800, 20:28560, 30:38080 },
+        hackschnitzel: { 10:21420, 15:27370, 20:33320, 30:45220 },
+        scheitholz:   { 10:11900, 15:15470, 20:19040, 30:23800 },
+        kombi:        { 10:23800, 15:29750, 20:35700, 30:47600 }
+    },
+    solar: {
+        ww:      { flach: 5950, vakuum: 8330 },
+        heizung: { flach: 11900, vakuum: 16660 }
+    },
+    district: { short: 9520, medium: 14280, long: 21420 },
+    ventilation: { dezentral: 4760, zentral: 11900 },
+    heating_optimization: 3570,
+    smart_home: 4760
+};
+
+// Thickness price multiplier (base = 160mm for wall)
+function thicknessMultiplier(mm, base) {
+    return mm / base;
+}
+
+function recalcCosts() {
+    const g = state.geo;
+
+    // Wall insulation
+    if (state.measures.includes('wall_insulation')) {
+        const wType = document.getElementById('wall_type')?.value || 'wdvs';
+        const wMat = document.getElementById('wall_material')?.value || 'mineralwolle';
+        const wThick = parseInt(document.getElementById('wall_thickness')?.value) || 160;
+        const basePrice = (PRICES.wall[wType] && PRICES.wall[wType][wMat]) || 150;
+        const tMult = wType === 'kerndaemmung' ? 1 : thicknessMultiplier(wThick, 160);
+        const total = Math.round(g.fassade * basePrice * tMult);
+        state.costs.wall_insulation = total;
+        const preview = document.getElementById('wall_cost_preview');
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${g.fassade} m² × ca. ${Math.round(basePrice * tMult)} €/m² = <strong>${formatCurrency(total)}</strong><br>
+            <span style="font-size:0.78rem;">Alle Preise brutto inkl. MwSt, Material + Montage. ${wType === 'kerndaemmung' ? 'Kerndämmung ist deutlich günstiger (Einblasverfahren), aber nur bei vorh. Hohlschicht möglich.' : ''}</span>`;
+    }
+
+    // Roof
+    if (state.measures.includes('roof_insulation')) {
+        const rType = document.getElementById('roof_type')?.value || 'zwischensparren';
+        const rMat = document.getElementById('roof_material')?.value || 'mineralwolle';
+        const rThick = parseInt(document.getElementById('roof_thickness')?.value) || 200;
+        const basePrice = (PRICES.roof[rType] && PRICES.roof[rType][rMat]) || 80;
+        const tMult = thicknessMultiplier(rThick, 200);
+        const total = Math.round(g.dach * basePrice * tMult);
+        state.costs.roof_insulation = total;
+        const preview = document.getElementById('roof_cost_preview');
+        // Solarpflicht bei Neueindeckung prüfen
+        const solarPflichtBL = {
+            bw: { name:'Baden-Württemberg', seit:'01/2023', anteil:'60% der Dachfläche', alt:'PV oder Solarthermie' },
+            be: { name:'Berlin', seit:'01/2023', anteil:'30% der Nettodachfläche', alt:'PV, Solarthermie oder Fassaden-PV' },
+            hb: { name:'Bremen', seit:'07/2024', anteil:'50% der Bruttodachfläche', alt:'PV' },
+            hh: { name:'Hamburg', seit:'01/2025', anteil:'30% der Nettodachfläche', alt:'PV' },
+            ni: { name:'Niedersachsen', seit:'01/2025', anteil:'50% der Dachfläche', alt:'PV' },
+            nw: { name:'NRW', seit:'01/2026', anteil:'30% der Nettodachfläche', alt:'PV' }
+        };
+        const isNeueindeckung = (rType === 'aufsparren' || rType === 'flachdach');
+        const solarInfo = solarPflichtBL[state.bundesland];
+        let solarHinweis = '';
+        if (isNeueindeckung && solarInfo) {
+            solarHinweis = `<br><span style="font-size:0.78rem; color:#c0392b;">⚠️ <strong>Solarpflicht in ${solarInfo.name}!</strong> Bei Neueindeckung müssen mind. ${solarInfo.anteil} mit ${solarInfo.alt} belegt werden (seit ${solarInfo.seit}). Planen Sie diese Kosten zusätzlich ein.</span>`;
+        } else if (isNeueindeckung) {
+            solarHinweis = `<br><span style="font-size:0.78rem; color:#7f8c8d;">ℹ️ In Ihrem Bundesland besteht aktuell keine Solarpflicht bei Dachsanierung. Prüfen Sie dennoch, ob eine PV-Anlage wirtschaftlich sinnvoll ist.</span>`;
+        }
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${g.dach} m² × ca. ${Math.round(basePrice * tMult)} €/m² = <strong>${formatCurrency(total)}</strong><br>
+            <span style="font-size:0.78rem;">${rType === 'aufsparren' ? 'Aufsparrendämmung inkl. Neueindeckung – teuerste aber effektivste Variante.' : rType === 'ogd' ? 'Oberste Geschossdecke – günstigste Variante wenn DG nicht ausgebaut.' : ''}</span>${solarHinweis}`;
+    }
+
+    // Basement
+    if (state.measures.includes('basement_insulation')) {
+        const bType = document.getElementById('basement_type')?.value || 'kellerdecke';
+        const bMat = document.getElementById('basement_material')?.value || 'eps';
+        const bThick = parseInt(document.getElementById('basement_thickness')?.value) || 80;
+        const basePrice = (PRICES.basement[bType] && PRICES.basement[bType][bMat]) || 50;
+        const tMult = thicknessMultiplier(bThick, 80);
+        const total = Math.round(g.keller * basePrice * tMult);
+        state.costs.basement_insulation = total;
+        const preview = document.getElementById('basement_cost_preview');
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${g.keller} m² × ca. ${Math.round(basePrice * tMult)} €/m² = <strong>${formatCurrency(total)}</strong>`;
+    }
+
+    // Windows
+    if (state.measures.includes('windows')) {
+        const wGlazing = document.getElementById('window_glazing')?.value || '3fach';
+        const wFrame = document.getElementById('window_frame')?.value || 'kunststoff';
+        const wSize = document.getElementById('window_size')?.value || 'medium';
+        const avgArea = PRICES.window.size[wSize] || 1.3;
+        const pricePerSqm = PRICES.window.perSqm[wGlazing] || 380;
+        const frameBase = PRICES.window.frame[wFrame] || 350;
+        const perWindow = Math.round(avgArea * pricePerSqm + frameBase);
+        let total = g.fenster * perWindow;
+        if (state.details.haustuer) total += PRICES.window.haustuer;
+        state.costs.windows = total;
+        const preview = document.getElementById('window_cost_preview');
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${g.fenster} Fenster × ca. ${formatCurrency(perWindow)}/Stk = ${formatCurrency(g.fenster * perWindow)}${state.details.haustuer ? ` + Haustür ${formatCurrency(PRICES.window.haustuer)}` : ''} = <strong>${formatCurrency(total)}</strong><br>
+            <span style="font-size:0.78rem;">${wGlazing === '2fach' ? '⚠️ 2-fach Verglasung ist nicht förderfähig (Uw > 0,95)!' : `${wFrame === 'holz_alu' ? 'Holz-Alu: Premium-Variante, sehr langlebig.' : ''}`}</span>`;
+    }
+
+    // Heat pump
+    if (state.measures.includes('heat_pump')) {
+        const hpType = document.getElementById('hp_type')?.value || 'luft_mono';
+        const hpKW = document.getElementById('hp_leistung')?.value || '12';
+        let total = (PRICES.hp[hpType] && PRICES.hp[hpType][hpKW]) || 21000;
+        if (state.details.hp_puffer) total += PRICES.hp.puffer;
+        if (state.details.hp_fussbodenheizung) total += Math.round(g.flaeche * PRICES.hp.fbh_per_sqm);
+        state.costs.heat_pump = total;
+        const preview = document.getElementById('hp_cost_preview');
+        if (preview) {
+            let parts = [`WP ${hpType.replace('_',' ')}, ${hpKW} kW: ${formatCurrency((PRICES.hp[hpType] && PRICES.hp[hpType][hpKW]) || 21000)}`];
+            if (state.details.hp_puffer) parts.push(`Pufferspeicher: ${formatCurrency(PRICES.hp.puffer)}`);
+            if (state.details.hp_fussbodenheizung) parts.push(`FBH ${g.flaeche} m²: ${formatCurrency(Math.round(g.flaeche * PRICES.hp.fbh_per_sqm))}`);
+            preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${parts.join(' + ')} = <strong>${formatCurrency(total)}</strong><br>
+                <span style="font-size:0.78rem;">${hpType.startsWith('sole') || hpType === 'wasser' ? 'Sole/Wasser-WP: höhere Invest., aber niedrigere Betriebskosten + ggf. +5% Effizienzbonus.' : `⚠️ Ab 01/2026: Förderung nur für leise Luft-WP! Max. Schallleistung: ${parseInt(hpKW) <= 6 ? '55 dB(A)' : parseInt(hpKW) <= 12 ? '60 dB(A)' : '68 dB(A)'} bei ${hpKW} kW. Achten Sie auf das Produktdatenblatt!`}</span>`;
+        }
+    }
+
+    // Biomass
+    if (state.measures.includes('biomass')) {
+        const bioType = document.getElementById('bio_type')?.value || 'pellet';
+        const bioKW = document.getElementById('bio_leistung')?.value || '15';
+        const total = (PRICES.biomass[bioType] && PRICES.biomass[bioType][bioKW]) || 20000;
+        state.costs.biomass = total;
+        const preview = document.getElementById('bio_cost_preview');
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${bioType} ${bioKW} kW = <strong>${formatCurrency(total)}</strong><br>
+            <span style="font-size:0.78rem;">Inkl. Pufferspeicher, Montage. ${bioType === 'pellet' ? 'Pelletlager (ca. 2-4 m²) einplanen.' : ''}</span>`;
+    }
+
+    // Solar thermal
+    if (state.measures.includes('solar_thermal')) {
+        const sType = document.getElementById('solar_type')?.value || 'ww';
+        const sKoll = document.getElementById('solar_kollektor')?.value || 'flach';
+        const total = (PRICES.solar[sType] && PRICES.solar[sType][sKoll]) || 5000;
+        state.costs.solar_thermal = total;
+        const preview = document.getElementById('solar_cost_preview');
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${sType === 'ww' ? 'Warmwasser' : 'WW + Heizung'}, ${sKoll === 'vakuum' ? 'Vakuumröhren' : 'Flachkollektor'} = <strong>${formatCurrency(total)}</strong>`;
+    }
+
+    // District heating
+    if (state.measures.includes('district_heating')) {
+        const dDist = document.getElementById('district_distance')?.value || 'short';
+        const total = PRICES.district[dDist] || 12000;
+        state.costs.district_heating = total;
+        const preview = document.getElementById('district_cost_preview');
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> Anschluss (${dDist === 'short' ? 'kurz' : dDist === 'medium' ? 'mittel' : 'lang'}) = <strong>${formatCurrency(total)}</strong>`;
+    }
+
+    // Ventilation
+    if (state.measures.includes('ventilation')) {
+        const vType = document.getElementById('vent_type')?.value || 'dezentral';
+        let total = PRICES.ventilation[vType] || 4000;
+        if (vType === 'zentral') total = Math.round(total * (g.flaeche / 140)); // scale by size
+        state.costs.ventilation = total;
+        const preview = document.getElementById('vent_cost_preview');
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${vType === 'zentral' ? 'Zentral mit Kanälen' : 'Dezentral (Einzelgeräte)'} = <strong>${formatCurrency(total)}</strong><br>
+            <span style="font-size:0.78rem;">${vType === 'zentral' ? 'Zentrale Anlage ist bei Neubau/Kernsanierung optimal. WRG ≥ 80% für max. Effizienz.' : 'Dezentral: Einfacher Einbau im Bestand, geringere Kosten.'}</span>`;
+    }
+
+    // Simple measures
+    if (state.measures.includes('heating_optimization')) state.costs.heating_optimization = PRICES.heating_optimization;
+    if (state.measures.includes('smart_home')) state.costs.smart_home = PRICES.smart_home;
+
+    updateTotalCost();
+}
+
+function toggleDetail(el, key, val) {
+    state.details[key] = val;
+    const yesBtn = document.getElementById(key + '_yes');
+    const noBtn = document.getElementById(key + '_no');
+    if (yesBtn) yesBtn.classList.toggle('active', val);
+    if (noBtn) noBtn.classList.toggle('active', !val);
+    recalcCosts();
+}
+
+function toggleDetailCard(el) {
+    const key = el.dataset.detail;
+    el.classList.toggle('selected');
+    state.details[key] = el.classList.contains('selected');
+    recalcCosts();
+}
+
+function generateCostInputs() {
+    const container = document.getElementById('cost-inputs');
+    if (!container) return;
+    let html = '';
+    if (state.measures.length === 0) {
+        html = '<div class="info-box">Bitte wählen Sie in Schritt 2 mindestens eine Maßnahme aus.</div>';
+    } else {
+        state.measures.forEach(m => {
+            const currentVal = state.costs[m] || defaultCosts[m] || 10000;
+            state.costs[m] = currentVal;
+            html += `
+                <div class="field">
+                    <label>${measureLabels[m]}</label>
+                    <div class="cost-input-group">
+                        <input type="number" id="cost_${m}" value="${currentVal}" min="0" step="500"
+                            onchange="state.costs['${m}']=parseInt(this.value)||0; updateTotalCost()">
+                        <span class="cost-suffix">€</span>
+                    </div>
+                </div>`;
+        });
+    }
+    container.innerHTML = html;
+    updateTotalCost();
+}
+
+function updateTotalCost() {
+    const total = state.measures.reduce((s, m) => s + (state.costs[m] || 0), 0);
+    const el = document.getElementById('totalCostDisplay');
+    if (el) el.textContent = formatCurrency(total);
+}
+
+function formatCurrency(n) {
+    return n.toLocaleString('de-DE') + ' €';
+}
+
+function formatPercent(n) {
+    return n + ' %';
+}
+
+// ============================================================
+// STEP NAVIGATION
+// ============================================================
+let currentStep = 1;
+
+function goToStep(step) {
+    if (step > currentStep + 1) return; // no skipping ahead
+    if (step === 4) {
+        calculateAndShow();
+        return;
+    }
+    currentStep = step;
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`section-${step}`).classList.add('active');
+    updateStepper();
+    if (step === 3) generateCostInputs();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateStepper() {
+    document.querySelectorAll('.step-item').forEach((el, i) => {
+        const s = i + 1;
+        el.classList.remove('active', 'completed');
+        if (s === currentStep) el.classList.add('active');
+        else if (s < currentStep) el.classList.add('completed');
+    });
+    document.querySelectorAll('.step-connector').forEach((el, i) => {
+        el.classList.toggle('active', i + 1 < currentStep);
+    });
+}
+
+// ============================================================
+// CALCULATION ENGINE
+// ============================================================
+function calculateAndShow() {
+    if (state.measures.length === 0) {
+        alert('Bitte wählen Sie mindestens eine Maßnahme aus.');
+        goToStep(2);
+        return;
+    }
+
+    currentStep = 4;
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-4').classList.add('active');
+    updateStepper();
+
+    const results = calculateFunding();
+    renderResults(results);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function calculateFunding() {
+    const units = state.unitCount;
+    const isOwner = state.ownership === 'owner';
+    const isWPB = isWorstPerformingBuilding();
+    const hasISFP = state.isfp;
+    const isEffizienzhaus = state.renovGoal === 'effizienzhaus';
+
+    const results = {
+        programs: [],
+        totalCost: 0,
+        totalFunding: 0,
+        totalFundingPercent: 0,
+        eigenanteil: 0,
+        nebenkosten: { isfp: 0, isfpFoerderung: 0, bau: 0, bauFoerderung: 0, gesamt: 0, eigenanteil: 0 },
+        taxAlternative: null,
+        statePrograms: [],
+        tips: [],
+        timeline: [],
+        bonuses: []
+    };
+
+    results.totalCost = state.measures.reduce((s, m) => s + (state.costs[m] || 0), 0);
+
+    if (isEffizienzhaus) {
+        calculateEffizienzhausFunding(results, units, isWPB, hasISFP);
+    } else {
+        calculateEinzelmassnahmenFunding(results, units, isOwner, isWPB, hasISFP);
+    }
+
+    // State programs
+    calculateStateFunding(results);
+
+    // Tax alternative
+    calculateTaxAlternative(results);
+
+    // Apply cumulation limit
+    const maxFunding = results.totalCost * FD.kumulierung.maxPublicFundingRate / 100;
+    if (results.totalFunding > maxFunding) {
+        results.totalFunding = maxFunding;
+    }
+
+    // Calculate Nebenkosten (iSFP + Baubegleitung) Eigenanteil
+    const nk = results.nebenkosten;
+    nk.gesamt = nk.isfp + nk.bau;
+    nk.eigenanteil = nk.gesamt - nk.isfpFoerderung - nk.bauFoerderung;
+
+    // Eigenanteil = Baukosten - Förderung + ungeförderte Nebenkosten
+    results.eigenanteil = Math.max(0, results.totalCost - results.totalFunding + nk.eigenanteil);
+    results.totalFundingPercent = results.totalCost > 0 ? Math.round((results.totalFunding / results.totalCost) * 100) : 0;
+
+    // Generate tips
+    generateTips(results, isOwner, isWPB, hasISFP);
+
+    // Timeline
+    results.timeline = [
+        { step: '1. Energieberatung', desc: 'Zertifizierten Energieberater beauftragen (dena-Expertenliste). iSFP erstellen lassen.' },
+        { step: '2. Angebote einholen', desc: 'Handwerker-Angebote einholen. WICHTIG: Noch keine Aufträge vergeben!' },
+        { step: '3. Förderantrag stellen', desc: 'Online-Antrag bei KfW/BAFA VOR Auftragsvergabe. Verträge nur mit auflösender Bedingung.' },
+        { step: '4. Bewilligung abwarten', desc: 'Nach Zusage: Aufträge erteilen und Maßnahmen durchführen.' },
+        { step: '5. Verwendungsnachweis', desc: 'Nach Abschluss: Rechnungen und Bestätigungen einreichen.' },
+        { step: '6. Auszahlung', desc: 'Zuschuss wird ausgezahlt bzw. Tilgungszuschuss gutgeschrieben.' }
+    ];
+
+    return results;
+}
+
+function isWorstPerformingBuilding() {
+    return (state.buildYear === 'pre1957' || state.buildYear === '1957-1978') &&
+           state.priorRenovation === 'none';
+}
+
+function calculateEffizienzhausFunding(results, units, isWPB, hasISFP) {
+    const ehRates = FD.kfw261.rates;
+    const std = state.ehStandard;
+    const hasEE = state.eeClass;
+    let rate = hasEE ? ehRates[std].ee : ehRates[std].base;
+    let maxCredit = hasEE ? FD.kfw261.maxCreditEE : FD.kfw261.maxCreditStandard;
+    maxCredit *= units;
+
+    let bonuses = [];
+    if (hasISFP) {
+        rate += FD.kfw261.bonuses.isfp;
+        bonuses.push(`+${FD.kfw261.bonuses.isfp}% iSFP-Bonus`);
+    }
+    if (isWPB) {
+        rate += FD.kfw261.bonuses.wpb;
+        bonuses.push(`+${FD.kfw261.bonuses.wpb}% Worst Performing Building`);
+    }
+
+    // Serial renovation bonus for EH40/EH55
+    const serialBonus = (std === 'eh40' || std === 'eh55') ? 15 : 0;
+    // WPB + serial capped at serialMax (20)
+    if (serialBonus > 0 && isWPB) {
+        const extraSerial = FD.kfw261.bonuses.serialMax - FD.kfw261.bonuses.wpb;
+        rate += extraSerial;
+        bonuses.push(`+${extraSerial}% Serielles Sanieren (mit WPB gedeckelt auf +${FD.kfw261.bonuses.serialMax}% gesamt)`);
+    }
+
+    const creditUsed = Math.min(results.totalCost, maxCredit);
+    const tilgungszuschuss = Math.round(creditUsed * rate / 100);
+
+    const stdNames = {
+        eh40: 'Effizienzhaus 40',
+        eh55: 'Effizienzhaus 55',
+        eh70: 'Effizienzhaus 70',
+        eh85: 'Effizienzhaus 85',
+        ehDenkmal: 'Effizienzhaus Denkmal'
+    };
+
+    const ehBaseRate = hasEE ? ehRates[std].ee : ehRates[std].base;
+    let ehCalcParts = [`Basis-Tilgungszuschuss ${stdNames[std]}${hasEE ? ' EE/NH' : ''}: ${ehBaseRate}%`];
+    if (hasISFP) ehCalcParts.push('+ 5% iSFP-Bonus');
+    if (isWPB) ehCalcParts.push('+ 10% WPB-Bonus');
+    if (serialBonus > 0 && isWPB) ehCalcParts.push('+ Serielles Sanieren (WPB+Seriell gedeckelt auf +20%)');
+
+    const ehCalc = `Rechenweg: Ihre Gesamtkosten: ${formatCurrency(results.totalCost)}. ` +
+        `Max. Kreditbetrag: ${formatCurrency(hasEE ? 150000 : 120000)}/WE × ${units} WE = ${formatCurrency(maxCredit)}. ` +
+        `Genutzter Kredit: ${formatCurrency(creditUsed)}. ` +
+        `Fördersatz: ${ehCalcParts.join(' ')} = ${rate}%. ` +
+        `${formatCurrency(creditUsed)} × ${rate}% = <strong>${formatCurrency(tilgungszuschuss)}</strong>`;
+
+    results.programs.push({
+        type: 'kfw',
+        name: `KfW 261 – ${stdNames[std]}${hasEE ? ' EE' : ''}`,
+        desc: `Zinsgünstiger Kredit mit ${rate}% Tilgungszuschuss`,
+        amount: tilgungszuschuss,
+        rate: rate,
+        maxEligible: creditUsed,
+        details: `Max. Kredit: ${formatCurrency(maxCredit)} (${formatCurrency(hasEE ? 150000 : 120000)}/WE × ${units} WE). Tilgungszuschuss: ${rate}%.`,
+        bonuses: bonuses,
+        calculation: ehCalc
+    });
+
+    // Baubegleitung
+    const bauCostPerUnit = (state.buildingType === 'efh' || state.buildingType === 'zfh') ? FD.kfw261.baubegleitung.efhZfhPerUnit : FD.kfw261.baubegleitung.mfhPerUnit;
+    const bauTotal = bauCostPerUnit * units;
+    const bauFunding = Math.round(bauTotal * FD.kfw261.baubegleitung.rate / 100);
+
+    results.programs.push({
+        type: 'kfw',
+        name: 'KfW Baubegleitung (Energieberatung)',
+        desc: '50% Zuschuss für Fachplanung & Baubegleitung',
+        amount: bauFunding,
+        rate: 50,
+        maxEligible: bauTotal,
+        details: `${formatCurrency(bauCostPerUnit)}/WE × ${units} WE = ${formatCurrency(bauTotal)} förderfähig.`,
+        bonuses: [],
+        calculation: `Rechenweg: Max. Kosten Baubegleitung: ${formatCurrency(bauCostPerUnit)}/WE × ${units} WE = ${formatCurrency(bauTotal)}. Davon 50% = <strong>${formatCurrency(bauFunding)}</strong>`
+    });
+
+    results.totalFunding = tilgungszuschuss + bauFunding;
+    results.bonuses = bonuses;
+}
+
+function calculateEinzelmassnahmenFunding(results, units, isOwner, isWPB, hasISFP) {
+    let totalFunding = 0;
+
+    // Separate heating measures from other measures
+    const selectedHeating = state.measures.filter(m => heatingMeasures.includes(m));
+    const selectedEnvelope = state.measures.filter(m => envelopeMeasures.includes(m));
+    const selectedTech = state.measures.filter(m => techMeasures.includes(m));
+    const nonHeating = [...selectedEnvelope, ...selectedTech];
+
+    // === KfW 458: Heizungsförderung (only for heating replacement) ===
+    // Boni (Klima, Einkommen) nur für eigengenutzte WE; Grundförderung für alle
+    if (selectedHeating.length > 0) {
+        const heatingCost = selectedHeating.reduce((s, m) => s + (state.costs[m] || 0), 0);
+        const maxEligible = FD.kfw458.maxEligiblePerUnit * units;
+        const eligibleCost = Math.min(heatingCost, maxEligible);
+        const weEigen = state.weEigengenutzt;
+        const weVerm = state.weVermietet;
+
+        // Rate für eigengenutzte WE
+        let rateEigen = FD.kfw458.baseRate; // 30%
+        let bonusesEigen = [];
+        const speedEligible = FD.kfw458.klimageschwindigkeitsbonus.eligibleOldHeating;
+        if (speedEligible.includes(state.currentHeating)) {
+            rateEigen += FD.kfw458.klimageschwindigkeitsbonus.rate;
+            bonusesEigen.push(`+${FD.kfw458.klimageschwindigkeitsbonus.rate}% Klimageschwindigkeitsbonus`);
+        }
+        if (weEigen > 0 && state.income === 'under40k') {
+            rateEigen += FD.kfw458.einkommensbonus.rate;
+            bonusesEigen.push(`+${FD.kfw458.einkommensbonus.rate}% Einkommensbonus`);
+        }
+        rateEigen = Math.min(rateEigen, FD.kfw458.maxTotalRate); // max 70%
+
+        // Rate für vermietete WE: nur Grundförderung (+ ggf. Effizienzbonus)
+        let rateVerm = FD.kfw458.baseRate; // 30%
+
+        // Kosten anteilig auf WE
+        const kostenProWE = eligibleCost / units;
+        const foerderungEigen = weEigen > 0 ? Math.round(kostenProWE * weEigen * rateEigen / 100) : 0;
+        const foerderungVerm = weVerm > 0 ? Math.round(kostenProWE * weVerm * rateVerm / 100) : 0;
+        const heatingFunding = foerderungEigen + foerderungVerm;
+
+        // Effektiver Gesamtsatz
+        const effectiveRate = eligibleCost > 0 ? Math.round(heatingFunding / eligibleCost * 100) : 0;
+
+        let heatingNames = selectedHeating.map(m => measureLabels[m]).join(', ');
+        let allBonuses = weEigen > 0 ? bonusesEigen : [];
+
+        // Rechenweg
+        let calcStr = `Rechenweg: Heizungskosten: ${formatCurrency(heatingCost)}. Max. förderfähig: ${formatCurrency(FD.kfw458.maxEligiblePerUnit)}/WE × ${units} WE = ${formatCurrency(maxEligible)}. Angesetzt: ${formatCurrency(eligibleCost)}.`;
+        if (weEigen > 0 && weVerm > 0) {
+            calcStr += `<br>Kosten pro WE: ${formatCurrency(Math.round(kostenProWE))}.`;
+            calcStr += `<br><strong>Eigengenutzt (${weEigen} WE):</strong> ${formatCurrency(Math.round(kostenProWE * weEigen))} × ${rateEigen}% = ${formatCurrency(foerderungEigen)} (30% Basis${bonusesEigen.length > 0 ? ' + ' + bonusesEigen.join(' + ') : ''})`;
+            calcStr += `<br><strong>Vermietet (${weVerm} WE):</strong> ${formatCurrency(Math.round(kostenProWE * weVerm))} × ${rateVerm}% = ${formatCurrency(foerderungVerm)} (nur Grundförderung)`;
+            calcStr += `<br>Gesamt: <strong>${formatCurrency(heatingFunding)}</strong> (effektiv ${effectiveRate}%)`;
+        } else {
+            const singleRate = weEigen > 0 ? rateEigen : rateVerm;
+            calcStr += ` ${formatCurrency(eligibleCost)} × ${singleRate}% = <strong>${formatCurrency(heatingFunding)}</strong>`;
+        }
+
+        results.programs.push({
+            type: 'kfw',
+            name: `KfW 458 – Heizungsförderung`,
+            desc: `${heatingNames} – ${weEigen > 0 && weVerm > 0 ? 'eff. ' + effectiveRate + '%' : (weEigen > 0 ? rateEigen + '%' : rateVerm + '%')} Zuschuss`,
+            amount: heatingFunding,
+            rate: effectiveRate,
+            maxEligible: eligibleCost,
+            details: `Grundförderung ${FD.kfw458.baseRate}% für alle WE.${weEigen > 0 && bonusesEigen.length > 0 ? ' Boni nur für ' + weEigen + ' eigengenutzte WE.' : ''}${weVerm > 0 ? ' Vermietete WE (' + weVerm + '): nur Grundförderung.' : ''} Max. förderfähig: ${formatCurrency(maxEligible)}.`,
+            bonuses: allBonuses,
+            calculation: calcStr
+        });
+
+        totalFunding += heatingFunding;
+    }
+
+    // === BAFA BEG EM: Einzelmaßnahmen (envelope + tech) ===
+    if (nonHeating.length > 0) {
+        const nonHeatingCost = nonHeating.reduce((s, m) => s + (state.costs[m] || 0), 0);
+        const maxPerUnit = hasISFP ? FD.bafaBegEM.maxEligiblePerUnitISFP : FD.bafaBegEM.maxEligiblePerUnitBase;
+        const maxEligible = maxPerUnit * units;
+        const eligibleCost = Math.min(nonHeatingCost, maxEligible);
+
+        let rate = FD.bafaBegEM.baseRate;
+        let bonuses = [];
+
+        if (hasISFP) {
+            rate += FD.bafaBegEM.isfpBonus;
+            bonuses.push(`+${FD.bafaBegEM.isfpBonus}% iSFP-Bonus`);
+        }
+
+        const envFunding = Math.round(eligibleCost * rate / 100);
+
+        const envCalc = `Rechenweg: Kosten Gebäudehülle/Technik: ${formatCurrency(nonHeatingCost)}. ` +
+            `Max. förderfähig: ${formatCurrency(maxPerUnit)}/WE × ${units} WE = ${formatCurrency(maxEligible)}${hasISFP ? ' (verdoppelt durch iSFP von ' + formatCurrency(FD.bafaBegEM.maxEligiblePerUnitBase) + ' auf ' + formatCurrency(FD.bafaBegEM.maxEligiblePerUnitISFP) + '/WE)' : ''}. ` +
+            `Angesetzter Betrag: ${formatCurrency(eligibleCost)}. ` +
+            `Fördersatz: 15% Basis${hasISFP ? ' + 5% iSFP-Bonus = 20%' : ''}. ` +
+            `${formatCurrency(eligibleCost)} × ${rate}% = <strong>${formatCurrency(envFunding)}</strong>`;
+
+        results.programs.push({
+            type: 'bafa',
+            name: 'BAFA BEG EM – Einzelmaßnahmen',
+            desc: `Gebäudehülle & Anlagentechnik – ${rate}% Zuschuss`,
+            amount: envFunding,
+            rate: rate,
+            maxEligible: eligibleCost,
+            details: `Fördersatz ${rate}%. Max. förderfähig: ${formatCurrency(maxEligible)} (${formatCurrency(maxPerUnit)}/WE × ${units} WE).${hasISFP ? ' Erhöhte Kostenobergrenze dank iSFP.' : ''}`,
+            bonuses: bonuses,
+            calculation: envCalc
+        });
+
+        totalFunding += envFunding;
+    }
+
+    // Energieberatung / iSFP – Förderung bezieht sich auf Netto-Honorar, Kunde zahlt brutto
+    if (hasISFP) {
+        const bt = state.buildingType || 'efh';
+        const isfpNetto = FD.isfp.costNetto[bt] || FD.isfp.costNetto.efh;
+        const isfpBrutto = FD.isfp.costBrutto[bt] || FD.isfp.costBrutto.efh;
+        const maxFunding = (bt === 'mfh') ? FD.isfp.maxFunding.mfh : FD.isfp.maxFunding.efh;
+        const beratungFunding = Math.min(Math.round(isfpNetto * FD.isfp.rate / 100), maxFunding);
+        results.nebenkosten.isfp = isfpBrutto; // Brutto = was der Kunde zahlt
+        results.nebenkosten.isfpFoerderung = beratungFunding;
+        results.programs.push({
+            type: 'bafa',
+            name: 'BAFA Energieberatung (iSFP)',
+            desc: '50% Zuschuss auf Netto-Honorar des Energieberaters',
+            amount: beratungFunding,
+            rate: 50,
+            maxEligible: isfpNetto,
+            details: `iSFP-Kosten: ${formatCurrency(isfpNetto)} netto (${formatCurrency(isfpBrutto)} brutto). Förderung: 50% auf netto, max. ${formatCurrency(maxFunding)}. Ihr Eigenanteil: ${formatCurrency(isfpBrutto - beratungFunding)}.`,
+            bonuses: [],
+            calculation: `Rechenweg: Netto-Honorar ${formatCurrency(isfpNetto)} × 50% = ${formatCurrency(Math.round(isfpNetto * 0.5))} → gedeckelt auf max. ${formatCurrency(maxFunding)} = <strong>${formatCurrency(beratungFunding)}</strong><br><span style="font-size:0.8rem;">Hinweis: Förderung bezieht sich auf das Netto-Honorar. Sie zahlen brutto ${formatCurrency(isfpBrutto)}, Ihr Eigenanteil: ${formatCurrency(isfpBrutto - beratungFunding)}.</span>`
+        });
+        totalFunding += beratungFunding;
+    }
+
+    // Fachplanung & Baubegleitung bei Einzelmaßnahmen: 50% Zuschuss auf 5% der Investitionskosten
+    if (nonHeating.length > 0 || selectedHeating.length > 0) {
+        const investTotal = state.measures.reduce((s, m) => s + (state.costs[m] || 0), 0);
+        const bauEstimate = Math.round(investTotal * 0.05); // 5% der Investitionssumme
+        const bauRate = FD.baubegleitungEM.rate;
+        const bauFunding = Math.round(bauEstimate * bauRate / 100);
+        results.nebenkosten.bau = bauEstimate;
+        results.nebenkosten.bauFoerderung = bauFunding;
+        results.programs.push({
+            type: 'bafa',
+            name: 'BAFA Fachplanung & Baubegleitung',
+            desc: `${bauRate}% Zuschuss auf Baubegleitungskosten (ca. 5% der Investitionssumme)`,
+            amount: bauFunding,
+            rate: bauRate,
+            maxEligible: bauEstimate,
+            details: `Investitionssumme: ${formatCurrency(investTotal)}. Baubegleitung (5%): ${formatCurrency(bauEstimate)}. Förderung: ${bauRate}%. Ihr Eigenanteil: ${formatCurrency(bauEstimate - bauFunding)}.`,
+            bonuses: [],
+            calculation: `Rechenweg: Investitionssumme ${formatCurrency(investTotal)} × 5% = ${formatCurrency(bauEstimate)} Baubegleitungskosten → davon ${bauRate}% = <strong>${formatCurrency(bauFunding)}</strong>`
+        });
+        totalFunding += bauFunding;
+    }
+
+    results.totalFunding = totalFunding;
+}
+
+function calculateStateFunding(results) {
+    const bl = state.bundesland;
+    const sp = FD.statePrograms;
+    if (!sp || !sp[bl]) return;
+
+    sp[bl].programs.forEach(prog => {
+        if (prog.loanOnly) {
+            results.statePrograms.push({
+                name: prog.name,
+                desc: prog.desc,
+                amount: 0,
+                isLoan: true,
+                loanDesc: prog.loanDesc,
+                bundesland: sp[bl].name
+            });
+            return;
+        }
+
+        let applies = false;
+        if (prog.applies === 'all') applies = state.measures.length > 0;
+        else if (prog.applies === 'envelope') applies = state.measures.some(m => envelopeMeasures.includes(m));
+        else if (prog.applies === 'heating') applies = state.measures.some(m => heatingMeasures.includes(m));
+
+        if (!applies) return;
+
+        const relevantCost = results.totalCost;
+        const bonus = Math.min(Math.round(relevantCost * prog.bonusPercent / 100), prog.maxBonus);
+
+        if (bonus > 0) {
+            results.statePrograms.push({
+                name: prog.name,
+                desc: prog.desc,
+                amount: bonus,
+                isLoan: false,
+                bundesland: sp[bl].name
+            });
+
+            // Check cumulation limit
+            const currentTotal = results.totalFunding + bonus;
+            const maxAllowed = results.totalCost * FD.kumulierung.maxPublicFundingRate / 100;
+            const actualBonus = Math.min(bonus, maxAllowed - results.totalFunding);
+            if (actualBonus > 0) {
+                results.totalFunding += actualBonus;
+                results.programs.push({
+                    type: 'state',
+                    name: `${prog.name} (${sp[bl].name})`,
+                    desc: prog.desc,
+                    amount: actualBonus,
+                    rate: prog.bonusPercent,
+                    maxEligible: relevantCost,
+                    details: `Landesförderung: ${prog.bonusPercent}%, max. ${formatCurrency(prog.maxBonus)}. Ggf. reduziert durch 60%-Kumulierungsgrenze.`,
+                    bonuses: []
+                });
+            }
+        }
+    });
+}
+
+function calculateTaxAlternative(results) {
+    // §35c EStG: 7% Year 1+2, 6% Year 3 = 20% over 3 years, max 200k eligible, max 40k tax reduction
+    // NUR für selbstgenutzte WE! Bei gemischter Nutzung: anteilig.
+    if (state.weEigengenutzt === 0) {
+        results.taxAlternative = { eligible: false, reason: 'Steuerliche Förderung nach §35c nur für selbstgenutztes Wohneigentum. Ihre WE sind komplett vermietet.' };
+        return;
+    }
+
+    const buildYearOld = ['pre1957', '1957-1978', '1979-1994', '1995-2001', '2002-2014'];
+    if (!buildYearOld.includes(state.buildYear)) {
+        results.taxAlternative = { eligible: false, reason: 'Gebäude muss mindestens 10 Jahre alt sein.' };
+        return;
+    }
+
+    // Bei gemischter Nutzung: nur anteilige Kosten für eigengenutzte WE
+    const eigenAnteil = state.unitCount > 1 ? state.weEigengenutzt / state.unitCount : 1;
+    const totalCost = results.totalCost;
+    const eigenCost = Math.round(totalCost * eigenAnteil);
+    const eligibleCost = Math.min(eigenCost, FD.par35c.maxEligibleCost);
+
+    const year1 = Math.min(Math.round(eligibleCost * FD.par35c.year1Rate / 100), FD.par35c.maxYear1);
+    const year2 = Math.min(Math.round(eligibleCost * FD.par35c.year2Rate / 100), FD.par35c.maxYear2);
+    const year3 = Math.min(Math.round(eligibleCost * FD.par35c.year3Rate / 100), FD.par35c.maxYear3);
+    const totalTax = year1 + year2 + year3;
+
+    let note = 'Steuerermäßigung nach §35c EStG über 3 Jahre. Kann NICHT mit KfW/BAFA für dieselbe Maßnahme kombiniert werden.';
+    if (eigenAnteil < 1) {
+        note += ` Nur der Anteil Ihrer ${state.weEigengenutzt} eigengenutzten WE (${Math.round(eigenAnteil * 100)}% = ${formatCurrency(eigenCost)}) ist §35c-fähig. Die Kosten der vermieteten WE können als Werbungskosten bei V+V abgesetzt werden.`;
+    }
+
+    results.taxAlternative = {
+        eligible: true,
+        totalReduction: totalTax,
+        year1, year2, year3,
+        eligibleCost,
+        eigenAnteil,
+        effectiveRate: totalCost > 0 ? Math.round((totalTax / totalCost) * 100) : 0,
+        note
+    };
+}
+
+function generateTips(results, isOwner, isWPB, hasISFP) {
+    const tips = [];
+
+    if (!hasISFP && state.renovGoal === 'einzeln') {
+        const extraFunding = Math.round(results.totalCost * 0.05);
+        const bt = state.buildingType || 'efh';
+        const isfpBruttoTip = FD.isfp.costBrutto[bt] || FD.isfp.costBrutto.efh;
+        const isfpMaxTip = (bt === 'mfh') ? FD.isfp.maxFunding.mfh : FD.isfp.maxFunding.efh;
+        tips.push({
+            title: 'iSFP erstellen lassen',
+            text: `Ein individueller Sanierungsfahrplan (ca. ${formatCurrency(isfpBruttoTip)} brutto) bringt Ihnen +5% Förderbonus und verdoppelt die förderfähigen Kosten von 30.000 € auf 60.000 €/WE. Geschätzte Mehrförderung: ca. ${formatCurrency(extraFunding)}. Die iSFP-Erstellung wird mit 50% auf netto bezuschusst (max. ${formatCurrency(isfpMaxTip)}).`,
+            priority: 'high'
+        });
+    }
+
+    if (isWPB) {
+        tips.push({
+            title: 'Worst Performing Building Bonus nutzen',
+            text: 'Ihr Gebäude qualifiziert sich als "Worst Performing Building" (Baujahr vor 1979, unsaniert). Dies bringt bei einer Effizienzhaussanierung +10% Tilgungszuschuss.',
+            priority: 'high'
+        });
+    }
+
+    if (isOwner && state.income !== 'under40k' && state.measures.some(m => heatingMeasures.includes(m))) {
+        tips.push({
+            title: 'Einkommensbonus prüfen',
+            text: 'Bei einem zu versteuernden Einkommen ≤ 40.000 € erhalten Sie +30% Einkommensbonus beim Heizungstausch. Prüfen Sie Ihren Steuerbescheid.',
+            priority: 'medium'
+        });
+    }
+
+    // Schallschutz-Tipp bei Luft-Wärmepumpe
+    if (state.measures.includes('heat_pump')) {
+        const hpType = document.getElementById('hp_type')?.value || 'luft_mono';
+        const hpKW = parseInt(document.getElementById('hp_leistung')?.value) || 12;
+        if (hpType.startsWith('luft')) {
+            const maxDB = hpKW <= 6 ? 55 : hpKW <= 12 ? 60 : 68;
+            tips.push({
+                title: 'Neue Schallschutz-Anforderungen ab 2026',
+                text: `Seit 01.01.2026 gelten verschärfte Schallgrenzwerte für die BEG-Förderung: Ihre ${hpKW}-kW-Luft-WP darf max. ${maxDB} dB(A) Schallleistung haben (10 dB unter EU-Ecodesign). Lassen Sie sich vom Installateur das Produktdatenblatt zeigen. Tipp: Wärmepumpen mit Invertertechnik und optimierter Schalldämpfung wählen.`,
+                priority: 'high'
+            });
+        }
+    }
+
+    const speedEligible = ['oil', 'coal', 'nightstorage', 'biomass_old', 'gas'];
+    if (state.measures.some(m => heatingMeasures.includes(m)) && speedEligible.includes(state.currentHeating)) {
+        tips.push({
+            title: 'Klimageschwindigkeitsbonus sichern',
+            text: 'Der +20% Klimageschwindigkeitsbonus gilt bis 2028. Ab 2029 sinkt er alle 2 Jahre um 3%. Jetzt handeln lohnt sich!',
+            priority: 'medium'
+        });
+    }
+
+    if (state.renovGoal === 'einzeln' && state.measures.length >= 3) {
+        tips.push({
+            title: 'Effizienzhaussanierung prüfen',
+            text: 'Bei mehreren Maßnahmen kann eine Komplettsanierung zum Effizienzhaus deutlich höhere Förderung bringen (bis 45% Tilgungszuschuss auf bis zu 150.000 €/WE).',
+            priority: 'medium'
+        });
+    }
+
+    // Tipp: Maßnahmen auf mehrere Jahre aufteilen
+    if (state.renovGoal === 'einzeln') {
+        const maxPerWE = hasISFP ? 60000 : 30000;
+        const totalEligible = results.totalCost;
+        const units = state.unitCount || 1;
+        if (totalEligible > maxPerWE * units) {
+            const ueberschuss = totalEligible - maxPerWE * units;
+            tips.push({
+                title: 'Maßnahmen auf mehrere Jahre aufteilen',
+                text: `Ihre förderfähigen Kosten (${formatCurrency(totalEligible)}) übersteigen das jährliche Maximum von ${formatCurrency(maxPerWE)}/WE um ${formatCurrency(ueberschuss)}. Der Fördertopf steht Ihnen jedes Kalenderjahr neu zur Verfügung! Teilen Sie die Maßnahmen verschiedener Gewerke auf 2+ Jahre auf, um die volle Förderung auszuschöpfen. Beispiel: Jahr 1 Gebäudehülle, Jahr 2 Heizungstausch.`,
+                priority: 'high'
+            });
+        }
+    }
+
+    // Solarpflicht-Tipp bei Dachsanierung mit Neueindeckung
+    if (state.measures.includes('roof_insulation')) {
+        const rType = document.getElementById('roof_type')?.value || 'zwischensparren';
+        const solarBL = { bw:'Baden-Württemberg', be:'Berlin', hb:'Bremen', hh:'Hamburg', ni:'Niedersachsen', nw:'Nordrhein-Westfalen' };
+        if ((rType === 'aufsparren' || rType === 'flachdach') && solarBL[state.bundesland]) {
+            tips.push({
+                title: `Solarpflicht in ${solarBL[state.bundesland]} beachten!`,
+                text: `Bei einer vollständigen Neueindeckung des Daches gilt in ${solarBL[state.bundesland]} die Solarpflicht. Sie müssen PV oder Solarthermie mit installieren. Planen Sie diese Zusatzkosten ein – gleichzeitig profitieren Sie von Einspeisevergütung und Eigenverbrauch.`,
+                priority: 'high'
+            });
+        }
+    }
+
+    if (results.taxAlternative && results.taxAlternative.eligible) {
+        const taxBetter = results.taxAlternative.totalReduction > results.totalFunding;
+        if (taxBetter) {
+            tips.push({
+                title: 'Steuerliche Förderung prüfen',
+                text: `In Ihrem Fall könnte die steuerliche Förderung nach §35c EStG (${formatCurrency(results.taxAlternative.totalReduction)}) günstiger sein als die direkte Förderung (${formatCurrency(results.totalFunding)}).`,
+                priority: 'high'
+            });
+        }
+    }
+
+    tips.push({
+        title: 'Antrag VOR Auftragsvergabe',
+        text: 'Stellen Sie den Förderantrag immer VOR der Auftragsvergabe. Verträge dürfen nur mit auflösender/aufschiebender Bedingung geschlossen werden.',
+        priority: 'high'
+    });
+
+    if (state.measures.some(m => heatingMeasures.includes(m))) {
+        tips.push({
+            title: 'Ergänzungskredit KfW 358/359',
+            text: 'Bei Liquiditätsbedarf können Sie zusätzlich den KfW-Ergänzungskredit (bis 120.000 €, ab 0,01% Zinsen) beantragen.',
+            priority: 'low'
+        });
+    }
+
+    // Vermieter-Tipps
+    if (state.weVermietet > 0) {
+        tips.push({
+            title: 'Vermietete WE: Kosten als Werbungskosten absetzbar',
+            text: `Die Sanierungskosten für Ihre ${state.weVermietet} vermietete(n) WE können Sie als Werbungskosten bei den Einkünften aus Vermietung und Verpachtung (V+V) geltend machen. Bei umfangreichen Maßnahmen ggf. auf mehrere Jahre verteilen (§ 82b EStDV).`,
+            priority: 'medium'
+        });
+        tips.push({
+            title: 'Modernisierungsumlage möglich',
+            text: 'Als Vermieter können Sie bis zu 10% der für die Wohnung aufgewendeten Modernisierungskosten (abzgl. Förderung) als Mieterhöhung umlegen. Bei Nutzung von BEG-Förderung max. 10% abzgl. Förderbetrag.',
+            priority: 'low'
+        });
+    }
+
+    if (state.weEigengenutzt > 0 && state.weVermietet > 0) {
+        tips.push({
+            title: 'Gemischte Nutzung: Getrennte Anträge',
+            text: `Bei Ihrem Gebäude mit ${state.weEigengenutzt} eigengenutzter und ${state.weVermietet} vermieteter WE: Boni (Klima, Einkommen) können nur für die eigengenutzte WE per Zusatzantrag bei der KfW beantragt werden. Der Basisantrag deckt die Grundförderung für alle WE ab.`,
+            priority: 'high'
+        });
+    }
+
+    results.tips = tips;
+}
+
+// ============================================================
+// RENDER RESULTS
+// ============================================================
+function renderResults(r) {
+    const container = document.getElementById('results-content');
+    let html = '';
+
+    // Validation banner
+    const validDate = formatDate(FD.meta.lastValidated);
+    const nextValidation = formatDate(FD.meta.nextValidation);
+    const daysSinceVal = (Date.now() - new Date(FD.meta.lastValidated).getTime()) / 86400000;
+    const staleClass = daysSinceVal > 45 ? ' validation-stale' : '';
+    html += `
+    <div class="validation-banner${staleClass}">
+        <div><span class="validation-dot"></span><strong>Förderdaten validiert:</strong> ${validDate} &middot; Nächste Prüfung: ${nextValidation}${daysSinceVal > 45 ? ' ⚠️ Prüfung überfällig!' : ''}</div>
+        <div style="font-size:0.78rem;color:var(--text-light);">Quellen: KfW, BAFA, BMWi &middot; Alle Angaben ohne Gewähr</div>
+    </div>`;
+
+    // Hero result
+    const gesamtInkl = r.totalCost + r.nebenkosten.gesamt;
+    const foerderquoteInkl = gesamtInkl > 0 ? Math.round((r.totalFunding / gesamtInkl) * 100) : 0;
+    html += `
+    <div class="result-hero savings-pulse count-animate">
+        <div class="big-label">Ihre maximale Förderung</div>
+        <div class="big-number">${formatCurrency(r.totalFunding)}</div>
+        <div class="big-label">${foerderquoteInkl}% der Gesamtkosten von ${formatCurrency(gesamtInkl)} inkl. Nebenkosten</div>
+    </div>`;
+    html += `
+    <div class="result-cards">
+        <div class="result-card">
+            <div class="rc-value">${formatCurrency(gesamtInkl)}</div>
+            <div class="rc-label">Gesamtkosten inkl. Nebenkosten</div>
+        </div>
+        <div class="result-card">
+            <div class="rc-value" style="color:var(--success);">${formatCurrency(r.totalFunding)}</div>
+            <div class="rc-label">Gesamtförderung</div>
+        </div>
+        <div class="result-card">
+            <div class="rc-value" style="color:var(--warning);">${formatCurrency(r.eigenanteil)}</div>
+            <div class="rc-label">Ihr Eigenanteil</div>
+        </div>
+        <div class="result-card">
+            <div class="rc-value">${foerderquoteInkl}%</div>
+            <div class="rc-label">Förderquote (inkl. Nebenkosten)</div>
+        </div>
+    </div>`;
+
+    // Donut chart
+    const fundingParts = r.programs.filter(p => p.amount > 0);
+    html += renderDonut(fundingParts, r.eigenanteil, r.totalCost);
+
+    // Programs detail
+    html += `<div class="card">
+        <div class="card-title">Ihre Förderprogramme im Detail</div>
+        <div class="card-subtitle">Optimale Kombination für Ihre Maßnahmen</div>
+        <ul class="program-list">`;
+
+    r.programs.forEach(p => {
+        if (p.amount <= 0) return;
+        const badgeClass = p.type === 'kfw' ? 'badge-kfw' : p.type === 'bafa' ? 'badge-bafa' : 'badge-state';
+        const itemClass = p.type;
+        html += `
+        <li class="program-item ${itemClass}">
+            <div class="program-header">
+                <div>
+                    <span class="program-badge ${badgeClass}">${p.type.toUpperCase()}</span>
+                    <span class="program-name">${p.name}</span>
+                </div>
+                <div class="program-amount">${formatCurrency(p.amount)}</div>
+            </div>
+            <div class="program-details">${p.desc}</div>
+            <div class="program-details">${p.details}</div>
+            ${p.bonuses.length > 0 ? `<div class="program-tip">${p.bonuses.join(' | ')}</div>` : ''}
+            ${p.calculation ? `<div class="calculation-box">${p.calculation}</div>` : ''}
+        </li>`;
+    });
+
+    html += '</ul></div>';
+
+    // === Gesamtrechnung Zusammenfassung ===
+    html += `<div class="card">
+        <div class="card-title">Gesamtrechnung – So setzt sich Ihre Förderung zusammen</div>
+        <div class="card-subtitle">Transparenter Rechenweg Schritt für Schritt</div>
+        <div class="tax-explanation" style="background:#f0f7f3; border-left-color:var(--primary);">`;
+
+    let runningTotal = 0;
+    r.programs.forEach(p => {
+        if (p.amount <= 0) return;
+        runningTotal += p.amount;
+        html += `<div class="calc-line"><span>${p.name}</span><span>+ ${formatCurrency(p.amount)}</span></div>`;
+    });
+    html += `<div class="calc-line" style="margin-top:0.3rem; padding-top:0.5rem; border-top:2px solid var(--primary); border-bottom:none;">
+        <span><strong>Summe Förderung (vor Kumulierungsgrenze)</strong></span><span><strong>${formatCurrency(runningTotal)}</strong></span></div>`;
+
+    if (r.totalFunding < runningTotal) {
+        const kumLimit = FD.kumulierung.maxPublicFundingRate;
+        html += `<div class="calc-line" style="color:var(--warning); border-bottom:none;">
+            <span>${kumLimit}%-Kumulierungsgrenze (${formatCurrency(r.totalCost)} × ${kumLimit}%)</span><span>max. ${formatCurrency(Math.round(r.totalCost * kumLimit / 100))}</span></div>`;
+    }
+    html += `<div class="calc-line" style="font-size:1.05rem; border-bottom:none; color:var(--primary);">
+        <span><strong>Tatsächliche Gesamtförderung</strong></span><span><strong>${formatCurrency(r.totalFunding)}</strong></span></div>`;
+    html += `<div class="calc-line" style="margin-top:0.5rem; padding-top:0.5rem; border-top:1px dashed #ccc; border-bottom:none;">
+        <span>Kosten Baumaßnahmen</span><span>${formatCurrency(r.totalCost)}</span></div>`;
+    const nk = r.nebenkosten;
+    if (nk.gesamt > 0) {
+        html += `<div class="calc-line" style="border-bottom:none;">
+            <span>+ Nebenkosten (Energieberatung + Baubegleitung)</span><span>+ ${formatCurrency(nk.gesamt)}</span></div>`;
+        html += `<div class="calc-line" style="border-bottom:none; font-weight:600;">
+            <span>Gesamtkosten inkl. Nebenkosten</span><span>${formatCurrency(r.totalCost + nk.gesamt)}</span></div>`;
+    }
+    html += `<div class="calc-line" style="border-bottom:none;">
+        <span>– Gesamtförderung</span><span>– ${formatCurrency(r.totalFunding)}</span></div>`;
+    html += `<div class="calc-line" style="font-size:1.05rem; border-bottom:none; color:var(--warning);">
+        <span><strong>= Ihr Eigenanteil</strong></span><span><strong>${formatCurrency(r.eigenanteil)}</strong></span></div>`;
+    if (nk.eigenanteil > 0) {
+        html += `<div class="calc-line" style="border-bottom:none; font-size:0.82rem; color:#666;">
+            <span>davon Eigenanteil Nebenkosten (iSFP: ${formatCurrency(nk.isfp - nk.isfpFoerderung)}, GEB: ${formatCurrency(nk.bau - nk.bauFoerderung)})</span><span>${formatCurrency(nk.eigenanteil)}</span></div>`;
+    }
+
+    html += '</div></div>';
+
+    // State programs info
+    if (r.statePrograms.length > 0) {
+        html += `<div class="card">
+            <div class="card-title">Landesförderung – ${FD.statePrograms[state.bundesland]?.name || state.bundesland}</div>
+            <div class="card-subtitle">Ergänzende Programme Ihres Bundeslandes</div>`;
+        r.statePrograms.forEach(sp => {
+            html += `<div class="info-box">
+                <strong>${sp.name}</strong><br>
+                ${sp.desc}
+                ${sp.isLoan ? `<br><em>${sp.loanDesc}</em>` : `<br>Zusätzliche Förderung: <strong>${formatCurrency(sp.amount)}</strong>`}
+            </div>`;
+        });
+        html += '</div>';
+    }
+
+    // Bar chart visualization
+    html += renderBarChart(r);
+
+    // Tax comparison
+    if (r.taxAlternative && r.taxAlternative.eligible) {
+        html += renderTaxComparison(r);
+    }
+
+    // Tips
+    if (r.tips.length > 0) {
+        html += `<div class="card">
+            <div class="card-title">Tipps zur Fördermaximierung</div>
+            <div class="card-subtitle">So holen Sie das Maximum heraus</div>`;
+        r.tips.forEach(tip => {
+            const cls = tip.priority === 'high' ? 'tip-box' : 'info-box';
+            html += `<div class="${cls}">
+                <div class="tip-box-title">${tip.title}</div>
+                <p>${tip.text}</p>
+            </div>`;
+        });
+        html += '</div>';
+    }
+
+    // Timeline
+    html += `<div class="card">
+        <div class="card-title">Antragsschritte & Fristen</div>
+        <div class="card-subtitle">So gehen Sie vor</div>
+        <div class="timeline">`;
+    r.timeline.forEach(t => {
+        html += `<div class="timeline-item">
+            <div class="timeline-step">${t.step}</div>
+            <div class="timeline-desc">${t.desc}</div>
+        </div>`;
+    });
+    html += '</div>';
+
+    html += `<div class="warning-box" style="margin-top:1rem;">
+        <strong>Wichtig:</strong> Alle Förderanträge müssen VOR der Auftragsvergabe gestellt werden.
+        Verträge mit Handwerkern dürfen nur unter dem Vorbehalt der Förderzusage geschlossen werden (auflösende Bedingung).
+    </div>`;
+    html += '</div>';
+
+    // Gewerk-Tipps
+    html += renderGewerkTips();
+
+    container.innerHTML = html;
+
+    // Animate bars
+    setTimeout(() => {
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.width;
+        });
+    }, 100);
+}
+
+function renderDonut(parts, eigen, total) {
+    if (total === 0) return '';
+    const colors = {
+        kfw: '#0066cc',
+        bafa: '#e74c3c',
+        state: '#f39c12',
+        tax: '#8e44ad'
+    };
+    const eigenColor = '#bdc3c7';
+
+    let segments = parts.map(p => ({
+        label: p.name.split('–')[0].trim(),
+        value: p.amount,
+        color: colors[p.type] || '#95a5a6'
+    }));
+    segments.push({ label: 'Eigenanteil', value: eigen, color: eigenColor });
+
+    const circumference = 2 * Math.PI * 70; // r=70
+    let offset = 0;
+    let arcs = '';
+    segments.forEach(seg => {
+        const pct = seg.value / total;
+        const dash = circumference * pct;
+        arcs += `<circle cx="90" cy="90" r="70" fill="none" stroke="${seg.color}" stroke-width="25"
+            stroke-dasharray="${dash} ${circumference - dash}" stroke-dashoffset="${-offset}"
+            style="transition: stroke-dasharray 1s ease-out, stroke-dashoffset 1s ease-out;" />`;
+        offset += dash;
+    });
+
+    let legend = segments.map(seg =>
+        `<div class="donut-legend-item">
+            <div class="donut-color" style="background:${seg.color}"></div>
+            <span>${seg.label}: <strong>${formatCurrency(seg.value)}</strong> (${Math.round(seg.value / total * 100)}%)</span>
+        </div>`
+    ).join('');
+
+    return `<div class="donut-container">
+        <svg class="donut-svg" viewBox="0 0 180 180">${arcs}</svg>
+        <div class="donut-legend">${legend}</div>
+    </div>`;
+}
+
+function renderBarChart(r) {
+    if (r.programs.length === 0) return '';
+    const maxVal = r.totalCost;
+    let bars = '';
+
+    r.programs.forEach(p => {
+        if (p.amount <= 0) return;
+        const pct = Math.max(5, Math.round(p.amount / maxVal * 100));
+        const label = p.name.split('–')[0].trim();
+        bars += `<div class="bar-row">
+            <div class="bar-label">${label}</div>
+            <div class="bar-track">
+                <div class="bar-fill ${p.type}" data-width="${pct}%" style="width:0%">${formatCurrency(p.amount)}</div>
+            </div>
+        </div>`;
+    });
+
+    const eigenPct = Math.max(5, Math.round(r.eigenanteil / maxVal * 100));
+    bars += `<div class="bar-row">
+        <div class="bar-label">Eigenanteil</div>
+        <div class="bar-track">
+            <div class="bar-fill eigen" data-width="${eigenPct}%" style="width:0%">${formatCurrency(r.eigenanteil)}</div>
+        </div>
+    </div>`;
+
+    return `<div class="card">
+        <div class="card-title">Kostenverteilung</div>
+        <div class="bar-chart">${bars}</div>
+    </div>`;
+}
+
+function renderTaxComparison(r) {
+    const tax = r.taxAlternative;
+    const directBetter = r.totalFunding >= tax.totalReduction;
+
+    return `<div class="card">
+        <div class="card-title">Vergleich: Direktförderung vs. Steuerliche Förderung (§35c EStG)</div>
+        <div class="card-subtitle">Welche Variante ist für Sie günstiger?</div>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Kriterium</th>
+                    <th>Direkte Förderung (KfW/BAFA)</th>
+                    <th>Steuerlich (§35c EStG)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="highlight-row">
+                    <td><strong>Gesamtvorteil</strong></td>
+                    <td class="${directBetter ? 'winner' : ''}">${formatCurrency(r.totalFunding)}</td>
+                    <td class="${!directBetter ? 'winner' : ''}">${formatCurrency(tax.totalReduction)}</td>
+                </tr>
+                <tr>
+                    <td>Effektiver Fördersatz</td>
+                    <td>${r.totalFundingPercent}%</td>
+                    <td>${tax.effectiveRate}% (über 3 Jahre)</td>
+                </tr>
+                <tr>
+                    <td>Zeitpunkt</td>
+                    <td>Sofort (nach Bewilligung)</td>
+                    <td>Über 3 Steuerjahre verteilt</td>
+                </tr>
+                <tr>
+                    <td>Jahr 1</td>
+                    <td>Volle Summe</td>
+                    <td>${formatCurrency(tax.year1)} (7%)</td>
+                </tr>
+                <tr>
+                    <td>Jahr 2</td>
+                    <td>–</td>
+                    <td>${formatCurrency(tax.year2)} (7%)</td>
+                </tr>
+                <tr>
+                    <td>Jahr 3</td>
+                    <td>–</td>
+                    <td>${formatCurrency(tax.year3)} (6%)</td>
+                </tr>
+                <tr>
+                    <td>Energieberater nötig?</td>
+                    <td>Ja (wird gefördert)</td>
+                    <td>Nein (nur Fachunternehmer)</td>
+                </tr>
+                <tr>
+                    <td>Antragstellung</td>
+                    <td>Vor Maßnahmenbeginn</td>
+                    <td>Über Steuererklärung</td>
+                </tr>
+                <tr>
+                    <td>Max. förderfähige Kosten</td>
+                    <td>Je nach Programm</td>
+                    <td>${formatCurrency(200000)} pro Objekt</td>
+                </tr>
+                <tr>
+                    <td>Kombinierbar?</td>
+                    <td colspan="2">Nicht für dieselbe Maßnahme. Aber: verschiedene Maßnahmen können aufgeteilt werden.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="${directBetter ? 'tip-box' : 'info-box'}">
+            <div class="tip-box-title">${directBetter ? 'Empfehlung: Direktförderung' : 'Hinweis: Steuerliche Variante prüfen'}</div>
+            <p>${directBetter
+                ? 'Die direkte Förderung über KfW/BAFA ist in Ihrem Fall die bessere Wahl – höhere Gesamtförderung und sofortige Entlastung.'
+                : 'Die steuerliche Förderung könnte in Ihrem Fall attraktiver sein. Besprechen Sie dies mit Ihrem Steuerberater.'
+            }</p>
+        </div>
+
+        <div class="tax-explanation">
+            <strong>So kommt die steuerliche Förderung zustande (§35c EStG):</strong><br><br>
+            Der Gesetzgeber erlaubt bei selbstgenutztem Wohneigentum (mind. 10 Jahre alt) eine direkte Steuerermäßigung
+            – also eine Reduktion Ihrer Einkommensteuerschuld, <em>nicht</em> nur eine Absetzung vom zu versteuernden Einkommen.<br><br>
+            <strong>Berechnungsgrundlage:</strong><br>
+            <div class="calc-line"><span>Ihre Sanierungskosten (inkl. Material + Arbeitslohn):</span><span>${formatCurrency(r.totalCost)}</span></div>
+            <div class="calc-line"><span>Max. förderfähig nach §35c:</span><span>${formatCurrency(200000)} pro Objekt</span></div>
+            <div class="calc-line"><span>Angesetzter Betrag:</span><span>${formatCurrency(tax.eligibleCost)}</span></div>
+            <br>
+            <strong>Verteilung über 3 Jahre:</strong><br>
+            <div class="calc-line"><span>Jahr 1: ${formatCurrency(tax.eligibleCost)} × 7% (max. 14.000 €)</span><span>${formatCurrency(tax.year1)}</span></div>
+            <div class="calc-line"><span>Jahr 2: ${formatCurrency(tax.eligibleCost)} × 7% (max. 14.000 €)</span><span>${formatCurrency(tax.year2)}</span></div>
+            <div class="calc-line"><span>Jahr 3: ${formatCurrency(tax.eligibleCost)} × 6% (max. 12.000 €)</span><span>${formatCurrency(tax.year3)}</span></div>
+            <div class="calc-line"><span><strong>Gesamte Steuerermäßigung über 3 Jahre:</strong></span><span><strong>${formatCurrency(tax.totalReduction)}</strong></span></div>
+            <br>
+            <strong>Warum maximal ${formatCurrency(tax.totalReduction)}?</strong><br>
+            ${tax.eligibleCost >= 200000
+                ? `Ihre Kosten übersteigen die Obergrenze von 200.000 €. Es werden nur 200.000 € angesetzt.
+                   Davon: 7% + 7% + 6% = 20%, also max. 40.000 € Steuerermäßigung.`
+                : `Bei Kosten von ${formatCurrency(tax.eligibleCost)} ergibt sich: 7% + 7% + 6% = insgesamt 20% = ${formatCurrency(tax.totalReduction)}.
+                   ${tax.totalReduction < 40000 ? 'Die Obergrenze von 40.000 € wird nicht erreicht.' : 'Die Obergrenze von 40.000 € greift.'}`
+            }<br><br>
+            <strong>Wichtig:</strong> Die Steuerermäßigung reduziert direkt Ihre Steuerschuld (nicht das zu versteuernde Einkommen).
+            Sie wirkt also wie ein Zuschuss, aber verteilt über 3 Steuerjahre.
+            Kein Energieberater nötig – aber ein Fachunternehmer muss die Arbeiten bescheinigen.
+        </div>
+
+        <div class="info-box" style="margin-top:0.8rem;">
+            <strong>Profi-Tipp: Splitting-Strategie</strong><br>
+            Sie können verschiedene Maßnahmen auf verschiedene Förderwege aufteilen.
+            Beispiel: Heizungstausch über KfW 458 (höhere Förderung), Dachdämmung über §35c (einfacher).
+            Voraussetzung: Klare Kostentrennung in den Rechnungen.
+        </div>
+    </div>`;
+}
+
+function renderGewerkTips() {
+    const selectedEnvelope = state.measures.filter(m => envelopeMeasures.includes(m));
+    const selectedHeating = state.measures.filter(m => heatingMeasures.includes(m));
+
+    if (selectedEnvelope.length === 0 && selectedHeating.length === 0) return '';
+
+    let html = `<div class="card">
+        <div class="card-title">Gewerk-spezifische Hinweise</div>
+        <div class="card-subtitle">Wichtiges für Planung und Ausführung</div>`;
+
+    if (state.measures.includes('wall_insulation')) {
+        html += `<div class="info-box">
+            <strong>Fassadendämmung:</strong> Achten Sie auf einen U-Wert ≤ 0,20 W/(m²K) für die volle Förderung.
+            Lassen Sie den Energieberater die Dämmstoffdicke berechnen. WDVS, vorgehängte hinterlüftete Fassade und Einblasdämmung sind förderfähig.
+        </div>`;
+    }
+    if (state.measures.includes('windows')) {
+        html += `<div class="info-box">
+            <strong>Fenster:</strong> Uw-Wert ≤ 0,95 W/(m²K) erforderlich. 3-fach-Verglasung empfohlen.
+            Auch Haustüren sind förderfähig (UD ≤ 1,3 W/(m²K)). Rollladenkasten-Dämmung kann einbezogen werden.
+        </div>`;
+    }
+    if (state.measures.includes('roof_insulation')) {
+        html += `<div class="info-box">
+            <strong>Dachdämmung:</strong> U-Wert ≤ 0,14 W/(m²K) für Dachflächen. Alternativ: Oberste Geschossdecke dämmen (U ≤ 0,14).
+            Dampfbremse und Luftdichtheit beachten – häufiger Fehler bei der Ausführung.
+        </div>`;
+    }
+    if (state.measures.includes('heat_pump')) {
+        html += `<div class="info-box">
+            <strong>Wärmepumpe:</strong> Seit 01/2026: Luft-WP müssen 10 dB unter EU-Ecodesign liegen (≤6 kW: max. 55 dB, 6–12 kW: max. 60 dB, 12–30 kW: max. 68 dB). Sonst keine Förderung!
+            Sole-Wasser und Wasser-Wasser-WP erhalten ggf. +5% Effizienzbonus. Achten Sie auf die Jahresarbeitszahl (JAZ ≥ 3,0).
+        </div>`;
+    }
+    if (state.measures.includes('biomass')) {
+        html += `<div class="info-box">
+            <strong>Biomasse-Heizung:</strong> Pellet- und Hackschnitzelheizungen sind förderfähig.
+            Achten Sie auf Emissionsgrenzwerte und einen ausreichenden Pufferspeicher. Kombinierbar mit Solarthermie.
+        </div>`;
+    }
+    if (state.measures.includes('ventilation')) {
+        html += `<div class="info-box">
+            <strong>Lüftungsanlage:</strong> Anlagen mit Wärmerückgewinnung (WRG ≥ 80%) sind besonders effizient.
+            Zentrale und dezentrale Systeme sind förderfähig. Wichtig bei gut gedämmten Gebäuden.
+        </div>`;
+    }
+
+    html += '</div>';
+    return html;
+}
+
+// ============================================================
+// VISITOR COUNTER (localStorage + optional API)
+// ============================================================
+function initCounter() {
+    // Local counter as fallback
+    let count = parseInt(localStorage.getItem('fn_visits') || '0') + 1;
+    localStorage.setItem('fn_visits', count);
+
+    const tooltip = document.getElementById('counterTooltip');
+
+    // Try external counter API (countapi alternative via simple JSON endpoint)
+    // If you host a counter endpoint, replace this URL:
+    const COUNTER_API = null; // e.g. 'https://api.countapi.xyz/hit/ak-energyconsulting/foerdernavigator'
+
+    if (COUNTER_API) {
+        fetch(COUNTER_API)
+            .then(r => r.json())
+            .then(d => {
+                if (tooltip) tooltip.textContent = `Seitenaufrufe: ${(d.value || d.count || count).toLocaleString('de-DE')}`;
+            })
+            .catch(() => {
+                if (tooltip) tooltip.textContent = `Seitenaufrufe (lokal): ${count.toLocaleString('de-DE')}`;
+            });
+    } else {
+        if (tooltip) tooltip.textContent = `Seitenaufrufe (lokal): ${count.toLocaleString('de-DE')}`;
+    }
+}
+
+// ============================================================
+// INIT – Load JSON data first, then initialize
+// ============================================================
+(async function init() {
+    await loadFundingData();
+    updateState();
+    initCounter();
+})();
+</script>
+
+</body>
+</html>

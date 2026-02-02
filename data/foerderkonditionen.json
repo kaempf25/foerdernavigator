@@ -1,0 +1,261 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastValidated": "2026-02-01",
+    "nextValidation": "2026-03-01",
+    "validatedBy": "automated",
+    "status": "current",
+    "changelog": [
+      {
+        "date": "2026-02-01",
+        "changes": ["Initiale Erstellung mit allen Förderprogrammen Stand 01/2026"]
+      }
+    ],
+    "sources": [
+      "https://www.kfw.de/inlandsfoerderung/Privatpersonen/Bestehende-Immobilie/",
+      "https://www.bafa.de/DE/Energie/Effiziente_Gebaeude/",
+      "https://www.gesetze-im-internet.de/estg/__35c.html"
+    ]
+  },
+
+  "kfw261": {
+    "name": "KfW 261 – Wohngebäude Kredit (Effizienzhaussanierung)",
+    "type": "kredit_tilgungszuschuss",
+    "maxCreditStandard": 120000,
+    "maxCreditEE": 150000,
+    "rates": {
+      "eh40":      { "base": 20, "ee": 25 },
+      "eh55":      { "base": 15, "ee": 20 },
+      "eh70":      { "base": 10, "ee": 15 },
+      "eh85":      { "base": 5,  "ee": 10 },
+      "ehDenkmal": { "base": 5,  "ee": 10 }
+    },
+    "bonuses": {
+      "isfp": 5,
+      "wpb": 10,
+      "serialMax": 20
+    },
+    "baubegleitung": {
+      "efhZfhPerUnit": 10000,
+      "mfhPerUnit": 4000,
+      "rate": 50
+    }
+  },
+
+  "kfw458": {
+    "name": "KfW 458 – Heizungsförderung",
+    "type": "zuschuss",
+    "maxEligiblePerUnit": 30000,
+    "baseRate": 30,
+    "klimageschwindigkeitsbonus": {
+      "rate": 20,
+      "validUntil": "2028-12-31",
+      "reductionAfter2028": 3,
+      "reductionIntervalYears": 2,
+      "eligibleOldHeating": ["oil", "coal", "nightstorage", "biomass_old", "gas"]
+    },
+    "einkommensbonus": {
+      "rate": 30,
+      "incomeThreshold": 40000,
+      "ownerOccupiedOnly": true
+    },
+    "effizienzbonus": {
+      "rate": 5,
+      "appliesTo": ["ground_source_hp", "water_source_hp"]
+    },
+    "maxTotalRate": 70
+  },
+
+  "bafaBegEM": {
+    "name": "BAFA BEG EM – Einzelmaßnahmen",
+    "type": "zuschuss",
+    "baseRate": 15,
+    "isfpBonus": 5,
+    "maxEligiblePerUnitBase": 30000,
+    "maxEligiblePerUnitISFP": 60000,
+    "eligibleMeasures": {
+      "gebaeudehuelle": {
+        "name": "Gebäudehülle (Dämmung, Fenster)",
+        "rate": 15,
+        "isfpRate": 20,
+        "uValues": {
+          "aussenwand": 0.20,
+          "dach": 0.14,
+          "fenster": 0.95,
+          "kellerdecke": 0.25,
+          "haustuer": 1.3
+        }
+      },
+      "anlagentechnik": {
+        "name": "Anlagentechnik (Lüftung, Automation)",
+        "rate": 15,
+        "isfpRate": 20
+      },
+      "heizungsoptimierung": {
+        "name": "Heizungsoptimierung",
+        "rate": 15,
+        "isfpRate": 20
+      }
+    }
+  },
+
+  "isfp": {
+    "name": "BAFA Energieberatung (iSFP)",
+    "type": "zuschuss",
+    "rate": 50,
+    "costNetto": { "efh": 1350, "zfh": 1350, "mfh": 2350 },
+    "costBrutto": { "efh": 1607, "zfh": 1607, "mfh": 2797 },
+    "maxFunding": {
+      "efh": 650,
+      "zfh": 650,
+      "mfh": 850
+    }
+  },
+
+  "baubegleitungEM": {
+    "name": "Fachplanung & Baubegleitung (Einzelmaßnahmen)",
+    "type": "zuschuss",
+    "rate": 50,
+    "maxCostPerUnit": {
+      "efhZfh": 5000,
+      "mfh": 2000
+    }
+  },
+
+  "par35c": {
+    "name": "§35c EStG – Steuerliche Förderung",
+    "type": "steuerermäßigung",
+    "year1Rate": 7,
+    "year2Rate": 7,
+    "year3Rate": 6,
+    "maxYear1": 14000,
+    "maxYear2": 14000,
+    "maxYear3": 12000,
+    "maxEligibleCost": 200000,
+    "maxTotalReduction": 40000,
+    "totalEffectiveRate": 20,
+    "requirements": {
+      "minBuildingAge": 10,
+      "ownerOccupied": true,
+      "validUntil": "2030-12-31"
+    }
+  },
+
+  "kumulierung": {
+    "maxPublicFundingRate": 60,
+    "note": "Maximale Förderquote aus allen öffentlichen Mitteln: 60% für Privatpersonen."
+  },
+
+  "kfw358": {
+    "name": "KfW 358/359 – Ergänzungskredit",
+    "maxAmount": 120000,
+    "minEffectiveRate": 0.01
+  },
+
+  "statePrograms": {
+    "bw": {
+      "name": "Baden-Württemberg",
+      "programs": [
+        {
+          "name": "Klimaschutz-Plus / Kombi-Darlehen Wohnen",
+          "desc": "Zusätzlicher BW-Bonus bis 25% auf Gebäudehülle. Kombi-Darlehen mit Zuschuss bei Effizienzhaussanierung (EH 55: 2.000 €, EH 40: 4.000 €).",
+          "bonusPercent": 5,
+          "maxBonus": 5000,
+          "applies": "envelope"
+        }
+      ]
+    },
+    "by": {
+      "name": "Bayern",
+      "programs": [
+        {
+          "name": "10.000-Häuser-Programm / EnergieBonusBayern",
+          "desc": "Zusatzförderung für Heizungstausch und Gebäudehülle. Details für 2026 in Vorbereitung.",
+          "bonusPercent": 3,
+          "maxBonus": 3000,
+          "applies": "all"
+        }
+      ]
+    },
+    "nw": {
+      "name": "Nordrhein-Westfalen",
+      "programs": [
+        {
+          "name": "NRW.BANK Wohneigentum modernisieren",
+          "desc": "Zinsgünstiges Darlehen für Fassadendämmung, Heizung und Barrierefreiheit. Kombinierbar mit BEG.",
+          "bonusPercent": 0,
+          "maxBonus": 0,
+          "applies": "all",
+          "loanOnly": true,
+          "loanDesc": "Zinsgünstiges Darlehen bis 150.000 €"
+        }
+      ]
+    },
+    "he": {
+      "name": "Hessen",
+      "programs": [
+        {
+          "name": "WIBank Energetische Förderung",
+          "desc": "Förderung für Wohngebäude, Modernisierungsfahrplan-Bonus +10%.",
+          "bonusPercent": 3,
+          "maxBonus": 4000,
+          "applies": "all"
+        }
+      ]
+    },
+    "ni": {
+      "name": "Niedersachsen",
+      "programs": [
+        {
+          "name": "NBank Klimaschutz & Energieeffizienz",
+          "desc": "EFRE-Förderung bis 70% für Nichtwohngebäude. Für Wohngebäude zinsgünstige Darlehen.",
+          "bonusPercent": 0,
+          "maxBonus": 0,
+          "applies": "all",
+          "loanOnly": true,
+          "loanDesc": "Zinsgünstiges Darlehen für Modernisierung"
+        }
+      ]
+    },
+    "sh": {
+      "name": "Schleswig-Holstein",
+      "programs": [
+        {
+          "name": "IB.SH Energetische Sanierung",
+          "desc": "Ergänzungsdarlehen für energetische Sanierung.",
+          "bonusPercent": 0,
+          "maxBonus": 0,
+          "applies": "all",
+          "loanOnly": true,
+          "loanDesc": "Ergänzungsdarlehen"
+        }
+      ]
+    },
+    "hh": {
+      "name": "Hamburg",
+      "programs": [
+        {
+          "name": "IFB Hamburg Energetische Modernisierung",
+          "desc": "Zuschüsse und Darlehen für Wohngebäude-Sanierung in Hamburg.",
+          "bonusPercent": 4,
+          "maxBonus": 5000,
+          "applies": "all"
+        }
+      ]
+    },
+    "be": {
+      "name": "Berlin",
+      "programs": [
+        {
+          "name": "IBB Energetische Gebäudesanierung",
+          "desc": "Zinsgünstige Darlehen der Investitionsbank Berlin.",
+          "bonusPercent": 0,
+          "maxBonus": 0,
+          "applies": "all",
+          "loanOnly": true,
+          "loanDesc": "Zinsgünstiges Darlehen"
+        }
+      ]
+    }
+  }
+}
