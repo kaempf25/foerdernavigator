@@ -1913,7 +1913,7 @@ function calcGeometry() {
     // Schätzung anzeigen
     const el = document.getElementById('geoEstimate');
     if (el) {
-        el.innerHTML = `<strong>Geschätzte Gebäudedaten:</strong> ca. ${flaeche} m² Wohnfläche · ${fassade} m² Fassade · ${dach} m² Dachfläche · ${keller} m² Kellerdecke · ca. ${fenster} Fenster`;
+        el.innerHTML = `<strong>Geschätzte Gebäudedaten:</strong> ca. ${formatNumber(flaeche)} m² Wohnfläche · ${formatNumber(fassade)} m² Fassade · ${formatNumber(dach)} m² Dachfläche · ${formatNumber(keller)} m² Kellerdecke · ca. ${fenster} Fenster`;
     }
 }
 
@@ -2114,7 +2114,7 @@ function recalcCosts() {
         const total = Math.round(g.fassade * pricePerSqm);
         state.costs.wall_insulation = total;
         const preview = document.getElementById('wall_cost_preview');
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${g.fassade} m² × ca. ${pricePerSqm} €/m² = <strong>${formatCurrency(total)}</strong><br>
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.fassade)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong><br>
             <span style="font-size:0.78rem;">${hinweis}</span>`;
     }
 
@@ -2145,7 +2145,7 @@ function recalcCosts() {
         } else if (isNeueindeckung) {
             solarHinweis = `<br><span style="font-size:0.78rem; color:#7f8c8d;">ℹ️ In Ihrem Bundesland besteht aktuell keine Solarpflicht bei Dachsanierung. Prüfen Sie dennoch, ob eine PV-Anlage wirtschaftlich sinnvoll ist.</span>`;
         }
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${g.dach} m² × ca. ${Math.round(basePrice * tMult)} €/m² = <strong>${formatCurrency(total)}</strong><br>
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.dach)} m² × ca. ${formatNumber(Math.round(basePrice * tMult))} €/m² = <strong>${formatCurrency(total)}</strong><br>
             <span style="font-size:0.78rem;">${rType === 'aufsparren' ? 'Aufsparrendämmung inkl. Neueindeckung – teuerste aber effektivste Variante.' : rType === 'ogd' ? 'Oberste Geschossdecke – günstigste Variante wenn DG nicht ausgebaut.' : ''}</span>${solarHinweis}`;
     }
 
@@ -2159,7 +2159,7 @@ function recalcCosts() {
         const total = Math.round(g.keller * basePrice * tMult);
         state.costs.basement_insulation = total;
         const preview = document.getElementById('basement_cost_preview');
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${g.keller} m² × ca. ${Math.round(basePrice * tMult)} €/m² = <strong>${formatCurrency(total)}</strong>`;
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.keller)} m² × ca. ${formatNumber(Math.round(basePrice * tMult))} €/m² = <strong>${formatCurrency(total)}</strong>`;
     }
 
     // Windows
@@ -2175,7 +2175,7 @@ function recalcCosts() {
         if (state.details.haustuer) total += PRICES.window.haustuer;
         state.costs.windows = total;
         const preview = document.getElementById('window_cost_preview');
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${g.fenster} Fenster × ca. ${formatCurrency(perWindow)}/Stk = ${formatCurrency(g.fenster * perWindow)}${state.details.haustuer ? ` + Haustür ${formatCurrency(PRICES.window.haustuer)}` : ''} = <strong>${formatCurrency(total)}</strong><br>
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.fenster)} Fenster × ca. ${formatCurrency(perWindow)}/Stk = ${formatCurrency(g.fenster * perWindow)}${state.details.haustuer ? ` + Haustür ${formatCurrency(PRICES.window.haustuer)}` : ''} = <strong>${formatCurrency(total)}</strong><br>
             <span style="font-size:0.78rem;">${wGlazing === '2fach' ? '⚠️ 2-fach Verglasung ist nicht förderfähig (Uw > 0,95)!' : `${wFrame === 'holz_alu' ? 'Holz-Alu: Premium-Variante, sehr langlebig.' : ''}`}</span>`;
     }
 
@@ -2191,7 +2191,7 @@ function recalcCosts() {
         if (preview) {
             let parts = [`WP ${hpType.replace('_',' ')}, ${hpKW} kW: ${formatCurrency((PRICES.hp[hpType] && PRICES.hp[hpType][hpKW]) || 21000)}`];
             if (state.details.hp_puffer) parts.push(`Pufferspeicher: ${formatCurrency(PRICES.hp.puffer)}`);
-            if (state.details.hp_fussbodenheizung) parts.push(`FBH ${g.flaeche} m²: ${formatCurrency(Math.round(g.flaeche * PRICES.hp.fbh_per_sqm))}`);
+            if (state.details.hp_fussbodenheizung) parts.push(`FBH ${formatNumber(g.flaeche)} m²: ${formatCurrency(Math.round(g.flaeche * PRICES.hp.fbh_per_sqm))}`);
             preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${parts.join(' + ')} = <strong>${formatCurrency(total)}</strong><br>
                 <span style="font-size:0.78rem;">${hpType.startsWith('sole') || hpType === 'wasser' ? 'Sole/Wasser-WP: höhere Invest., aber niedrigere Betriebskosten + ggf. +5% Effizienzbonus.' : `⚠️ Ab 01/2026: Förderung nur für leise Luft-WP! Max. Schallleistung: ${parseInt(hpKW) <= 6 ? '55 dB(A)' : parseInt(hpKW) <= 12 ? '60 dB(A)' : '68 dB(A)'} bei ${hpKW} kW. Achten Sie auf das Produktdatenblatt!`}</span>`;
         }
@@ -2292,8 +2292,12 @@ function updateTotalCost() {
     if (el) el.textContent = formatCurrency(total);
 }
 
+function formatNumber(n) {
+    return Math.round(n).toLocaleString('de-DE');
+}
+
 function formatCurrency(n) {
-    return n.toLocaleString('de-DE') + ' €';
+    return Math.round(n).toLocaleString('de-DE') + ' €';
 }
 
 function formatPercent(n) {
@@ -3230,9 +3234,9 @@ function renderTaxComparison(r) {
                         <td><strong style="font-size:1.1rem; ${!directBetter ? 'color:var(--success);' : ''}">${formatCurrency(tax.totalReduction)}</strong></td>
                     </tr>
                     <tr>
-                        <td>Fördersatz</td>
-                        <td>${r.totalFundingPercent}% der Kosten</td>
-                        <td>20% der Kosten (über 3 Jahre)</td>
+                        <td>Effektive Förderquote</td>
+                        <td>${r.totalFundingPercent}% (${formatCurrency(r.totalFunding)} von ${formatCurrency(r.totalCost)})</td>
+                        <td>${r.totalCost > 0 ? Math.round(tax.totalReduction / r.totalCost * 100) : 20}% (${formatCurrency(tax.totalReduction)} von ${formatCurrency(r.totalCost)})</td>
                     </tr>
                     <tr>
                         <td>Auszahlung</td>
