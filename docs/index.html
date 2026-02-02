@@ -2326,6 +2326,19 @@ function formatPercent(n) {
 // ============================================================
 let currentStep = 1;
 
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Falls in iFrame eingebettet: Elternseite zum iFrame scrollen
+    try {
+        if (window.parent !== window) {
+            window.parent.postMessage({ type: 'scrollToIframe' }, '*');
+        }
+    } catch(e) {}
+    // Fallback: document.documentElement
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+}
+
 function goToStep(step) {
     if (step > currentStep + 1) return; // no skipping ahead
     if (step === 4) {
@@ -2337,7 +2350,7 @@ function goToStep(step) {
     document.getElementById(`section-${step}`).classList.add('active');
     updateStepper();
     if (step === 3) generateCostInputs();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToTop();
 }
 
 function updateStepper() {
@@ -2369,7 +2382,7 @@ function calculateAndShow() {
 
     const results = calculateFunding();
     renderResults(results);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToTop();
 }
 
 function calculateFunding() {
