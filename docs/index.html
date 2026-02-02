@@ -1968,14 +1968,18 @@ const WALL_MATERIALS = {
 
 const BASEMENT_MATERIALS = {
     // Kellerdecke von unten: leichte Platten, einfach zu montieren
-    eps:         { label: 'EPS/Styropor – WLG 035, günstig & leicht', lambda: 0.035, types: ['kellerdecke', 'kellerdecke_oben', 'bodenplatte'] },
-    xps:         { label: 'XPS – WLG 035, feuchtebeständig & druckfest', lambda: 0.035, types: ['kellerdecke', 'kellerdecke_oben', 'perimeter', 'bodenplatte'] },
+    eps:         { label: 'EPS/Styropor – WLG 035, günstig & leicht', lambda: 0.035, types: ['kellerdecke', 'kellerdecke_oben'] },
+    xps:         { label: 'XPS – WLG 035, feuchtebeständig & druckfest', lambda: 0.035, types: ['kellerdecke', 'kellerdecke_oben', 'perimeter'] },
     mineralwolle:{ label: 'Mineralwolle – WLG 035, nicht brennbar', lambda: 0.035, types: ['kellerdecke', 'kellerdecke_oben'] },
-    pur:         { label: 'PUR/PIR – WLG 024, schlank & effizient', lambda: 0.024, types: ['kellerdecke', 'kellerdecke_oben', 'bodenplatte'] },
+    pur:         { label: 'PUR/PIR – WLG 024, schlank & effizient', lambda: 0.024, types: ['kellerdecke', 'kellerdecke_oben'] },
     holzfaser:   { label: 'Holzfaserplatte – WLG 040, ökologisch', lambda: 0.040, types: ['kellerdecke', 'kellerdecke_oben'] },
     // Perimeterdämmung: muss druckfest + wasserbeständig sein
-    schaumglas:  { label: 'Schaumglas (Foamglas) – WLG 040, druckfest & wasserdicht', lambda: 0.040, types: ['perimeter', 'bodenplatte'] },
-    eps_perimeter:{ label: 'EPS Perimeter – WLG 035, druckfest & hydrophob', lambda: 0.035, types: ['perimeter'] }
+    schaumglas:  { label: 'Schaumglas (Foamglas) – WLG 040, druckfest & wasserdicht', lambda: 0.040, types: ['perimeter'] },
+    eps_perimeter:{ label: 'EPS Perimeter – WLG 035, druckfest & hydrophob', lambda: 0.035, types: ['perimeter'] },
+    // Bodenplatte von oben: druckfest unter Estrich (hohe Druckbelastung!)
+    eps_boden:   { label: 'EPS Trittschall/Bodendämmplatte – WLG 035, druckfest', lambda: 0.035, types: ['bodenplatte'] },
+    pur_boden:   { label: 'PUR/PIR Bodendämmplatte – WLG 024, schlank unter Estrich', lambda: 0.024, types: ['bodenplatte'] },
+    xps_boden:   { label: 'XPS Bodendämmplatte – WLG 035, druckfest & feuchteresistent', lambda: 0.035, types: ['bodenplatte'] }
 };
 
 function updateBasementOptions() {
@@ -2005,11 +2009,11 @@ function updateBasementOptions() {
         if (situationHint) situationHint.textContent = 'Beheizter Keller: Die Kellerwände müssen in die thermische Hülle einbezogen werden. Perimeterdämmung + Bodenplatte empfohlen.';
     } else { // kein_keller
         options = [
-            { value: 'bodenplatte', label: 'Bodenplattendämmung (auf/unter der Bodenplatte)' }
+            { value: 'bodenplatte', label: 'Bodenplattendämmung von oben (Dämmung + neuer Estrich)' }
         ];
         bodenExtraField.style.display = 'none';
         document.getElementById('basement_incl_bodenplatte').checked = false;
-        if (situationHint) situationHint.textContent = 'Ohne Keller: Die Bodenplatte grenzt direkt ans Erdreich und muss gedämmt werden.';
+        if (situationHint) situationHint.textContent = 'Ohne Keller: Dämmplatten werden auf die Bodenplatte gelegt, darüber neuer Estrich + Bodenbelag. Raumhöhe verringert sich um ca. 8–14 cm.';
     }
 
     options.forEach((o, i) => {
@@ -2055,7 +2059,7 @@ function updateBasementMaterialOptions() {
             kellerdecke: 'Dämmplatten werden von unten an die Kellerdecke geklebt/gedübelt. Ca. 25–65 €/m².',
             kellerdecke_oben: 'Nur sinnvoll wenn EG-Bodenaufbau ohnehin erneuert wird. Ca. 85–120 €/m².',
             perimeter: '⚠️ Inkl. Erdarbeiten, Abdichtung und Drainage. Ca. 195–310 €/m². Komplettpreis – keine Dickenauswahl nötig.',
-            bodenplatte: 'Dämmung auf/unter der Bodenplatte. Ca. 75–145 €/m².'
+            bodenplatte: 'Druckfeste Dämmplatten auf die Bodenplatte + neuer Estrich + Bodenbelag. Ca. 90–160 €/m². Raumhöhe verringert sich!'
         };
         hint.textContent = hints[bType] || '';
     }
@@ -2174,8 +2178,8 @@ const PRICES = {
         kellerdecke_oben: { eps: 85, xps: 95, mineralwolle: 90, pur: 120, holzfaser: 100 },
         // Perimeterdämmung: inkl. Erdarbeiten, Abdichtung, Drainage (sehr aufwändig!)
         perimeter:        { xps: 220, schaumglas: 310, eps_perimeter: 195 },
-        // Bodenplatte: Dämmung unter/auf Bodenplatte
-        bodenplatte:      { eps: 75, xps: 85, pur: 110, schaumglas: 145 }
+        // Bodenplatte von oben: Dämmung auf Bodenplatte + neuer Estrich (Sanierung)
+        bodenplatte:      { eps_boden: 95, pur_boden: 130, xps_boden: 105 }
     },
     window: {
         glazing: { '2fach': 0, '3fach': 0, '3fach_plus': 95 },
@@ -2303,7 +2307,7 @@ function recalcCosts() {
         let bodenTotal = 0;
         let bodenPricePerSqm = 0;
         if (inclBoden && isPerimeter) {
-            bodenPricePerSqm = (PRICES.basement.bodenplatte && PRICES.basement.bodenplatte[bMat === 'eps_perimeter' ? 'xps' : bMat]) || PRICES.basement.bodenplatte.xps || 85;
+            bodenPricePerSqm = (PRICES.basement.bodenplatte && PRICES.basement.bodenplatte.xps_boden) || 105;
             const bodenTMult = thicknessMultiplier(bThick, 80);
             bodenPricePerSqm = Math.round(bodenPricePerSqm * bodenTMult);
             bodenTotal = Math.round(grundflaeche * bodenPricePerSqm);
@@ -2326,7 +2330,7 @@ function recalcCosts() {
             let hinweis = '';
             if (bType === 'kellerdecke') hinweis = 'Günstigste und häufigste Variante. Dämmplatten von unten an die Kellerdecke geklebt/gedübelt.';
             else if (bType === 'kellerdecke_oben') hinweis = 'Neuer Fußbodenaufbau im EG nötig. Nur wenn EG-Boden ohnehin erneuert wird.';
-            else if (bType === 'bodenplatte') hinweis = 'Dämmung auf/unter der Bodenplatte gegen das Erdreich.';
+            else if (bType === 'bodenplatte') hinweis = 'Druckfeste Dämmplatten auf der Bodenplatte + neuer Estrich + Bodenbelag. Raumhöhe verringert sich um ca. 8–14 cm.';
             html = `<strong>Geschätzte Kosten:</strong> ${formatNumber(grundflaeche)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong><br>
                 <span style="font-size:0.78rem;">${hinweis}</span>`;
         }
