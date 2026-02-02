@@ -820,9 +820,16 @@
 
         /* Print */
         @media print {
-            .stepper, .btn-group, .hero { display: none !important; }
-            .section { display: block !important; }
+            .hero, .stepper, .btn-group, .footer { display: none !important; }
+            #section-1, #section-2, #section-3 { display: none !important; }
+            #section-4 { display: block !important; }
+            .section { page-break-before: avoid; }
             .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+            body { background: white; }
+            .container { max-width: 100%; }
+            .result-hero { color: #1a6b3c !important; background: #f0f7f3 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .result-cards { gap: 0.5rem; }
+            .result-card { box-shadow: none; border: 1px solid #ddd; }
         }
 
         /* Scroll animations */
