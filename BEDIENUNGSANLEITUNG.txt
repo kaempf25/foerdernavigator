@@ -1,0 +1,531 @@
+========================================================================
+  BEDIENUNGSANLEITUNG - AK Energy Consulting Foerdernavigator
+========================================================================
+
+Stand: Februar 2026
+Autor: AK Energy Consulting
+Zweck: Komplette Anleitung fuer Betrieb, Pflege und Aenderungen
+
+========================================================================
+INHALTSVERZEICHNIS
+========================================================================
+
+  1. Was ist der Foerdernavigator?
+  2. Wo liegt was? (Dateistruktur)
+  3. Wie komme ich an die Dateien?
+  4. So sieht der normale Betrieb aus (nichts tun!)
+  5. Aenderungen am Rechner vornehmen
+  6. Aenderungen auf die Webseite hochladen (GitHub Push)
+  7. Die Webseite ansehen und testen
+  8. Die monatliche automatische Pruefung
+  9. Wenn etwas schiefgeht (Problemloesung)
+ 10. Einbindung in die WordPress-Seite (Elementor)
+ 11. Wichtige Links auf einen Blick
+ 12. Glossar (Fachbegriffe einfach erklaert)
+
+
+========================================================================
+1. WAS IST DER FOERDERNAVIGATOR?
+========================================================================
+
+Der Foerdernavigator ist ein Online-Rechner fuer Ihre Webseite
+ak-energyconsulting.de. Ihre Kunden koennen damit berechnen, welche
+staatlichen Foerderungen (KfW, BAFA, Steuerbonus) sie fuer eine
+energetische Sanierung bekommen koennen.
+
+Der Rechner besteht aus einer einzigen HTML-Datei und einer JSON-Datei
+mit den Foerderdaten. Er laeuft komplett im Browser des Besuchers -
+es wird kein Server, keine Datenbank und kein PHP benoetigt.
+
+Die Webseite wird kostenlos ueber "GitHub Pages" gehostet. Einmal im
+Monat prueft ein automatisches Script, ob sich an den Foerderbedingungen
+etwas geaendert hat.
+
+
+========================================================================
+2. WO LIEGT WAS? (DATEISTRUKTUR)
+========================================================================
+
+Auf Ihrem Mac liegen die Dateien hier:
+
+  ~/Library/Mobile Documents/com~apple~CloudDocs/FOERDERNAVIGATOR/
+
+Das ist Ihr iCloud-Ordner. Die Dateien werden auch in der iCloud
+gesichert. In diesem Ordner finden Sie:
+
+  FOERDERNAVIGATOR/
+  |
+  |-- docs/                          <-- DAS IST DIE WEBSEITE
+  |   |-- index.html                 <-- Der Rechner (Hauptdatei)
+  |   |-- data/
+  |       |-- foerderkonditionen.json  <-- Foerderdaten (Saetze, Grenzen)
+  |
+  |-- data/
+  |   |-- foerderkonditionen.json    <-- Master-Foerderdaten
+  |
+  |-- scripts/
+  |   |-- validate-funding.js        <-- Automatisches Pruefscript
+  |
+  |-- .github/workflows/
+  |   |-- validate-funding.yml       <-- Zeitplan fuer automatische Pruefung
+  |
+  |-- index.html                     <-- Kopie der Webseite (Backup)
+  |-- BEDIENUNGSANLEITUNG.txt        <-- Diese Datei
+  |-- WORDPRESS-INTEGRATION.md       <-- Anleitung fuer Elementor
+
+WICHTIG: Wenn Sie etwas aendern, aendern Sie IMMER die Datei im
+Ordner "docs/". Das ist die Version, die im Internet angezeigt wird.
+Danach kopieren Sie die Datei auch ins Hauptverzeichnis als Backup:
+
+  docs/index.html  -->  index.html  (immer beide gleich halten!)
+
+
+========================================================================
+3. WIE KOMME ICH AN DIE DATEIEN?
+========================================================================
+
+METHODE 1: Ueber den Finder (einfach)
+--------------------------------------
+1. Oeffnen Sie den Finder
+2. Klicken Sie in der Seitenleiste auf "iCloud Drive"
+3. Navigieren Sie zum Ordner "FOERDERNAVIGATOR"
+4. Doppelklick auf eine Datei oeffnet sie im Standard-Editor
+
+METHODE 2: Ueber das Terminal (fuer Profis)
+---------------------------------------------
+1. Oeffnen Sie das Terminal (Programme > Dienstprogramme > Terminal)
+2. Geben Sie ein:
+   cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/FOERDERNAVIGATOR
+
+Jetzt sind Sie im Projektordner und koennen Befehle ausfuehren.
+
+
+========================================================================
+4. SO SIEHT DER NORMALE BETRIEB AUS
+========================================================================
+
+Im Normalfall muessen Sie NICHTS tun. Der Foerdernavigator laeuft
+automatisch:
+
+- Die Webseite ist unter dieser Adresse erreichbar:
+  https://kaempf25.github.io/foerdernavigator/
+
+- Jeden 1. des Monats prueft GitHub automatisch die KfW- und
+  BAFA-Webseiten, ob sich Foerdersaetze geaendert haben.
+
+- Falls es Aenderungen oder Warnungen gibt, bekommen Sie eine
+  E-Mail von GitHub (an die E-Mail-Adresse Ihres GitHub-Kontos).
+
+- Sie koennen den Status jederzeit pruefen unter:
+  https://github.com/kaempf25/foerdernavigator/actions
+
+
+========================================================================
+5. AENDERUNGEN AM RECHNER VORNEHMEN
+========================================================================
+
+Wenn Sie etwas am Rechner aendern moechten (z.B. Texte, Preise,
+neue Materialien), gehen Sie so vor:
+
+SCHRITT 1: Datei oeffnen
+--------------------------
+Oeffnen Sie die Datei im Texteditor:
+
+  Finder > iCloud Drive > FOERDERNAVIGATOR > docs > index.html
+
+Rechtsklick > "Oeffnen mit" > TextEdit (oder besser: Visual Studio Code)
+
+TIPP: Fuer Codebearbeitung ist "Visual Studio Code" (kostenlos)
+viel besser als TextEdit. Download: https://code.visualstudio.com
+
+SCHRITT 2: Aenderung vornehmen
+--------------------------------
+Suchen Sie die Stelle, die Sie aendern moechten (Cmd+F zum Suchen).
+
+Haeufige Aenderungen:
+
+  a) PREISE AENDERN:
+     Suchen Sie nach "const PRICES"
+     Dort stehen alle Preise in Euro pro Quadratmeter (brutto).
+     Beispiel: eps: 155 bedeutet EPS kostet 155 Euro/m2
+     Aendern Sie die Zahl und speichern Sie.
+
+  b) FOERDERSAETZE AENDERN:
+     Oeffnen Sie: docs/data/foerderkonditionen.json
+     Dort stehen alle Foerdersaetze (Prozente, Hoechstbetraege).
+     Aendern Sie die Zahlen und speichern Sie.
+     WICHTIG: Kopieren Sie die Datei auch nach data/foerderkonditionen.json
+
+  c) TEXTE AENDERN:
+     Suchen Sie den Text in docs/index.html mit Cmd+F
+     Aendern Sie den Text und speichern Sie.
+
+  d) MIT CLAUDE CODE AENDERN (EMPFOHLEN):
+     Am einfachsten ist es, Aenderungen mit Claude Code zu machen.
+     Starten Sie Claude Code im Terminal (siehe Schritt 3 unten)
+     und beschreiben Sie, was Sie aendern moechten. Claude macht
+     die Aenderung fuer Sie.
+
+SCHRITT 3: Backup-Kopie aktualisieren
+---------------------------------------
+Wenn Sie docs/index.html geaendert haben, kopieren Sie die Datei:
+
+  Im Finder: docs/index.html kopieren (Cmd+C)
+  Dann in den Hauptordner FOERDERNAVIGATOR einfuegen (Cmd+V)
+  "Ersetzen" waehlen, wenn gefragt wird.
+
+Oder im Terminal:
+  cp docs/index.html index.html
+
+
+========================================================================
+6. AENDERUNGEN AUF DIE WEBSEITE HOCHLADEN (GITHUB PUSH)
+========================================================================
+
+Nachdem Sie Aenderungen gemacht haben, muessen diese auf GitHub
+hochgeladen werden. Erst dann sind sie im Internet sichtbar.
+
+SCHRITT 1: Terminal oeffnen
+-----------------------------
+Oeffnen Sie das Programm "Terminal":
+  - Spotlight-Suche (Cmd + Leertaste) > "Terminal" eintippen > Enter
+  ODER
+  - Finder > Programme > Dienstprogramme > Terminal
+
+SCHRITT 2: In den Projektordner wechseln
+------------------------------------------
+Tippen Sie diesen Befehl und druecken Sie Enter:
+
+  cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/FOERDERNAVIGATOR
+
+SCHRITT 3: Aenderungen hochladen
+----------------------------------
+Tippen Sie diese drei Befehle nacheinander ein (nach jedem Befehl Enter):
+
+  git add .
+  git commit -m "Kurze Beschreibung was geaendert wurde"
+  git push
+
+Beispiel:
+  git add .
+  git commit -m "Preise fuer WDVS aktualisiert"
+  git push
+
+WICHTIG: Bei "git commit" schreiben Sie zwischen die Anfuehrungszeichen
+eine kurze Beschreibung, was Sie geaendert haben. Das hilft spaeter
+nachzuvollziehen, was wann geaendert wurde.
+
+SCHRITT 4: Warten
+-------------------
+Nach dem Push dauert es 1-2 Minuten, bis die Aenderung auf der
+Webseite sichtbar ist. Laden Sie die Seite im Browser mit Cmd+Shift+R
+neu (das erzwingt ein Neuladen ohne Cache).
+
+FALLS NACH DEM PASSWORT GEFRAGT WIRD:
+---------------------------------------
+GitHub fragt nach Username und Password:
+  - Username: kaempf25
+  - Password: Hier muessen Sie Ihren Personal Access Token eingeben
+    (NICHT Ihr GitHub-Passwort!)
+  - Beim Tippen des Tokens werden KEINE Zeichen angezeigt - das ist
+    normal! Einfach eintippen/einfuegen und Enter druecken.
+
+Falls Sie Ihren Token vergessen haben, erstellen Sie einen neuen:
+  1. Gehen Sie zu: https://github.com/settings/tokens
+  2. "Generate new token (classic)" klicken
+  3. Name: Foerdernavigator
+  4. Haken bei: repo UND workflow
+  5. "Generate token" klicken
+  6. Token sofort kopieren (wird nur einmal angezeigt!)
+
+
+========================================================================
+7. DIE WEBSEITE ANSEHEN UND TESTEN
+========================================================================
+
+LIVE-WEBSEITE (im Internet):
+  https://kaempf25.github.io/foerdernavigator/
+
+LOKALER TEST (auf Ihrem Mac, vor dem Hochladen):
+  Oeffnen Sie die Datei docs/index.html direkt im Browser:
+  - Finder > FOERDERNAVIGATOR > docs > index.html > Doppelklick
+  - Oder: Rechtsklick > "Oeffnen mit" > Safari/Chrome
+
+  HINWEIS: Die Foerderkonditionen aus der JSON-Datei laden beim
+  lokalen Test moeglicherweise nicht. Das ist ein Browser-
+  Sicherheitsfeature. Im Internet funktioniert alles normal.
+
+GITHUB-REPOSITORY (alle Dateien online ansehen):
+  https://github.com/kaempf25/foerdernavigator
+
+
+========================================================================
+8. DIE MONATLICHE AUTOMATISCHE PRUEFUNG
+========================================================================
+
+WAS PASSIERT AUTOMATISCH?
+---------------------------
+Jeden 1. des Monats um 10:00 Uhr (deutsche Zeit) prueft ein
+automatisches Script folgende Webseiten:
+
+  - KfW 458 (Heizungsfoerderung): Grundfoerderung 30%,
+    Klimageschwindigkeitsbonus 20%, max. 30.000 Euro
+  - KfW 261 (Effizienzhaussanierung): Kreditbetraege 120.000/150.000 Euro
+  - BAFA BEG Einzelmassnahmen: Basisfoerderung 15%
+  - Paragraph 35c EStG: Steuersaetze 7%/6%, Hoechstbetrag 200.000 Euro
+
+Das Script prueft, ob die bekannten Zahlen noch auf den offiziellen
+Webseiten zu finden sind.
+
+WO SEHE ICH DIE ERGEBNISSE?
+------------------------------
+1. Gehen Sie zu: https://github.com/kaempf25/foerdernavigator/actions
+2. Dort sehen Sie eine Liste aller Pruefungen
+3. Gruener Haken = alles in Ordnung
+4. Gelbes Dreieck = Warnungen (bitte manuell pruefen)
+5. Rotes X = Fehler (Script konnte nicht laufen)
+
+WARNUNGEN UND BENACHRICHTIGUNGEN:
+------------------------------------
+Falls Warnungen auftreten (z.B. ein Foerdersatz wurde auf der
+KfW-Seite nicht mehr gefunden), passiert Folgendes:
+  - Ein "Issue" wird automatisch im GitHub-Repository erstellt
+  - Sie bekommen eine E-Mail-Benachrichtigung
+  - Im Issue steht, welche Pruefung fehlgeschlagen ist
+
+WAS TUN BEI WARNUNGEN?
+-------------------------
+1. Lesen Sie die Warnung (im Issue oder in der E-Mail)
+2. Pruefen Sie die offizielle Webseite (z.B. kfw.de) manuell
+3. Falls sich tatsaechlich etwas geaendert hat:
+   - Aktualisieren Sie die Datei docs/data/foerderkonditionen.json
+   - Oder bitten Sie Claude Code, die Aenderung vorzunehmen
+   - Laden Sie die Aenderung hoch (siehe Kapitel 6)
+4. Schliessen Sie das Issue auf GitHub
+
+PRUEFUNG MANUELL AUSLOESEN:
+------------------------------
+Sie koennen die Pruefung jederzeit manuell starten:
+1. Gehen Sie zu: https://github.com/kaempf25/foerdernavigator/actions
+2. Klicken Sie links auf "Monatliche Foerder-Validierung"
+3. Klicken Sie rechts auf "Run workflow"
+4. Klicken Sie auf den gruenen Button "Run workflow"
+
+
+========================================================================
+9. WENN ETWAS SCHIEFGEHT (PROBLEMLOESUNG)
+========================================================================
+
+PROBLEM: "git push" sagt "Authentication failed"
+-------------------------------------------------
+Ihr Token ist abgelaufen. Erstellen Sie einen neuen:
+  https://github.com/settings/tokens
+  (Siehe Kapitel 6, Abschnitt "Falls nach dem Passwort gefragt wird")
+
+PROBLEM: "git push" sagt "rejected" oder "conflict"
+-----------------------------------------------------
+Das passiert, wenn auf GitHub eine neuere Version liegt (z.B. durch
+die automatische Pruefung). Loesung:
+
+  git pull --rebase
+  git push
+
+Falls das nicht klappt:
+  git pull --rebase --autostash
+  git push
+
+PROBLEM: Die Webseite zeigt alte Inhalte nach dem Push
+-------------------------------------------------------
+Warten Sie 2-3 Minuten. Dann laden Sie die Seite neu mit:
+  Cmd + Shift + R (erzwingt Neuladen ohne Cache)
+
+PROBLEM: Die Webseite zeigt gar nichts / weisse Seite
+-------------------------------------------------------
+Pruefen Sie:
+1. Ist GitHub Pages aktiviert?
+   https://github.com/kaempf25/foerdernavigator/settings/pages
+   Branch muss "main" sein, Ordner muss "/docs" sein.
+
+2. Gibt es JavaScript-Fehler?
+   Oeffnen Sie die Seite im Browser, dann:
+   Rechtsklick > "Untersuchen" > Tab "Konsole"
+   Dort stehen Fehlermeldungen in Rot.
+
+PROBLEM: Ich habe etwas kaputt gemacht und will zurueck
+---------------------------------------------------------
+Sie koennen jede Aenderung rueckgaengig machen:
+
+  Letzte (noch nicht hochgeladene) Aenderung rueckgaengig machen:
+    git checkout -- docs/index.html
+
+  Alles zurueck auf den letzten hochgeladenen Stand:
+    git checkout -- .
+
+  VORSICHT: Das macht ALLE lokalen Aenderungen rueckgaengig!
+
+PROBLEM: Terminal findet den Ordner nicht
+------------------------------------------
+Stellen Sie sicher, dass Sie genau diesen Befehl eingeben:
+  cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/FOERDERNAVIGATOR
+
+Der Backslash vor "Documents" ist wichtig (wegen des Leerzeichens).
+
+
+========================================================================
+10. EINBINDUNG IN DIE WORDPRESS-SEITE (ELEMENTOR)
+========================================================================
+
+So binden Sie den Foerdernavigator auf ak-energyconsulting.de ein:
+
+1. Oeffnen Sie die gewuenschte Seite in Elementor
+2. Suchen Sie das Widget "HTML" (oder "Individuelles HTML")
+3. Ziehen Sie es an die gewuenschte Stelle
+4. Fuegen Sie diesen Code ein:
+
+<div style="width:100%; max-width:1200px; margin:0 auto;">
+  <iframe
+    src="https://kaempf25.github.io/foerdernavigator/"
+    width="100%"
+    height="3000"
+    frameborder="0"
+    style="border:none; border-radius:12px;"
+    scrolling="no">
+  </iframe>
+</div>
+
+5. Klicken Sie auf "Veroeffentlichen"
+
+TIPP: Die Hoehe (3000) muessen Sie eventuell anpassen. Wenn unter
+dem Rechner zu viel Leerraum ist, verkleinern Sie die Zahl. Wenn
+der Rechner abgeschnitten wird, vergroessern Sie sie.
+
+
+========================================================================
+11. WICHTIGE LINKS AUF EINEN BLICK
+========================================================================
+
+  Webseite (live):
+    https://kaempf25.github.io/foerdernavigator/
+
+  GitHub Repository (Dateien online ansehen):
+    https://github.com/kaempf25/foerdernavigator
+
+  GitHub Actions (automatische Pruefung ansehen):
+    https://github.com/kaempf25/foerdernavigator/actions
+
+  GitHub Pages Einstellungen:
+    https://github.com/kaempf25/foerdernavigator/settings/pages
+
+  Neuen Token erstellen:
+    https://github.com/settings/tokens
+
+  GitHub Issues (Warnungen/Probleme):
+    https://github.com/kaempf25/foerdernavigator/issues
+
+
+========================================================================
+12. GLOSSAR (FACHBEGRIFFE EINFACH ERKLAERT)
+========================================================================
+
+  GitHub
+    Eine Webseite, auf der Programmcode gespeichert und verwaltet wird.
+    Wie eine Cloud fuer Code, aber mit Versionsverlauf.
+
+  GitHub Pages
+    Ein kostenloser Service von GitHub, der aus Ihren Dateien eine
+    Webseite macht. Keine Installation noetig.
+
+  GitHub Actions
+    Automatische Aufgaben, die GitHub fuer Sie ausfuehrt. In unserem
+    Fall: die monatliche Pruefung der Foerderbedingungen.
+
+  Repository (Repo)
+    Ein Projekt auf GitHub. Alle Dateien des Foerdernavigators zusammen.
+
+  Git
+    Ein Programm zur Versionsverwaltung. Merkt sich jede Aenderung,
+    die Sie machen, sodass Sie jederzeit zurueck koennen.
+
+  Terminal
+    Das Eingabefenster auf dem Mac, in dem Sie Befehle eintippen.
+    Auch "Kommandozeile" genannt.
+
+  git add .
+    Sagt Git: "Merke dir alle geaenderten Dateien."
+    Der Punkt bedeutet "alle Dateien im aktuellen Ordner."
+
+  git commit -m "..."
+    Sagt Git: "Speichere diese Aenderungen mit dieser Beschreibung."
+    Wie ein Speicherpunkt in einem Computerspiel.
+
+  git push
+    Sagt Git: "Lade die gespeicherten Aenderungen auf GitHub hoch."
+    Erst danach ist die Aenderung im Internet sichtbar.
+
+  git pull
+    Sagt Git: "Hole die neueste Version von GitHub herunter."
+    Noetig, wenn die automatische Pruefung etwas geaendert hat.
+
+  Personal Access Token
+    Ein langes Passwort, das GitHub statt des normalen Passworts
+    verlangt. Sieht aus wie: ghp_xAb3dEf5gH7iJk9LmNo...
+
+  HTML
+    Die Sprache, in der Webseiten geschrieben werden.
+
+  JSON
+    Ein Dateiformat fuer strukturierte Daten. Die Foerderdaten
+    stehen in einer JSON-Datei.
+
+  Claude Code
+    Ein KI-Assistent, der Programmcode schreiben und aendern kann.
+    Laeuft im Terminal. Sie koennen ihm in normalem Deutsch sagen,
+    was Sie aendern moechten.
+
+  iFrame
+    Ein "Fenster in einer Webseite", das eine andere Webseite
+    einbettet. So wird der Foerdernavigator auf ak-energyconsulting.de
+    angezeigt.
+
+  Elementor
+    Ein visueller Editor fuer WordPress-Webseiten. Damit koennen
+    Sie Ihre Seite per Drag-and-Drop gestalten.
+
+  Push
+    Das Hochladen von Aenderungen auf GitHub (siehe "git push").
+
+  Pull
+    Das Herunterladen von Aenderungen von GitHub (siehe "git pull").
+
+  Branch
+    Ein "Zweig" des Projekts. Ihr Projekt hat einen Branch namens
+    "main" - das ist die Hauptversion.
+
+  Workflow
+    Ein automatischer Ablauf in GitHub Actions. Ihr Workflow prueft
+    monatlich die Foerderbedingungen.
+
+  Issue
+    Ein Hinweis/Problem auf GitHub. Die automatische Pruefung erstellt
+    Issues, wenn Warnungen auftreten.
+
+
+========================================================================
+  KURZANLEITUNG (zum Ausdrucken)
+========================================================================
+
+  AENDERUNG HOCHLADEN - 3 Schritte:
+
+  1. Terminal oeffnen (Spotlight > "Terminal")
+
+  2. Eintippen:
+     cd ~/Library/Mobile\ Documents/com~apple~CloudDocs/FOERDERNAVIGATOR
+
+  3. Eintippen:
+     git add .
+     git commit -m "Was wurde geaendert"
+     git push
+
+  Fertig! Nach 1-2 Minuten ist die Aenderung live.
+
+========================================================================

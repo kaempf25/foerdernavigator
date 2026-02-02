@@ -3172,108 +3172,101 @@ function renderTaxComparison(r) {
     const tax = r.taxAlternative;
     const directBetter = r.totalFunding >= tax.totalReduction;
 
+    // Investitionskosten je Maßnahme aufschlüsseln
+    let costBreakdownHtml = '';
+    let totalMeasureCost = 0;
+    state.measures.forEach(m => {
+        const cost = state.costs[m] || 0;
+        if (cost > 0) {
+            totalMeasureCost += cost;
+            costBreakdownHtml += `<div class="calc-line" style="border-bottom:none;"><span>${measureLabels[m] || m}</span><span>${formatCurrency(cost)}</span></div>`;
+        }
+    });
+
     return `<div class="card">
-        <div class="card-title">Vergleich: Direktförderung vs. Steuerliche Förderung (§35c EStG)</div>
-        <div class="card-subtitle">Welche Variante ist für Sie günstiger?</div>
+        <div class="card-title">Alternative: Steuerliche Förderung nach §35c EStG</div>
+        <div class="card-subtitle">Statt KfW/BAFA können Sie die Kosten auch steuerlich absetzen – lohnt sich das?</div>
 
-        <table class="comparison-table">
-            <thead>
-                <tr>
-                    <th>Kriterium</th>
-                    <th>Direkte Förderung (KfW/BAFA)</th>
-                    <th>Steuerlich (§35c EStG)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="highlight-row">
-                    <td><strong>Gesamtvorteil</strong></td>
-                    <td class="${directBetter ? 'winner' : ''}">${formatCurrency(r.totalFunding)}</td>
-                    <td class="${!directBetter ? 'winner' : ''}">${formatCurrency(tax.totalReduction)}</td>
-                </tr>
-                <tr>
-                    <td>Effektiver Fördersatz</td>
-                    <td>${r.totalFundingPercent}%</td>
-                    <td>${tax.effectiveRate}% (über 3 Jahre)</td>
-                </tr>
-                <tr>
-                    <td>Zeitpunkt</td>
-                    <td>Sofort (nach Bewilligung)</td>
-                    <td>Über 3 Steuerjahre verteilt</td>
-                </tr>
-                <tr>
-                    <td>Jahr 1</td>
-                    <td>Volle Summe</td>
-                    <td>${formatCurrency(tax.year1)} (7%)</td>
-                </tr>
-                <tr>
-                    <td>Jahr 2</td>
-                    <td>–</td>
-                    <td>${formatCurrency(tax.year2)} (7%)</td>
-                </tr>
-                <tr>
-                    <td>Jahr 3</td>
-                    <td>–</td>
-                    <td>${formatCurrency(tax.year3)} (6%)</td>
-                </tr>
-                <tr>
-                    <td>Energieberater nötig?</td>
-                    <td>Ja (wird gefördert)</td>
-                    <td>Nein (nur Fachunternehmer)</td>
-                </tr>
-                <tr>
-                    <td>Antragstellung</td>
-                    <td>Vor Maßnahmenbeginn</td>
-                    <td>Über Steuererklärung</td>
-                </tr>
-                <tr>
-                    <td>Max. förderfähige Kosten</td>
-                    <td>Je nach Programm</td>
-                    <td>${formatCurrency(200000)} pro Objekt</td>
-                </tr>
-                <tr>
-                    <td>Kombinierbar?</td>
-                    <td colspan="2">Nicht für dieselbe Maßnahme. Aber: verschiedene Maßnahmen können aufgeteilt werden.</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="${directBetter ? 'tip-box' : 'info-box'}">
-            <div class="tip-box-title">${directBetter ? 'Empfehlung: Direktförderung' : 'Hinweis: Steuerliche Variante prüfen'}</div>
-            <p>${directBetter
-                ? 'Die direkte Förderung über KfW/BAFA ist in Ihrem Fall die bessere Wahl – höhere Gesamtförderung und sofortige Entlastung.'
-                : 'Die steuerliche Förderung könnte in Ihrem Fall attraktiver sein. Besprechen Sie dies mit Ihrem Steuerberater.'
-            }</p>
+        <div class="tax-explanation" style="background:#f0f7f3; border-left-color:var(--primary);">
+            <strong>Ihre Investitionskosten nach Maßnahme:</strong><br><br>
+            ${costBreakdownHtml}
+            <div class="calc-line" style="margin-top:0.3rem; padding-top:0.5rem; border-top:2px solid var(--primary); border-bottom:none;">
+                <span><strong>Gesamte Investitionskosten</strong></span><span><strong>${formatCurrency(totalMeasureCost)}</strong></span></div>
+            ${tax.eligibleCost < totalMeasureCost ? `<div class="calc-line" style="border-bottom:none; color:var(--text-light); font-size:0.85rem;">
+                <span>Davon §35c-fähig (nur eigengenutzt)</span><span>${formatCurrency(tax.eligibleCost)}</span></div>` : ''}
+            ${tax.eligibleCost > 200000 ? `<div class="calc-line" style="border-bottom:none; color:var(--warning); font-size:0.85rem;">
+                <span>Obergrenze §35c: max. 200.000 € pro Objekt</span><span>${formatCurrency(200000)}</span></div>` : ''}
         </div>
 
-        <div class="tax-explanation">
-            <strong>So kommt die steuerliche Förderung zustande (§35c EStG):</strong><br><br>
-            Der Gesetzgeber erlaubt bei selbstgenutztem Wohneigentum (mind. 10 Jahre alt) eine direkte Steuerermäßigung
-            – also eine Reduktion Ihrer Einkommensteuerschuld, <em>nicht</em> nur eine Absetzung vom zu versteuernden Einkommen.<br><br>
-            <strong>Berechnungsgrundlage:</strong><br>
-            <div class="calc-line"><span>Ihre Sanierungskosten (inkl. Material + Arbeitslohn):</span><span>${formatCurrency(r.totalCost)}</span></div>
-            <div class="calc-line"><span>Max. förderfähig nach §35c:</span><span>${formatCurrency(200000)} pro Objekt</span></div>
-            <div class="calc-line"><span>Angesetzter Betrag:</span><span>${formatCurrency(tax.eligibleCost)}</span></div>
+        <div class="tax-explanation" style="margin-top:0.8rem;">
+            <strong>So berechnet sich die steuerliche Förderung:</strong><br><br>
+            Von Ihren Investitionskosten (${formatCurrency(tax.eligibleCost)}) erstattet das Finanzamt über 3 Jahre insgesamt 20%:<br><br>
+            <div class="calc-line"><span>Jahr 1: ${formatCurrency(tax.eligibleCost)} × 7%</span><span>${formatCurrency(tax.year1)}</span></div>
+            <div class="calc-line"><span>Jahr 2: ${formatCurrency(tax.eligibleCost)} × 7%</span><span>${formatCurrency(tax.year2)}</span></div>
+            <div class="calc-line"><span>Jahr 3: ${formatCurrency(tax.eligibleCost)} × 6%</span><span>${formatCurrency(tax.year3)}</span></div>
+            <div class="calc-line" style="margin-top:0.3rem; padding-top:0.5rem; border-top:2px solid var(--primary); border-bottom:none;">
+                <span><strong>Steuerermäßigung gesamt (20%)</strong></span><span><strong>${formatCurrency(tax.totalReduction)}</strong></span></div>
             <br>
-            <strong>Verteilung über 3 Jahre:</strong><br>
-            <div class="calc-line"><span>Jahr 1: ${formatCurrency(tax.eligibleCost)} × 7% (max. 14.000 €)</span><span>${formatCurrency(tax.year1)}</span></div>
-            <div class="calc-line"><span>Jahr 2: ${formatCurrency(tax.eligibleCost)} × 7% (max. 14.000 €)</span><span>${formatCurrency(tax.year2)}</span></div>
-            <div class="calc-line"><span>Jahr 3: ${formatCurrency(tax.eligibleCost)} × 6% (max. 12.000 €)</span><span>${formatCurrency(tax.year3)}</span></div>
-            <div class="calc-line"><span><strong>Gesamte Steuerermäßigung über 3 Jahre:</strong></span><span><strong>${formatCurrency(tax.totalReduction)}</strong></span></div>
-            <br>
-            <strong>Warum maximal ${formatCurrency(tax.totalReduction)}?</strong><br>
-            ${tax.eligibleCost >= 200000
-                ? `Ihre Kosten übersteigen die Obergrenze von 200.000 €. Es werden nur 200.000 € angesetzt.
-                   Davon: 7% + 7% + 6% = 20%, also max. 40.000 € Steuerermäßigung.`
-                : `Bei Kosten von ${formatCurrency(tax.eligibleCost)} ergibt sich: 7% + 7% + 6% = insgesamt 20% = ${formatCurrency(tax.totalReduction)}.
-                   ${tax.totalReduction < 40000 ? 'Die Obergrenze von 40.000 € wird nicht erreicht.' : 'Die Obergrenze von 40.000 € greift.'}`
-            }<br><br>
-            <strong>Wichtig:</strong> Die Steuerermäßigung reduziert direkt Ihre Steuerschuld (nicht das zu versteuernde Einkommen).
-            Sie wirkt also wie ein Zuschuss, aber verteilt über 3 Steuerjahre.
-            Kein Energieberater nötig – aber ein Fachunternehmer muss die Arbeiten bescheinigen.
+            <span style="font-size:0.85rem; color:var(--text-light);">
+                Die 20% werden direkt von Ihrer Steuerschuld abgezogen – das ist ein echter Zuschuss vom Finanzamt, verteilt über 3 Steuerjahre.
+                Kein Energieberater nötig, aber ein Fachunternehmer muss die Arbeiten bescheinigen.
+            </span>
+        </div>
+
+        <div class="card" style="margin-top:1rem; background:${directBetter ? '#f0f7f3' : '#fef9e7'}; border-left:4px solid ${directBetter ? 'var(--primary)' : 'var(--warning)'};">
+            <strong style="font-size:1.1rem;">Vergleich: Was bringt Ihnen mehr?</strong>
+            <table class="comparison-table" style="margin-top:0.8rem;">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th style="${directBetter ? 'background:var(--primary);color:white;' : ''}">Direkte Förderung (KfW/BAFA)</th>
+                        <th style="${!directBetter ? 'background:var(--primary);color:white;' : ''}">Steuerlich (§35c EStG)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="highlight-row">
+                        <td><strong>Ihr Vorteil</strong></td>
+                        <td><strong style="font-size:1.1rem; ${directBetter ? 'color:var(--success);' : ''}">${formatCurrency(r.totalFunding)}</strong></td>
+                        <td><strong style="font-size:1.1rem; ${!directBetter ? 'color:var(--success);' : ''}">${formatCurrency(tax.totalReduction)}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Fördersatz</td>
+                        <td>${r.totalFundingPercent}% der Kosten</td>
+                        <td>20% der Kosten (über 3 Jahre)</td>
+                    </tr>
+                    <tr>
+                        <td>Auszahlung</td>
+                        <td>Sofort nach Bewilligung</td>
+                        <td>Verteilt über 3 Steuerjahre</td>
+                    </tr>
+                    <tr>
+                        <td>Energieberater</td>
+                        <td>Ja, erforderlich (wird gefördert)</td>
+                        <td>Nein, nur Fachunternehmer</td>
+                    </tr>
+                    <tr>
+                        <td>Antrag</td>
+                        <td>Vor Baubeginn bei KfW/BAFA</td>
+                        <td>Nachträglich per Steuererklärung</td>
+                    </tr>
+                    <tr>
+                        <td>Investitionskosten</td>
+                        <td colspan="2" style="text-align:center;">${formatCurrency(totalMeasureCost)} (Ihre geplanten Maßnahmen)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top:0.8rem; padding:0.8rem; border-radius:8px; background:${directBetter ? 'rgba(26,107,60,0.08)' : 'rgba(243,156,18,0.08)'};">
+                <strong>${directBetter ? '✅ Empfehlung: Direktförderung über KfW/BAFA' : '⚠️ Prüfen Sie die steuerliche Variante mit Ihrem Steuerberater'}</strong><br>
+                <span style="font-size:0.9rem;">${directBetter
+                    ? `Die direkte Förderung bringt Ihnen <strong>${formatCurrency(r.totalFunding - tax.totalReduction)} mehr</strong> als die steuerliche Variante – und das Geld kommt sofort.`
+                    : `Die steuerliche Förderung bringt Ihnen <strong>${formatCurrency(tax.totalReduction - r.totalFunding)} mehr</strong> als die Direktförderung – allerdings verteilt über 3 Jahre.`
+                }</span>
+            </div>
         </div>
 
         <div class="info-box" style="margin-top:0.8rem;">
-            <strong>Profi-Tipp: Splitting-Strategie</strong><br>
+            <strong>💡 Profi-Tipp: Splitting-Strategie</strong><br>
             Sie können verschiedene Maßnahmen auf verschiedene Förderwege aufteilen.
             Beispiel: Heizungstausch über KfW 458 (höhere Förderung), Dachdämmung über §35c (einfacher).
             Voraussetzung: Klare Kostentrennung in den Rechnungen.
