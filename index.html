@@ -1297,19 +1297,18 @@
                 <strong>Kellerdämmung – Details</strong>
                 <div class="field" style="margin-top:0.8rem;">
                     <label>Ausführungsart</label>
-                    <select id="basement_type" onchange="recalcCosts()">
-                        <option value="kellerdecke" selected>Kellerdecke von unten dämmen</option>
-                        <option value="perimeter">Perimeterdämmung (Außenwand Keller)</option>
-                        <option value="bodenplatte">Bodenplatte / Fußboden dämmen</option>
+                    <select id="basement_type" onchange="updateBasementMaterialOptions(); recalcCosts()">
+                        <option value="kellerdecke" selected>Kellerdeckendämmung von unten (unbeheizter Keller)</option>
+                        <option value="kellerdecke_oben">Kellerdeckendämmung von oben (bei Bodenaufbau-Erneuerung)</option>
+                        <option value="perimeter">Perimeterdämmung Kellerwand außen (beheizter Keller)</option>
+                        <option value="bodenplatte">Bodenplattendämmung (beheizter Keller)</option>
                     </select>
+                    <div class="field-hint" id="basement_type_hint">Häufigste Variante: Kellerdecke von unten dämmen bei unbeheiztem Keller. Sehr kosteneffektiv.</div>
                 </div>
                 <div class="field">
                     <label>Dämmmaterial</label>
                     <select id="basement_material" onchange="recalcCosts()">
-                        <option value="eps" selected>EPS / XPS – feuchtebeständig</option>
-                        <option value="mineralwolle">Mineralwolle (Kellerdecke)</option>
-                        <option value="pur">PUR/PIR – schlank, hohe Leistung</option>
-                        <option value="schaumglas">Schaumglas – Perimeter, druckfest</option>
+                        <!-- Wird dynamisch per updateBasementMaterialOptions() befüllt -->
                     </select>
                 </div>
                 <div class="field">
@@ -1319,6 +1318,7 @@
                         <option value="80" selected>80 mm (GEG-konform)</option>
                         <option value="100">100 mm (Empfohlen, U ≤ 0,25)</option>
                         <option value="120">120 mm (Sehr gut)</option>
+                        <option value="140">140 mm (Optimal)</option>
                     </select>
                     <div class="field-hint">Für BEG-Förderung: U-Wert ≤ 0,25 W/(m²K) erforderlich.</div>
                 </div>
@@ -1772,7 +1772,7 @@ const measureLabels = {
 
 // Alle Default-Kosten BRUTTO (inkl. 19% MwSt)
 const defaultCosts = {
-    wall_insulation: 33900, roof_insulation: 13900, basement_insulation: 7850,
+    wall_insulation: 33900, roof_insulation: 13900, basement_insulation: 5400,
     windows: 17850, heat_pump: 33320, biomass: 26180, solar_thermal: 9520,
     district_heating: 14280, ventilation: 9520, heating_optimization: 3570, smart_home: 4760
 };
@@ -1868,6 +1868,11 @@ function updateState() {
         updateWallThicknessOptions();
     }
 
+    // Kellerdämmung: Materialien initialisieren
+    if (state.measures.includes('basement_insulation')) {
+        updateBasementMaterialOptions();
+    }
+
     // Recalculate costs based on details
     recalcCosts();
 
@@ -1946,6 +1951,50 @@ const WALL_MATERIALS = {
     pur_schaum:     { label: 'PUR-Ortschaum – WLG 028, injiziert', lambda: 0.028, types: ['kerndaemmung'] },
     perlite:        { label: 'Perlite-Granulat – WLG 045, mineralisch', lambda: 0.045, types: ['kerndaemmung'] }
 };
+
+const BASEMENT_MATERIALS = {
+    // Kellerdecke von unten: leichte Platten, einfach zu montieren
+    eps:         { label: 'EPS/Styropor – WLG 035, günstig & leicht', lambda: 0.035, types: ['kellerdecke', 'kellerdecke_oben', 'bodenplatte'] },
+    xps:         { label: 'XPS – WLG 035, feuchtebeständig & druckfest', lambda: 0.035, types: ['kellerdecke', 'kellerdecke_oben', 'perimeter', 'bodenplatte'] },
+    mineralwolle:{ label: 'Mineralwolle – WLG 035, nicht brennbar', lambda: 0.035, types: ['kellerdecke', 'kellerdecke_oben'] },
+    pur:         { label: 'PUR/PIR – WLG 024, schlank & effizient', lambda: 0.024, types: ['kellerdecke', 'kellerdecke_oben', 'bodenplatte'] },
+    holzfaser:   { label: 'Holzfaserplatte – WLG 040, ökologisch', lambda: 0.040, types: ['kellerdecke', 'kellerdecke_oben'] },
+    // Perimeterdämmung: muss druckfest + wasserbeständig sein
+    schaumglas:  { label: 'Schaumglas (Foamglas) – WLG 040, druckfest & wasserdicht', lambda: 0.040, types: ['perimeter', 'bodenplatte'] },
+    eps_perimeter:{ label: 'EPS Perimeter – WLG 035, druckfest & hydrophob', lambda: 0.035, types: ['perimeter'] }
+};
+
+function updateBasementMaterialOptions() {
+    const bType = document.getElementById('basement_type').value;
+    const sel = document.getElementById('basement_material');
+    const prevVal = sel.value;
+    sel.innerHTML = '';
+    let firstVal = null;
+    let prevStillAvailable = false;
+    for (const [key, mat] of Object.entries(BASEMENT_MATERIALS)) {
+        if (mat.types.includes(bType)) {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = mat.label;
+            sel.appendChild(opt);
+            if (!firstVal) firstVal = key;
+            if (key === prevVal) prevStillAvailable = true;
+        }
+    }
+    sel.value = prevStillAvailable ? prevVal : firstVal;
+
+    // Hinweistext je nach Ausführungsart
+    const hint = document.getElementById('basement_type_hint');
+    if (hint) {
+        const hints = {
+            kellerdecke: 'Häufigste Variante: Kellerdecke von unten dämmen bei unbeheiztem Keller. Sehr kosteneffektiv (ca. 25–65 €/m²).',
+            kellerdecke_oben: 'Nur sinnvoll, wenn der Fußbodenaufbau im EG ohnehin erneuert wird. Deutlich aufwändiger als von unten.',
+            perimeter: '⚠️ Aufwändig: Erdreich muss freigelegt werden! Nur bei beheiztem/bewohntem Keller nötig. Inkl. Erdarbeiten ca. 150–350 €/m².',
+            bodenplatte: 'Dämmung unter/auf der Bodenplatte. Nur bei beheiztem Keller sinnvoll, oft in Kombination mit Perimeterdämmung.'
+        };
+        hint.textContent = hints[bType] || '';
+    }
+}
 
 // Materialien nach Ausführungsart filtern und in <select> einfügen
 function updateWallMaterialOptions() {
@@ -2054,9 +2103,14 @@ const PRICES = {
         flachdach:       { mineralwolle: 143, holzfaser: 167, pur: 179, zellulose: 119, eps: 131 }
     },
     basement: {
-        kellerdecke: { eps: 54, mineralwolle: 65, pur: 83, schaumglas: 107 },
-        perimeter:   { eps: 95, mineralwolle: 83, pur: 119, schaumglas: 155 },
-        bodenplatte: { eps: 71, mineralwolle: 65, pur: 101, schaumglas: 131 }
+        // Kellerdecke von unten: günstigste Variante (Preise €/m² inkl. Material + Montage, brutto)
+        kellerdecke:      { eps: 35, xps: 42, mineralwolle: 45, pur: 65, holzfaser: 50 },
+        // Kellerdecke von oben: teurer wegen Fußbodenaufbau
+        kellerdecke_oben: { eps: 85, xps: 95, mineralwolle: 90, pur: 120, holzfaser: 100 },
+        // Perimeterdämmung: inkl. Erdarbeiten, Abdichtung, Drainage (sehr aufwändig!)
+        perimeter:        { xps: 220, schaumglas: 310, eps_perimeter: 195 },
+        // Bodenplatte: Dämmung unter/auf Bodenplatte
+        bodenplatte:      { eps: 75, xps: 85, pur: 110, schaumglas: 145 }
     },
     window: {
         glazing: { '2fach': 0, '3fach': 0, '3fach_plus': 95 },
@@ -2161,12 +2215,21 @@ function recalcCosts() {
         const bType = document.getElementById('basement_type')?.value || 'kellerdecke';
         const bMat = document.getElementById('basement_material')?.value || 'eps';
         const bThick = parseInt(document.getElementById('basement_thickness')?.value) || 80;
-        const basePrice = (PRICES.basement[bType] && PRICES.basement[bType][bMat]) || 50;
-        const tMult = thicknessMultiplier(bThick, 80);
-        const total = Math.round(g.keller * basePrice * tMult);
+        const basePrice = (PRICES.basement[bType] && PRICES.basement[bType][bMat]) || 35;
+        // Perimeterdämmung: Preise sind Komplettpreise inkl. Erdarbeiten, keine Dickenkorrektur
+        const isPerimeter = (bType === 'perimeter');
+        const tMult = isPerimeter ? 1 : thicknessMultiplier(bThick, 80);
+        const pricePerSqm = Math.round(basePrice * tMult);
+        const total = Math.round(g.keller * pricePerSqm);
         state.costs.basement_insulation = total;
         const preview = document.getElementById('basement_cost_preview');
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.keller)} m² × ca. ${formatNumber(Math.round(basePrice * tMult))} €/m² = <strong>${formatCurrency(total)}</strong>`;
+        let hinweis = '';
+        if (bType === 'kellerdecke') hinweis = 'Günstigste und häufigste Variante. Dämmplatten werden von unten an die Kellerdecke geklebt/gedübelt.';
+        else if (bType === 'kellerdecke_oben') hinweis = 'Aufwändiger: Neuer Fußbodenaufbau im EG nötig. Nur wenn EG-Boden ohnehin erneuert wird.';
+        else if (bType === 'perimeter') hinweis = '⚠️ Inkl. Erdarbeiten, Abdichtung und Drainage. Sehr aufwändig – nur bei beheiztem Keller sinnvoll!';
+        else if (bType === 'bodenplatte') hinweis = 'Dämmung auf/unter der Bodenplatte. Oft in Kombination mit Perimeterdämmung bei beheiztem Keller.';
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.keller)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong><br>
+            <span style="font-size:0.78rem;">${hinweis}</span>`;
     }
 
     // Windows
