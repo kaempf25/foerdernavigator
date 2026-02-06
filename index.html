@@ -2201,10 +2201,14 @@ const PRICES = {
         innendaemmung:  { eps: 107, eps032: 119, mineralwolle: 119, mw032: 131, pur: 155, holzfaser: 143 }
     },
     roof: {
-        zwischensparren: { mineralwolle: 95, holzfaser: 131, pur: 143, zellulose: 71, eps: 83 },
-        aufsparren:      { mineralwolle: 214, holzfaser: 250, pur: 238, zellulose: 179, eps: 190 },
-        ogd:             { mineralwolle: 48, holzfaser: 65, pur: 71, zellulose: 36, eps: 42 },
-        flachdach:       { mineralwolle: 143, holzfaser: 167, pur: 179, zellulose: 119, eps: 131 }
+        // Zwischensparren: Preise nach Dämmatlas (Dämmsack ca. 50€, Einblas <20€)
+        zwischensparren: { zellulose: 45, eps: 60, mineralwolle: 70, holzfaser: 100, pur: 110 },
+        // Aufsparren: Dämmatlas sagt "bis 350€" - aktuelle Preise passen
+        aufsparren:      { zellulose: 179, eps: 190, mineralwolle: 214, pur: 238, holzfaser: 250 },
+        // OGD: Dämmatlas sagt "bis 75€" - aktuelle Preise passen
+        ogd:             { zellulose: 36, eps: 42, mineralwolle: 48, holzfaser: 65, pur: 71 },
+        // Flachdach: Dämmatlas Einblas 20-25€, Panel höher
+        flachdach:       { zellulose: 25, eps: 80, mineralwolle: 90, holzfaser: 110, pur: 120 }
     },
     basement: {
         // Kellerdecke von unten: günstigste Variante (Preise €/m² inkl. Material + Montage, brutto)
