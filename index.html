@@ -2119,32 +2119,234 @@ const INNENDAEMMUNG_SYSTEM = [
 
 // Typische Dachaufbauten nach Baujahr
 const ROOF_BY_BUILDYEAR = {
-    'pre1957':    { name: 'Dachstuhl ohne Dämmung', R_dach: 0.20, U_bestand: 2.70 },
-    '1957-1978':  { name: 'Dach mit minimaler Dämmung', R_dach: 0.50, U_bestand: 1.49 },
-    '1979-1994':  { name: 'Dach mit 60-80mm Dämmung', R_dach: 2.00, U_bestand: 0.46 },
-    '1995-2001':  { name: 'Dach mit 100-120mm Dämmung', R_dach: 3.20, U_bestand: 0.30 },
-    '2002-2014':  { name: 'Dach mit 160-180mm Dämmung', R_dach: 5.00, U_bestand: 0.19 },
-    'post2014':   { name: 'Dach mit 200-240mm Dämmung', R_dach: 6.50, U_bestand: 0.15 }
+    'pre1957': {
+        name: 'Dachstuhl ohne Dämmung',
+        R_dach: 0.20,
+        U_bestand: 2.70,
+        schichten: [
+            { name: 'Innenverkleidung (Putz auf Schalung)', dicke: 20, R: 0.05 },
+            { name: 'Sparren (Holz 120mm, Luftraum)', dicke: 120, R: 0.15 },
+            { name: 'Holzschalung', dicke: 24, R: 0.16 },
+            { name: 'Dachpappe/Bitumen', dicke: 3, R: 0.01 },
+            { name: 'Dachziegel', dicke: 30, R: 0.03 }
+        ]
+    },
+    '1957-1978': {
+        name: 'Dach mit minimaler Dämmung',
+        R_dach: 0.50,
+        U_bestand: 1.49,
+        schichten: [
+            { name: 'Gipskarton', dicke: 12, R: 0.05 },
+            { name: 'Sparren mit Teildämmung (40mm MW)', dicke: 140, R: 0.30 },
+            { name: 'Holzschalung/Lattung', dicke: 24, R: 0.16 },
+            { name: 'Unterspannbahn', dicke: 1, R: 0.00 },
+            { name: 'Dachziegel', dicke: 30, R: 0.03 }
+        ]
+    },
+    '1979-1994': {
+        name: 'Dach mit 60-80mm Dämmung',
+        R_dach: 2.00,
+        U_bestand: 0.46,
+        schichten: [
+            { name: 'Gipskarton', dicke: 12, R: 0.05 },
+            { name: 'Dampfbremse', dicke: 1, R: 0.00 },
+            { name: 'Zwischensparrendämmung (MW 80mm)', dicke: 80, R: 2.00 },
+            { name: 'Sparren (Holz)', dicke: 140, R: 0.10 },
+            { name: 'Unterspannbahn', dicke: 1, R: 0.00 },
+            { name: 'Konterlattung + Lattung', dicke: 50, R: 0.05 },
+            { name: 'Dachziegel', dicke: 30, R: 0.03 }
+        ]
+    },
+    '1995-2001': {
+        name: 'Dach mit 100-120mm Dämmung',
+        R_dach: 3.20,
+        U_bestand: 0.30,
+        schichten: [
+            { name: 'Gipskarton', dicke: 12, R: 0.05 },
+            { name: 'Dampfbremse', dicke: 1, R: 0.00 },
+            { name: 'Zwischensparrendämmung (MW 120mm)', dicke: 120, R: 3.00 },
+            { name: 'Sparren (Holz)', dicke: 160, R: 0.12 },
+            { name: 'Unterspannbahn diffusionsoffen', dicke: 1, R: 0.00 },
+            { name: 'Konterlattung + Lattung', dicke: 50, R: 0.05 },
+            { name: 'Dachziegel', dicke: 30, R: 0.03 }
+        ]
+    },
+    '2002-2014': {
+        name: 'Dach mit 160-180mm Dämmung',
+        R_dach: 5.00,
+        U_bestand: 0.19,
+        schichten: [
+            { name: 'Gipskarton', dicke: 12, R: 0.05 },
+            { name: 'Installationsebene (30mm)', dicke: 30, R: 0.02 },
+            { name: 'Dampfbremse feuchtevariabel', dicke: 1, R: 0.00 },
+            { name: 'Zwischensparrendämmung (MW 180mm)', dicke: 180, R: 4.80 },
+            { name: 'Sparren (Holz)', dicke: 200, R: 0.14 },
+            { name: 'Unterdeckbahn diffusionsoffen', dicke: 1, R: 0.00 },
+            { name: 'Konterlattung + Lattung', dicke: 60, R: 0.06 },
+            { name: 'Dachziegel', dicke: 30, R: 0.03 }
+        ]
+    },
+    'post2014': {
+        name: 'Dach mit 200-240mm Dämmung',
+        R_dach: 6.50,
+        U_bestand: 0.15,
+        schichten: [
+            { name: 'Gipskarton', dicke: 12, R: 0.05 },
+            { name: 'Installationsebene (50mm)', dicke: 50, R: 0.03 },
+            { name: 'Dampfbremse feuchtevariabel', dicke: 1, R: 0.00 },
+            { name: 'Zwischensparrendämmung (MW 220mm)', dicke: 220, R: 6.00 },
+            { name: 'Sparren (Holz)', dicke: 240, R: 0.17 },
+            { name: 'Unterdeckbahn diffusionsoffen', dicke: 1, R: 0.00 },
+            { name: 'Konterlattung + Lattung', dicke: 60, R: 0.06 },
+            { name: 'Dachziegel', dicke: 30, R: 0.03 }
+        ]
+    }
 };
 
 // Typische Kellerdecken nach Baujahr
 const BASEMENT_BY_BUILDYEAR = {
-    'pre1957':    { name: 'Kappendecke/Holzbalken', R_decke: 0.30, U_bestand: 2.13 },
-    '1957-1978':  { name: 'Betondecke ohne Dämmung', R_decke: 0.17, U_bestand: 2.94 },
-    '1979-1994':  { name: 'Betondecke mit 30-40mm Dämmung', R_decke: 1.00, U_bestand: 0.85 },
-    '1995-2001':  { name: 'Betondecke mit 50-60mm Dämmung', R_decke: 1.60, U_bestand: 0.56 },
-    '2002-2014':  { name: 'Betondecke mit 80-100mm Dämmung', R_decke: 2.70, U_bestand: 0.35 },
-    'post2014':   { name: 'Betondecke mit 120mm+ Dämmung', R_decke: 3.50, U_bestand: 0.27 }
+    'pre1957': {
+        name: 'Kappendecke/Holzbalken',
+        R_decke: 0.30,
+        U_bestand: 2.13,
+        schichten: [
+            { name: 'Bodenbelag (Holzdielen/Fliesen)', dicke: 20, R: 0.05 },
+            { name: 'Blindboden/Estrich', dicke: 40, R: 0.03 },
+            { name: 'Kappendecke/Holzbalken', dicke: 200, R: 0.20 },
+            { name: 'Putz (Unterseite)', dicke: 15, R: 0.02 }
+        ]
+    },
+    '1957-1978': {
+        name: 'Betondecke ohne Dämmung',
+        R_decke: 0.17,
+        U_bestand: 2.94,
+        schichten: [
+            { name: 'Bodenbelag (PVC/Fliesen)', dicke: 10, R: 0.02 },
+            { name: 'Zementestrich', dicke: 50, R: 0.04 },
+            { name: 'Stahlbetondecke', dicke: 180, R: 0.11 },
+            { name: 'Putz (Unterseite)', dicke: 15, R: 0.02 }
+        ]
+    },
+    '1979-1994': {
+        name: 'Betondecke mit 30-40mm Dämmung',
+        R_decke: 1.00,
+        U_bestand: 0.85,
+        schichten: [
+            { name: 'Bodenbelag', dicke: 10, R: 0.02 },
+            { name: 'Zementestrich', dicke: 50, R: 0.04 },
+            { name: 'PE-Folie', dicke: 1, R: 0.00 },
+            { name: 'Trittschalldämmung (EPS 30mm)', dicke: 30, R: 0.80 },
+            { name: 'Stahlbetondecke', dicke: 180, R: 0.11 },
+            { name: 'Putz (Unterseite)', dicke: 15, R: 0.02 }
+        ]
+    },
+    '1995-2001': {
+        name: 'Betondecke mit 50-60mm Dämmung',
+        R_decke: 1.60,
+        U_bestand: 0.56,
+        schichten: [
+            { name: 'Bodenbelag', dicke: 10, R: 0.02 },
+            { name: 'Zementestrich', dicke: 50, R: 0.04 },
+            { name: 'PE-Folie', dicke: 1, R: 0.00 },
+            { name: 'Wärmedämmung (EPS 50mm)', dicke: 50, R: 1.40 },
+            { name: 'Stahlbetondecke', dicke: 200, R: 0.12 },
+            { name: 'Putz (Unterseite)', dicke: 15, R: 0.02 }
+        ]
+    },
+    '2002-2014': {
+        name: 'Betondecke mit 80-100mm Dämmung',
+        R_decke: 2.70,
+        U_bestand: 0.35,
+        schichten: [
+            { name: 'Bodenbelag', dicke: 10, R: 0.02 },
+            { name: 'Heizestrich', dicke: 65, R: 0.05 },
+            { name: 'PE-Folie', dicke: 1, R: 0.00 },
+            { name: 'Wärmedämmung (EPS 80mm)', dicke: 80, R: 2.30 },
+            { name: 'Trittschalldämmung', dicke: 20, R: 0.20 },
+            { name: 'Stahlbetondecke', dicke: 200, R: 0.12 },
+            { name: 'Putz (Unterseite)', dicke: 15, R: 0.02 }
+        ]
+    },
+    'post2014': {
+        name: 'Betondecke mit 120mm+ Dämmung',
+        R_decke: 3.50,
+        U_bestand: 0.27,
+        schichten: [
+            { name: 'Bodenbelag', dicke: 10, R: 0.02 },
+            { name: 'Heizestrich', dicke: 65, R: 0.05 },
+            { name: 'PE-Folie', dicke: 1, R: 0.00 },
+            { name: 'Wärmedämmung (EPS/PUR 120mm)', dicke: 120, R: 3.20 },
+            { name: 'Trittschalldämmung', dicke: 20, R: 0.20 },
+            { name: 'Stahlbetondecke', dicke: 220, R: 0.13 },
+            { name: 'Putz (Unterseite)', dicke: 15, R: 0.02 }
+        ]
+    }
 };
 
 // Oberste Geschossdecke nach Baujahr
 const CEILING_BY_BUILDYEAR = {
-    'pre1957':    { name: 'Holzbalkendecke ohne Dämmung', R_decke: 0.25, U_bestand: 2.38 },
-    '1957-1978':  { name: 'Betondecke ohne Dämmung', R_decke: 0.15, U_bestand: 3.13 },
-    '1979-1994':  { name: 'Decke mit 60-80mm Dämmung', R_decke: 2.00, U_bestand: 0.46 },
-    '1995-2001':  { name: 'Decke mit 100-120mm Dämmung', R_decke: 3.20, U_bestand: 0.30 },
-    '2002-2014':  { name: 'Decke mit 140-160mm Dämmung', R_decke: 4.50, U_bestand: 0.21 },
-    'post2014':   { name: 'Decke mit 180-200mm Dämmung', R_decke: 5.50, U_bestand: 0.18 }
+    'pre1957': {
+        name: 'Holzbalkendecke ohne Dämmung',
+        R_decke: 0.25,
+        U_bestand: 2.38,
+        schichten: [
+            { name: 'Dielenboden (Spitzboden)', dicke: 24, R: 0.15 },
+            { name: 'Holzbalken mit Einschub', dicke: 180, R: 0.08 },
+            { name: 'Putz auf Schalung', dicke: 20, R: 0.05 }
+        ]
+    },
+    '1957-1978': {
+        name: 'Betondecke ohne Dämmung',
+        R_decke: 0.15,
+        U_bestand: 3.13,
+        schichten: [
+            { name: 'Estrich/Aufbeton', dicke: 50, R: 0.04 },
+            { name: 'Stahlbetondecke', dicke: 180, R: 0.11 }
+        ]
+    },
+    '1979-1994': {
+        name: 'Decke mit 60-80mm Dämmung',
+        R_decke: 2.00,
+        U_bestand: 0.46,
+        schichten: [
+            { name: 'Gehbelag (OSB/Spanplatte)', dicke: 22, R: 0.15 },
+            { name: 'Dämmung (MW 80mm)', dicke: 80, R: 2.00 },
+            { name: 'Stahlbetondecke', dicke: 180, R: 0.11 }
+        ]
+    },
+    '1995-2001': {
+        name: 'Decke mit 100-120mm Dämmung',
+        R_decke: 3.20,
+        U_bestand: 0.30,
+        schichten: [
+            { name: 'Gehbelag (OSB)', dicke: 22, R: 0.15 },
+            { name: 'Dämmung (MW 120mm)', dicke: 120, R: 3.00 },
+            { name: 'Dampfbremse', dicke: 1, R: 0.00 },
+            { name: 'Stahlbetondecke', dicke: 200, R: 0.12 }
+        ]
+    },
+    '2002-2014': {
+        name: 'Decke mit 140-160mm Dämmung',
+        R_decke: 4.50,
+        U_bestand: 0.21,
+        schichten: [
+            { name: 'Gehbelag (OSB)', dicke: 22, R: 0.15 },
+            { name: 'Dämmung (MW 160mm)', dicke: 160, R: 4.30 },
+            { name: 'Dampfbremse', dicke: 1, R: 0.00 },
+            { name: 'Stahlbetondecke', dicke: 200, R: 0.12 }
+        ]
+    },
+    'post2014': {
+        name: 'Decke mit 180-200mm Dämmung',
+        R_decke: 5.50,
+        U_bestand: 0.18,
+        schichten: [
+            { name: 'Gehbelag (OSB)', dicke: 22, R: 0.15 },
+            { name: 'Dämmung (MW 200mm)', dicke: 200, R: 5.40 },
+            { name: 'Dampfbremse feuchtevariabel', dicke: 1, R: 0.00 },
+            { name: 'Stahlbetondecke', dicke: 220, R: 0.13 }
+        ]
+    }
 };
 
 /**
@@ -2294,6 +2496,105 @@ function getSchichtenNachher(wallData, wType, wThick, matData, lambda) {
                 neuSchichten.push({...s});
             }
         });
+    }
+
+    return neuSchichten;
+}
+
+// Schichtaufbau nach Sanierung für Dach generieren
+function getRoofSchichtenNachher(roofData, rType, rThick, matData, lambda) {
+    let neuSchichten = [];
+    const R_daemm = (rThick / 1000) / lambda;
+    const daemmName = matData ? matData.label.split('–')[0].trim() : 'Mineralwolle';
+
+    if (rType === 'zwischensparren') {
+        neuSchichten = [
+            { name: 'Gipskarton', dicke: 12, R: 0.05 },
+            { name: 'Installationsebene (optional)', dicke: 30, R: 0.02 },
+            { name: 'Dampfbremse feuchtevariabel', dicke: 1, R: 0.00 },
+            { name: `Zwischensparrendämmung (${daemmName} ${rThick}mm)`, dicke: rThick, R: R_daemm },
+            { name: 'Sparren (Holz)', dicke: Math.max(rThick, 160), R: 0.12 },
+            { name: 'Unterdeckbahn diffusionsoffen', dicke: 1, R: 0.00 },
+            { name: 'Konterlattung + Lattung', dicke: 60, R: 0.06 },
+            { name: 'Dachziegel', dicke: 30, R: 0.03 }
+        ];
+    } else if (rType === 'aufsparren') {
+        neuSchichten = [
+            { name: 'Gipskarton', dicke: 12, R: 0.05 },
+            { name: 'Dampfbremse', dicke: 1, R: 0.00 },
+            { name: 'Bestandssparren (sichtbar)', dicke: 160, R: 0.12 },
+            { name: 'Holzschalung', dicke: 24, R: 0.16 },
+            { name: `Aufsparrendämmung (${daemmName} ${rThick}mm)`, dicke: rThick, R: R_daemm },
+            { name: 'Unterdeckbahn diffusionsoffen', dicke: 1, R: 0.00 },
+            { name: 'Konterlattung + Lattung', dicke: 60, R: 0.06 },
+            { name: 'Dachziegel (neu)', dicke: 30, R: 0.03 }
+        ];
+    } else if (rType === 'ogd') {
+        neuSchichten = [
+            { name: 'Gehbelag (OSB/Spanplatte, begehbar)', dicke: 22, R: 0.15 },
+            { name: `Dämmung (${daemmName} ${rThick}mm)`, dicke: rThick, R: R_daemm },
+            { name: 'Dampfbremse feuchtevariabel', dicke: 1, R: 0.00 },
+            { name: 'Bestandsdecke', dicke: 200, R: 0.12 }
+        ];
+    } else if (rType === 'flachdach') {
+        neuSchichten = [
+            { name: 'Kiesschüttung / Begrünung', dicke: 50, R: 0.03 },
+            { name: 'Abdichtungsbahn (EPDM/Bitumen)', dicke: 5, R: 0.00 },
+            { name: `Gefälledämmung (${daemmName} ${rThick}mm)', dicke: rThick, R: R_daemm },
+            { name: 'Dampfsperre', dicke: 1, R: 0.00 },
+            { name: 'Voranstrich', dicke: 1, R: 0.00 },
+            { name: 'Bestandsdecke (Beton)', dicke: 200, R: 0.12 }
+        ];
+    }
+
+    return neuSchichten;
+}
+
+// Schichtaufbau nach Sanierung für Keller/Boden generieren
+function getBasementSchichtenNachher(basementData, bType, bThick, matData, lambda) {
+    let neuSchichten = [];
+    const R_daemm = (bThick / 1000) / lambda;
+    const daemmName = matData ? matData.label.split('–')[0].trim() : 'EPS';
+
+    if (bType === 'kellerdecke') {
+        // Dämmung von unten an die Kellerdecke
+        neuSchichten = [
+            { name: 'Bodenbelag (Bestand)', dicke: 20, R: 0.05 },
+            { name: 'Estrich (Bestand)', dicke: 50, R: 0.04 },
+            { name: 'Bestandsdecke (Beton)', dicke: 180, R: 0.11 },
+            { name: `Dämmplatten (${daemmName} ${bThick}mm)`, dicke: bThick, R: R_daemm },
+            { name: 'Putz / Spachtelung (Unterseite)', dicke: 5, R: 0.01 }
+        ];
+    } else if (bType === 'kellerdecke_oben') {
+        // Dämmung von oben auf die Kellerdecke
+        neuSchichten = [
+            { name: 'Bodenbelag (neu)', dicke: 15, R: 0.05 },
+            { name: 'Heizestrich (neu)', dicke: 65, R: 0.05 },
+            { name: 'PE-Folie', dicke: 1, R: 0.00 },
+            { name: `Wärmedämmung (${daemmName} ${bThick}mm)`, dicke: bThick, R: R_daemm },
+            { name: 'Ausgleichsschicht', dicke: 10, R: 0.01 },
+            { name: 'Bestandsdecke (Beton)', dicke: 180, R: 0.11 }
+        ];
+    } else if (bType === 'perimeter') {
+        // Perimeterdämmung (Kellerwand außen)
+        neuSchichten = [
+            { name: 'Innenputz (Keller)', dicke: 15, R: 0.02 },
+            { name: 'Kellerwand (Beton/Mauerwerk)', dicke: 300, R: 0.20 },
+            { name: 'Abdichtung (KMB/Bitumen)', dicke: 5, R: 0.00 },
+            { name: `Perimeterdämmung (${daemmName} ${bThick}mm)`, dicke: bThick, R: R_daemm },
+            { name: 'Schutzschicht / Noppenbahn', dicke: 10, R: 0.01 },
+            { name: 'Filtervlies + Drainage', dicke: 20, R: 0.00 }
+        ];
+    } else if (bType === 'bodenplatte') {
+        // Bodenplatte von oben dämmen
+        neuSchichten = [
+            { name: 'Bodenbelag (neu)', dicke: 15, R: 0.05 },
+            { name: 'Heizestrich (neu)', dicke: 65, R: 0.05 },
+            { name: 'PE-Folie', dicke: 1, R: 0.00 },
+            { name: `Bodendämmung (${daemmName} ${bThick}mm)`, dicke: bThick, R: R_daemm },
+            { name: 'Feuchtigkeitssperre', dicke: 1, R: 0.00 },
+            { name: 'Bestandsbodenplatte (Beton)', dicke: 200, R: 0.12 }
+        ];
     }
 
     return neuSchichten;
@@ -2642,7 +2943,7 @@ function recalcCosts() {
             </div>`;
     }
 
-    // Roof – mit vollständiger U-Wert-Berechnung
+    // Roof – mit vollständiger U-Wert-Berechnung und Schichtaufbau
     if (state.measures.includes('roof_insulation')) {
         const rType = document.getElementById('roof_type')?.value || 'zwischensparren';
         const rMat = document.getElementById('roof_material')?.value || 'mineralwolle';
@@ -2659,22 +2960,32 @@ function recalcCosts() {
         const lambda = matData ? matData.lambda : 0.035;
         const uCalc = calcUValue(roofData.R_dach || roofData.R_decke, rThick / 1000, lambda, false);
 
-        const targetU = (rType === 'ogd') ? 0.14 : 0.14; // BEG: U ≤ 0,14 für Dach und OGD
+        const targetU = 0.14; // BEG: U ≤ 0,14 für Dach und OGD
         const foerderHinweis = uCalc.U_neu <= targetU
-            ? '✓ BEG-Anforderung (U ≤ 0,14) erfüllt!'
-            : `⚠ Für BEG mind. ${Math.ceil(lambda / (1/(Rsi + (roofData.R_dach || roofData.R_decke) + Rse) - targetU) * 1000 / 10) * 10} mm empfohlen.`;
+            ? '<span style="color:#27ae60; font-weight:600;">✓ BEG-Anforderung (U ≤ 0,14) erfüllt!</span>'
+            : `<span style="color:#e67e22;">⚠ Für BEG mind. ${Math.ceil(lambda / (1/(Rsi + (roofData.R_dach || roofData.R_decke) + Rse) - targetU) * 1000 / 10) * 10} mm empfohlen.</span>`;
 
-        const verfahrenName = {
+        const verfahrenNamen = {
             'zwischensparren': 'Zwischensparrendämmung',
             'aufsparren': 'Aufsparrendämmung',
             'ogd': 'Oberste Geschossdecke',
             'flachdach': 'Flachdachdämmung'
-        }[rType] || rType;
+        };
 
-        let uWertHinweis = `<strong>U-Wert vorher:</strong> ${uCalc.U_alt.toFixed(2)} W/(m²K) → <strong>U-Wert nachher:</strong> ${uCalc.U_neu.toFixed(2)} W/(m²K) (−${uCalc.verbesserung}%)<br>`
-            + `<span style="color:#666;">Bestand: ${roofData.name}<br>`
-            + `${verfahrenName} ${rThick} mm ${matData ? matData.label.split('–')[0].trim() : ''} (λ=${lambda})</span><br>`
-            + `<span style="color:${uCalc.U_neu <= targetU ? '#27ae60' : '#e67e22'};">${foerderHinweis}</span>`;
+        // Schichtaufbau generieren
+        const schichtenVorher = roofData.schichten || [];
+        const schichtenNachher = getRoofSchichtenNachher(roofData, rType, rThick, matData, lambda);
+
+        // Titel für Schichtaufbau
+        const titelVorher = rType === 'ogd' ? '🏠 Deckenaufbau VORHER (Bestand)' : '🏠 Dachaufbau VORHER (Bestand)';
+        const titelNachher = rType === 'ogd' ? '🔧 Deckenaufbau NACHHER (saniert)' : '🔧 Dachaufbau NACHHER (saniert)';
+
+        const schichtHtml = `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
+                <div>${renderSchichtaufbau(schichtenVorher, titelVorher)}</div>
+                <div>${renderSchichtaufbau(schichtenNachher, titelNachher, 'Dämmung')}</div>
+            </div>
+        `;
 
         // Solarpflicht bei Neueindeckung prüfen
         const solarPflichtBL = {
@@ -2689,19 +3000,28 @@ function recalcCosts() {
         const solarInfo = solarPflichtBL[state.bundesland];
         let solarHinweis = '';
         if (isNeueindeckung && solarInfo) {
-            solarHinweis = `<br><span style="font-size:0.78rem; color:#c0392b;">⚠️ <strong>Solarpflicht in ${solarInfo.name}!</strong> Bei Neueindeckung müssen mind. ${solarInfo.anteil} mit ${solarInfo.alt} belegt werden (seit ${solarInfo.seit}).</span>`;
+            solarHinweis = `<div style="margin-top:0.8rem; padding:0.6rem; background:#fff3cd; border-radius:6px; font-size:0.78rem; color:#856404;">⚠️ <strong>Solarpflicht in ${solarInfo.name}!</strong> Bei Neueindeckung müssen mind. ${solarInfo.anteil} mit ${solarInfo.alt} belegt werden (seit ${solarInfo.seit}).</div>`;
         }
 
         const preview = document.getElementById('roof_cost_preview');
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.dach)} m² × ca. ${formatNumber(Math.round(basePrice * tMult))} €/m² = <strong>${formatCurrency(total)}</strong>
-            <div style="margin-top:0.5rem; padding:0.6rem; background:#f8f9fa; border-radius:6px; font-size:0.78rem;">${uWertHinweis}</div>${solarHinweis}`;
+        if (preview) preview.innerHTML = `
+            <strong>Geschätzte Kosten:</strong> ${formatNumber(g.dach)} m² × ca. ${formatNumber(Math.round(basePrice * tMult))} €/m² = <strong>${formatCurrency(total)}</strong>
+            <div style="margin-top:0.8rem; padding:0.8rem; background:linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%); border-radius:8px;">
+                <div style="font-size:0.85rem; margin-bottom:0.8rem;">
+                    <strong>Verfahren:</strong> ${verfahrenNamen[rType] || rType}<br>
+                    <strong>U-Wert:</strong> ${uCalc.U_alt.toFixed(2)} → <strong style="color:#1a6b3c;">${uCalc.U_neu.toFixed(2)} W/(m²K)</strong> <span style="color:#27ae60;">(−${uCalc.verbesserung}%)</span>
+                </div>
+                ${foerderHinweis}
+                ${schichtHtml}
+            </div>${solarHinweis}`;
     }
 
-    // Basement / Bodenplatte
+    // Basement / Bodenplatte – mit Schichtaufbau
     if (state.measures.includes('basement_insulation')) {
         const bType = document.getElementById('basement_type')?.value || 'kellerdecke';
         const bMat = document.getElementById('basement_material')?.value || 'eps';
         const bThick = parseInt(document.getElementById('basement_thickness')?.value) || 80;
+        const buildYear = document.getElementById('buildYear')?.value || '1957-1978';
         const isPerimeter = (bType === 'perimeter');
         const inclBoden = document.getElementById('basement_incl_bodenplatte')?.checked || false;
 
@@ -2709,19 +3029,19 @@ function recalcCosts() {
         const tMult = isPerimeter ? 1 : thicknessMultiplier(bThick, 80);
         const pricePerSqm = Math.round(basePrice * tMult);
 
-        // Grundfläche für Berechnung
-        const grundflaeche = g.keller; // Kellerdecke ≈ Grundfläche
+        const grundflaeche = g.keller;
+        const basementData = BASEMENT_BY_BUILDYEAR[buildYear];
+        const matData = BASEMENT_MATERIALS[bMat];
+        const lambda = matData ? matData.lambda : 0.035;
 
-        // Perimeterdämmung: Fläche = Umfang × Kellerhöhe (ca. 2,4m)
         let periFlaeche = 0;
         if (isPerimeter) {
             const umfang = 2 * (state.geo.breite + state.geo.laenge);
-            periFlaeche = Math.round(umfang * 2.4); // ca. 2,4m Kellerhöhe
+            periFlaeche = Math.round(umfang * 2.4);
         }
         const mainFlaeche = isPerimeter ? periFlaeche : grundflaeche;
         let total = Math.round(mainFlaeche * pricePerSqm);
 
-        // Zusätzliche Bodenplattendämmung bei beheiztem Keller
         let bodenTotal = 0;
         let bodenPricePerSqm = 0;
         if (inclBoden && isPerimeter) {
@@ -2734,47 +3054,71 @@ function recalcCosts() {
 
         state.costs.basement_insulation = total;
         const preview = document.getElementById('basement_cost_preview');
+
+        // Verfahrensnamen
+        const verfahrenNamen = {
+            'kellerdecke': 'Kellerdeckendämmung von unten',
+            'kellerdecke_oben': 'Kellerdeckendämmung von oben',
+            'perimeter': 'Perimeterdämmung (Kellerwand außen)',
+            'bodenplatte': 'Bodenplattendämmung'
+        };
+
         let html = '';
         if (isPerimeter) {
-            html = `<strong>Geschätzte Kosten Perimeterdämmung:</strong><br>
-                ${formatNumber(periFlaeche)} m² Kellerwand × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(Math.round(periFlaeche * pricePerSqm))}</strong>
-                <br><span style="font-size:0.78rem;">Umfang ${formatNumber(2*(state.geo.breite+state.geo.laenge))} m × 2,4 m Kellerhöhe = ${formatNumber(periFlaeche)} m² · Inkl. Erdarbeiten, Abdichtung, Drainage.</span>`;
+            // Perimeterdämmung - einfachere Anzeige
+            const schichtenNachher = getBasementSchichtenNachher(basementData, bType, bThick, matData, lambda);
+
+            html = `
+                <strong>Geschätzte Kosten:</strong> ${formatNumber(periFlaeche)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(Math.round(periFlaeche * pricePerSqm))}</strong>
+                <div style="margin-top:0.8rem; padding:0.8rem; background:linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%); border-radius:8px;">
+                    <div style="font-size:0.85rem; margin-bottom:0.8rem;">
+                        <strong>Verfahren:</strong> ${verfahrenNamen[bType]}<br>
+                        <span style="color:#666;">Umfang ${formatNumber(2*(state.geo.breite+state.geo.laenge))} m × 2,4 m Kellerhöhe = ${formatNumber(periFlaeche)} m²</span><br>
+                        <span style="color:#666;">Inkl. Erdarbeiten, Abdichtung, Drainage</span>
+                    </div>
+                    <div style="margin-top:0.8rem;">
+                        ${renderSchichtaufbau(schichtenNachher, '🔧 Wandaufbau NACHHER (saniert)', 'Perimeterdämmung')}
+                    </div>
+                </div>`;
             if (inclBoden) {
-                html += `<br><br><strong>+ Bodenplattendämmung:</strong><br>
-                    ${formatNumber(grundflaeche)} m² × ca. ${formatNumber(bodenPricePerSqm)} €/m² = <strong>${formatCurrency(bodenTotal)}</strong>`;
+                html += `<div style="margin-top:0.8rem; padding:0.6rem; background:#f0f0f0; border-radius:6px;">
+                    <strong>+ Bodenplattendämmung:</strong> ${formatNumber(grundflaeche)} m² × ca. ${formatNumber(bodenPricePerSqm)} €/m² = <strong>${formatCurrency(bodenTotal)}</strong>
+                </div>`;
             }
-            html += `<br><br><strong style="font-size:1.05rem;">Gesamt: ${formatCurrency(total)}</strong>`;
+            html += `<div style="margin-top:0.8rem;"><strong style="font-size:1.05rem;">Gesamt: ${formatCurrency(total)}</strong></div>`;
         } else {
-            // U-Wert-Berechnung für Kellerdecke/Bodenplatte
-            const buildYear = document.getElementById('buildYear')?.value || '1957-1978';
-            const basementData = BASEMENT_BY_BUILDYEAR[buildYear];
-            const matData = BASEMENT_MATERIALS[bMat];
-            const lambda = matData ? matData.lambda : 0.035;
+            // Kellerdecke / Bodenplatte mit vollständigem Schichtaufbau
             const uCalc = calcUValue(basementData.R_decke, bThick / 1000, lambda, false);
-
-            const targetU = 0.25; // BEG: U ≤ 0,25 für Kellerdecke/Bodenplatte
+            const targetU = 0.25;
             const foerderHinweis = uCalc.U_neu <= targetU
-                ? '✓ BEG-Anforderung (U ≤ 0,25) erfüllt!'
-                : `⚠ Für BEG mind. ${Math.ceil(lambda / (1/(Rsi + basementData.R_decke + Rse) - targetU) * 1000 / 10) * 10} mm empfohlen.`;
+                ? '<span style="color:#27ae60; font-weight:600;">✓ BEG-Anforderung (U ≤ 0,25) erfüllt!</span>'
+                : `<span style="color:#e67e22;">⚠ Für BEG mind. ${Math.ceil(lambda / (1/(Rsi + basementData.R_decke + Rse) - targetU) * 1000 / 10) * 10} mm empfohlen.</span>`;
 
-            const verfahrenName = {
-                'kellerdecke': 'Kellerdeckendämmung von unten',
-                'kellerdecke_oben': 'Kellerdeckendämmung von oben',
-                'bodenplatte': 'Bodenplattendämmung'
-            }[bType] || bType;
+            const schichtenVorher = basementData.schichten || [];
+            const schichtenNachher = getBasementSchichtenNachher(basementData, bType, bThick, matData, lambda);
 
-            let hinweis = `<strong>U-Wert vorher:</strong> ${uCalc.U_alt.toFixed(2)} W/(m²K) → <strong>U-Wert nachher:</strong> ${uCalc.U_neu.toFixed(2)} W/(m²K) (−${uCalc.verbesserung}%)<br>`
-                + `<span style="color:#666;">Bestand: ${basementData.name}<br>`
-                + `${verfahrenName} ${bThick} mm ${matData ? matData.label.split('–')[0].trim() : ''} (λ=${lambda})</span><br>`
-                + `<span style="color:${uCalc.U_neu <= targetU ? '#27ae60' : '#e67e22'};">${foerderHinweis}</span>`;
+            const schichtHtml = `
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
+                    <div>${renderSchichtaufbau(schichtenVorher, '🏠 Deckenaufbau VORHER (Bestand)')}</div>
+                    <div>${renderSchichtaufbau(schichtenNachher, '🔧 Deckenaufbau NACHHER (saniert)', 'Dämmung')}</div>
+                </div>
+            `;
 
-            html = `<strong>Geschätzte Kosten:</strong> ${formatNumber(grundflaeche)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong>
-                <div style="margin-top:0.5rem; padding:0.6rem; background:#f8f9fa; border-radius:6px; font-size:0.78rem;">${hinweis}</div>`;
+            html = `
+                <strong>Geschätzte Kosten:</strong> ${formatNumber(grundflaeche)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong>
+                <div style="margin-top:0.8rem; padding:0.8rem; background:linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%); border-radius:8px;">
+                    <div style="font-size:0.85rem; margin-bottom:0.8rem;">
+                        <strong>Verfahren:</strong> ${verfahrenNamen[bType] || bType}<br>
+                        <strong>U-Wert:</strong> ${uCalc.U_alt.toFixed(2)} → <strong style="color:#1a6b3c;">${uCalc.U_neu.toFixed(2)} W/(m²K)</strong> <span style="color:#27ae60;">(−${uCalc.verbesserung}%)</span>
+                    </div>
+                    ${foerderHinweis}
+                    ${schichtHtml}
+                </div>`;
         }
         if (preview) preview.innerHTML = html;
     }
 
-    // Windows
+    // Windows – mit Fensteraufbau-Anzeige
     if (state.measures.includes('windows')) {
         const wGlazing = document.getElementById('window_glazing')?.value || '3fach';
         const wFrame = document.getElementById('window_frame')?.value || 'kunststoff';
@@ -2786,9 +3130,66 @@ function recalcCosts() {
         let total = g.fenster * perWindow;
         if (state.details.haustuer) total += PRICES.window.haustuer;
         state.costs.windows = total;
+
+        // Fenster-Aufbau Daten
+        const glazingData = {
+            '2fach': { name: '2-fach Verglasung', uw: 1.1, aufbau: ['Außenscheibe (4mm Float)', 'Argon-Füllung (16mm)', 'Innenscheibe (4mm Float)'], foerderfaehig: false },
+            '3fach': { name: '3-fach Verglasung', uw: 0.95, aufbau: ['Außenscheibe (4mm Float)', 'Argon-Füllung (14mm)', 'Mittelscheibe (4mm Float)', 'Argon-Füllung (14mm)', 'Innenscheibe (4mm Low-E)'], foerderfaehig: true },
+            '3fach_plus': { name: '3-fach mit Wärmeschutz', uw: 0.80, aufbau: ['Außenscheibe (4mm Float)', 'Krypton-Füllung (12mm)', 'Mittelscheibe (4mm Low-E)', 'Krypton-Füllung (12mm)', 'Innenscheibe (4mm Low-E)'], foerderfaehig: true }
+        };
+        const frameData = {
+            'kunststoff': { name: 'Kunststoff (PVC)', uf: 1.3 },
+            'holz': { name: 'Holz', uf: 1.2 },
+            'holz_alu': { name: 'Holz-Aluminium', uf: 1.1 },
+            'alu': { name: 'Aluminium (thermisch getrennt)', uf: 1.4 }
+        };
+
+        const gData = glazingData[wGlazing] || glazingData['3fach'];
+        const fData = frameData[wFrame] || frameData['kunststoff'];
+
+        // Bestandsfenster (typisch Altbau)
+        const bestandUw = 2.8; // Typisch: Einfachverglasung oder alte 2-fach
+
+        const foerderHinweis = gData.foerderfaehig
+            ? '<span style="color:#27ae60; font-weight:600;">✓ BEG-Anforderung (Uw ≤ 0,95) erfüllt!</span>'
+            : '<span style="color:#e74c3c; font-weight:600;">⚠ 2-fach Verglasung ist nicht förderfähig (Uw > 0,95)!</span>';
+
+        // Fensteraufbau als Tabelle
+        const fensterHtml = `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
+                <div>
+                    <div style="margin-bottom:0.8rem;"><strong>🪟 Bestandsfenster (typisch Altbau)</strong></div>
+                    <table style="width:100%; border-collapse:collapse; font-size:0.75rem;">
+                        <tr style="background:#fee;"><td style="padding:4px 6px; border:1px solid #ddd;">Verglasung</td><td style="padding:4px 6px; border:1px solid #ddd;">Einfach oder alte 2-fach</td></tr>
+                        <tr><td style="padding:4px 6px; border:1px solid #ddd;">Rahmen</td><td style="padding:4px 6px; border:1px solid #ddd;">Holz (alt) ohne Dichtung</td></tr>
+                        <tr style="background:#1a6b3c; color:white;"><td style="padding:4px 6px; border:1px solid #ddd;"><strong>Uw-Wert</strong></td><td style="padding:4px 6px; border:1px solid #ddd;"><strong>ca. ${bestandUw.toFixed(1)} W/(m²K)</strong></td></tr>
+                    </table>
+                </div>
+                <div>
+                    <div style="margin-bottom:0.8rem;"><strong>🔧 Neues Fenster (${gData.name})</strong></div>
+                    <table style="width:100%; border-collapse:collapse; font-size:0.75rem;">
+                        ${gData.aufbau.map((s, i) => `<tr style="background:${i % 2 === 0 ? '#fff' : '#f8f8f8'};${s.includes('Low-E') || s.includes('Krypton') ? 'font-weight:600; background:#fff3cd;' : ''}"><td colspan="2" style="padding:3px 6px; border:1px solid #ddd;">${s}</td></tr>`).join('')}
+                        <tr style="background:#e8f5e9;"><td style="padding:4px 6px; border:1px solid #ddd;">Rahmen</td><td style="padding:4px 6px; border:1px solid #ddd;">${fData.name} (Uf=${fData.uf})</td></tr>
+                        <tr style="background:#1a6b3c; color:white;"><td style="padding:4px 6px; border:1px solid #ddd;"><strong>Uw-Wert</strong></td><td style="padding:4px 6px; border:1px solid #ddd;"><strong>ca. ${gData.uw.toFixed(2)} W/(m²K)</strong></td></tr>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        const verbesserung = Math.round((1 - gData.uw / bestandUw) * 100);
+
         const preview = document.getElementById('window_cost_preview');
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.fenster)} Fenster × ca. ${formatCurrency(perWindow)}/Stk = ${formatCurrency(g.fenster * perWindow)}${state.details.haustuer ? ` + Haustür ${formatCurrency(PRICES.window.haustuer)}` : ''} = <strong>${formatCurrency(total)}</strong><br>
-            <span style="font-size:0.78rem;">${wGlazing === '2fach' ? '⚠️ 2-fach Verglasung ist nicht förderfähig (Uw > 0,95)!' : `${wFrame === 'holz_alu' ? 'Holz-Alu: Premium-Variante, sehr langlebig.' : ''}`}</span>`;
+        if (preview) preview.innerHTML = `
+            <strong>Geschätzte Kosten:</strong> ${formatNumber(g.fenster)} Fenster × ca. ${formatCurrency(perWindow)}/Stk = ${formatCurrency(g.fenster * perWindow)}${state.details.haustuer ? ` + Haustür ${formatCurrency(PRICES.window.haustuer)}` : ''} = <strong>${formatCurrency(total)}</strong>
+            <div style="margin-top:0.8rem; padding:0.8rem; background:linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%); border-radius:8px;">
+                <div style="font-size:0.85rem; margin-bottom:0.8rem;">
+                    <strong>Verglasung:</strong> ${gData.name}<br>
+                    <strong>Rahmen:</strong> ${fData.name}<br>
+                    <strong>Uw-Wert:</strong> ${bestandUw.toFixed(1)} → <strong style="color:#1a6b3c;">${gData.uw.toFixed(2)} W/(m²K)</strong> <span style="color:#27ae60;">(−${verbesserung}%)</span>
+                </div>
+                ${foerderHinweis}
+                ${fensterHtml}
+            </div>`;
     }
 
     // Heat pump
