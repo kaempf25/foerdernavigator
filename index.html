@@ -2000,6 +2000,130 @@ const WALL_MATERIALS = {
     pur_schaum:     { label: 'PUR-Ortschaum – WLG 028, injiziert', lambda: 0.028, types: ['kerndaemmung'] }
 };
 
+// ============================================================
+// TYPISCHE WANDAUFBAUTEN NACH BAUJAHR (für U-Wert-Berechnung)
+// ============================================================
+// Wärmeübergangswiderstände nach DIN EN ISO 6946
+const Rsi = 0.13;  // Innenseite (horizontaler Wärmestrom)
+const Rse = 0.04;  // Außenseite (horizontaler Wärmestrom)
+
+// Typische Bestandswände nach Baujahr (ohne Dämmung)
+// R_wand = Wärmewiderstand der Wandkonstruktion ohne Rsi/Rse
+const WALL_BY_BUILDYEAR = {
+    'pre1957': {
+        name: 'Vollziegelmauerwerk 38 cm',
+        R_wand: 0.54,           // 0.38m / 0.70 W/(mK) ≈ 0.54 m²K/W
+        U_bestand: 1.41,        // 1/(0.13 + 0.54 + 0.04) = 1.41
+        beschreibung: 'Typisch: Vollziegel 38 cm, verputzt'
+    },
+    '1957-1978': {
+        name: 'Zweischaliges Mauerwerk mit Luftschicht',
+        R_wand: 0.65,           // Klinker + Luftschicht + HLZ
+        R_luftschicht: 0.18,    // Ruhende Luftschicht 40-60mm
+        U_bestand: 1.22,        // Mit Luftschicht
+        beschreibung: 'Typisch: Klinker + 40-60mm Luftschicht + Hochlochziegel, verputzt'
+    },
+    '1979-1994': {
+        name: 'Mauerwerk mit leichter Dämmung',
+        R_wand: 1.10,           // Erste WSchV: Ansätze von Dämmung
+        U_bestand: 0.79,
+        beschreibung: 'Typisch: Mauerwerk + 40-60mm Dämmung (1. WSchV)'
+    },
+    '1995-2001': {
+        name: 'Mauerwerk mit Dämmung (2. WSchV)',
+        R_wand: 1.85,
+        U_bestand: 0.50,
+        beschreibung: 'Typisch: Mauerwerk + 80-100mm Dämmung (2. WSchV)'
+    },
+    '2002-2014': {
+        name: 'Mauerwerk mit EnEV-Dämmung',
+        R_wand: 2.70,
+        U_bestand: 0.35,
+        beschreibung: 'Typisch: Mauerwerk + 120-140mm Dämmung (EnEV)'
+    },
+    'post2014': {
+        name: 'Mauerwerk mit GEG-Dämmung',
+        R_wand: 4.50,
+        U_bestand: 0.21,
+        beschreibung: 'Typisch: Mauerwerk + 160-200mm Dämmung (EnEV 2016/GEG)'
+    }
+};
+
+// Typische Dachaufbauten nach Baujahr
+const ROOF_BY_BUILDYEAR = {
+    'pre1957':    { name: 'Dachstuhl ohne Dämmung', R_dach: 0.20, U_bestand: 2.70 },
+    '1957-1978':  { name: 'Dach mit minimaler Dämmung', R_dach: 0.50, U_bestand: 1.49 },
+    '1979-1994':  { name: 'Dach mit 60-80mm Dämmung', R_dach: 2.00, U_bestand: 0.46 },
+    '1995-2001':  { name: 'Dach mit 100-120mm Dämmung', R_dach: 3.20, U_bestand: 0.30 },
+    '2002-2014':  { name: 'Dach mit 160-180mm Dämmung', R_dach: 5.00, U_bestand: 0.19 },
+    'post2014':   { name: 'Dach mit 200-240mm Dämmung', R_dach: 6.50, U_bestand: 0.15 }
+};
+
+// Typische Kellerdecken nach Baujahr
+const BASEMENT_BY_BUILDYEAR = {
+    'pre1957':    { name: 'Kappendecke/Holzbalken', R_decke: 0.30, U_bestand: 2.13 },
+    '1957-1978':  { name: 'Betondecke ohne Dämmung', R_decke: 0.17, U_bestand: 2.94 },
+    '1979-1994':  { name: 'Betondecke mit 30-40mm Dämmung', R_decke: 1.00, U_bestand: 0.85 },
+    '1995-2001':  { name: 'Betondecke mit 50-60mm Dämmung', R_decke: 1.60, U_bestand: 0.56 },
+    '2002-2014':  { name: 'Betondecke mit 80-100mm Dämmung', R_decke: 2.70, U_bestand: 0.35 },
+    'post2014':   { name: 'Betondecke mit 120mm+ Dämmung', R_decke: 3.50, U_bestand: 0.27 }
+};
+
+// Oberste Geschossdecke nach Baujahr
+const CEILING_BY_BUILDYEAR = {
+    'pre1957':    { name: 'Holzbalkendecke ohne Dämmung', R_decke: 0.25, U_bestand: 2.38 },
+    '1957-1978':  { name: 'Betondecke ohne Dämmung', R_decke: 0.15, U_bestand: 3.13 },
+    '1979-1994':  { name: 'Decke mit 60-80mm Dämmung', R_decke: 2.00, U_bestand: 0.46 },
+    '1995-2001':  { name: 'Decke mit 100-120mm Dämmung', R_decke: 3.20, U_bestand: 0.30 },
+    '2002-2014':  { name: 'Decke mit 140-160mm Dämmung', R_decke: 4.50, U_bestand: 0.21 },
+    'post2014':   { name: 'Decke mit 180-200mm Dämmung', R_decke: 5.50, U_bestand: 0.18 }
+};
+
+/**
+ * Berechnet den U-Wert nach Sanierung
+ * @param {number} R_bestand - Wärmewiderstand der Bestandskonstruktion (ohne Rsi/Rse)
+ * @param {number} d_daemmung - Dämmstoffdicke in Metern
+ * @param {number} lambda - Wärmeleitfähigkeit des Dämmstoffs in W/(m·K)
+ * @param {boolean} isKerndaemmung - Bei Kerndämmung wird Luftschicht ersetzt
+ * @param {number} R_luftschicht - Wärmewiderstand der ersetzten Luftschicht (nur bei Kerndämmung)
+ * @returns {object} - { U_alt, U_neu, R_gesamt, verbesserung }
+ */
+function calcUValue(R_bestand, d_daemmung, lambda, isKerndaemmung = false, R_luftschicht = 0.18) {
+    const R_daemmung = d_daemmung / lambda;
+
+    let R_gesamt_alt = Rsi + R_bestand + Rse;
+    let R_gesamt_neu;
+
+    if (isKerndaemmung) {
+        // Bei Kerndämmung: Luftschicht wird durch Dämmung ersetzt
+        R_gesamt_neu = Rsi + (R_bestand - R_luftschicht) + R_daemmung + Rse;
+    } else {
+        // Bei Außen-/Innendämmung: Dämmung wird hinzugefügt
+        R_gesamt_neu = Rsi + R_bestand + R_daemmung + Rse;
+    }
+
+    const U_alt = 1 / R_gesamt_alt;
+    const U_neu = 1 / R_gesamt_neu;
+    const verbesserung = Math.round((1 - U_neu / U_alt) * 100);
+
+    return {
+        U_alt: Math.round(U_alt * 100) / 100,
+        U_neu: Math.round(U_neu * 100) / 100,
+        R_gesamt: Math.round(R_gesamt_neu * 100) / 100,
+        R_daemmung: Math.round(R_daemmung * 100) / 100,
+        verbesserung: verbesserung
+    };
+}
+
+// Dachdämmstoffe mit Lambda-Werten
+const ROOF_MATERIALS = {
+    mineralwolle: { label: 'Mineralwolle – WLG 035', lambda: 0.035 },
+    holzfaser:    { label: 'Holzfaserplatte – WLG 042', lambda: 0.042 },
+    pur:          { label: 'PUR/PIR – WLG 024', lambda: 0.024 },
+    zellulose:    { label: 'Zellulose – WLG 040', lambda: 0.040 },
+    eps:          { label: 'EPS – WLG 035', lambda: 0.035 }
+};
+
 const BASEMENT_MATERIALS = {
     // Kellerdecke von unten: leichte Platten, einfach zu montieren
     eps:         { label: 'EPS/Styropor – WLG 035, günstig & leicht', lambda: 0.035, types: ['kellerdecke', 'kellerdecke_oben'] },
@@ -2259,44 +2383,94 @@ function thicknessMultiplier(mm, base) {
 function recalcCosts() {
     const g = state.geo;
 
-    // Wall insulation
+    // Wall insulation – mit vollständiger U-Wert-Berechnung
     if (state.measures.includes('wall_insulation')) {
         const wType = document.getElementById('wall_type')?.value || 'wdvs';
         const wMat = document.getElementById('wall_material')?.value || 'mineralwolle';
+        const buildYear = document.getElementById('buildYear')?.value || '1957-1978';
         const basePrice = (PRICES.wall[wType] && PRICES.wall[wType][wMat]) || 150;
-        let tMult, pricePerSqm, hinweis;
+        const wallData = WALL_BY_BUILDYEAR[buildYear];
+        const matData = WALL_MATERIALS[wMat];
+        const lambda = matData ? matData.lambda : 0.035;
+
+        let tMult, pricePerSqm, hinweis, uCalc;
+
         if (wType === 'kerndaemmung') {
             const cavity = parseInt(document.getElementById('wall_cavity')?.value) || 60;
             tMult = 1; // Kerndämmung: Preis unabhängig von Dicke (Einblasverfahren)
             pricePerSqm = basePrice;
-            const matData = WALL_MATERIALS[wMat];
-            const lambda = matData ? matData.lambda : 0.035;
-            const uAchievable = Math.round((lambda / (cavity / 1000)) * 100) / 100;
-            hinweis = `Kerndämmung (Einblasverfahren) bei ${cavity} mm Hohlschicht. Erreichbarer U-Wert der Dämmschicht: ca. ${uAchievable.toFixed(2)} W/(m²K). `
-                + (uAchievable > 0.20 ? 'U ≤ 0,20 wird nicht erreicht – BEG fördert Kerndämmung trotzdem bei vollständiger Füllung.' : 'U ≤ 0,20 wird erreicht – BEG-förderfähig.');
+
+            // U-Wert-Berechnung: Bei Kerndämmung wird Luftschicht durch Dämmung ersetzt
+            const R_luftschicht = wallData.R_luftschicht || 0.18;
+            uCalc = calcUValue(wallData.R_wand, cavity / 1000, lambda, true, R_luftschicht);
+
+            const foerderHinweis = uCalc.U_neu <= 0.20
+                ? '✓ BEG-Anforderung (U ≤ 0,20) erfüllt!'
+                : 'BEG fördert Kerndämmung trotzdem bei vollständiger Füllung.';
+
+            hinweis = `<strong>U-Wert vorher:</strong> ${uCalc.U_alt.toFixed(2)} W/(m²K) → <strong>U-Wert nachher:</strong> ${uCalc.U_neu.toFixed(2)} W/(m²K) (−${uCalc.verbesserung}%)<br>`
+                + `<span style="color:#666;">Bestand: ${wallData.beschreibung}<br>`
+                + `Kerndämmung ${cavity} mm ${matData ? matData.label.split('–')[0].trim() : ''} (λ=${lambda})</span><br>`
+                + `<span style="color:${uCalc.U_neu <= 0.20 ? '#27ae60' : '#e67e22'};">${foerderHinweis}</span>`;
         } else {
             const wThick = parseInt(document.getElementById('wall_thickness')?.value) || 160;
-            tMult = thicknessMultiplier(wThick, 160); // Basispreis in PRICES bezieht sich auf 160mm
+            tMult = thicknessMultiplier(wThick, 160);
             pricePerSqm = Math.round(basePrice * tMult);
-            hinweis = `Alle Preise brutto inkl. MwSt, Material + Montage.`;
+
+            // U-Wert-Berechnung: Dämmung wird von außen/innen aufgebracht
+            uCalc = calcUValue(wallData.R_wand, wThick / 1000, lambda, false);
+
+            const foerderHinweis = uCalc.U_neu <= 0.20
+                ? '✓ BEG-Anforderung (U ≤ 0,20) erfüllt!'
+                : `⚠ Für BEG mind. ${Math.ceil(lambda / (1/(Rsi + wallData.R_wand + Rse) - 0.20) * 1000 / 10) * 10} mm erforderlich.`;
+
+            const verfahren = wType === 'vhf' ? 'VHF' : (wType === 'innendaemmung' ? 'Innendämmung' : 'WDVS');
+            hinweis = `<strong>U-Wert vorher:</strong> ${uCalc.U_alt.toFixed(2)} W/(m²K) → <strong>U-Wert nachher:</strong> ${uCalc.U_neu.toFixed(2)} W/(m²K) (−${uCalc.verbesserung}%)<br>`
+                + `<span style="color:#666;">Bestand: ${wallData.beschreibung}<br>`
+                + `${verfahren} ${wThick} mm ${matData ? matData.label.split('–')[0].trim() : ''} (λ=${lambda})</span><br>`
+                + `<span style="color:${uCalc.U_neu <= 0.20 ? '#27ae60' : '#e67e22'};">${foerderHinweis}</span>`;
         }
         const total = Math.round(g.fassade * pricePerSqm);
         state.costs.wall_insulation = total;
         const preview = document.getElementById('wall_cost_preview');
         if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.fassade)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong><br>
-            <span style="font-size:0.78rem;">${hinweis}</span>`;
+            <div style="margin-top:0.5rem; padding:0.6rem; background:#f8f9fa; border-radius:6px; font-size:0.78rem;">${hinweis}</div>`;
     }
 
-    // Roof
+    // Roof – mit vollständiger U-Wert-Berechnung
     if (state.measures.includes('roof_insulation')) {
         const rType = document.getElementById('roof_type')?.value || 'zwischensparren';
         const rMat = document.getElementById('roof_material')?.value || 'mineralwolle';
         const rThick = parseInt(document.getElementById('roof_thickness')?.value) || 200;
+        const buildYear = document.getElementById('buildYear')?.value || '1957-1978';
         const basePrice = (PRICES.roof[rType] && PRICES.roof[rType][rMat]) || 80;
         const tMult = thicknessMultiplier(rThick, 200);
         const total = Math.round(g.dach * basePrice * tMult);
         state.costs.roof_insulation = total;
-        const preview = document.getElementById('roof_cost_preview');
+
+        // U-Wert-Berechnung
+        const roofData = (rType === 'ogd') ? CEILING_BY_BUILDYEAR[buildYear] : ROOF_BY_BUILDYEAR[buildYear];
+        const matData = ROOF_MATERIALS[rMat];
+        const lambda = matData ? matData.lambda : 0.035;
+        const uCalc = calcUValue(roofData.R_dach || roofData.R_decke, rThick / 1000, lambda, false);
+
+        const targetU = (rType === 'ogd') ? 0.14 : 0.14; // BEG: U ≤ 0,14 für Dach und OGD
+        const foerderHinweis = uCalc.U_neu <= targetU
+            ? '✓ BEG-Anforderung (U ≤ 0,14) erfüllt!'
+            : `⚠ Für BEG mind. ${Math.ceil(lambda / (1/(Rsi + (roofData.R_dach || roofData.R_decke) + Rse) - targetU) * 1000 / 10) * 10} mm empfohlen.`;
+
+        const verfahrenName = {
+            'zwischensparren': 'Zwischensparrendämmung',
+            'aufsparren': 'Aufsparrendämmung',
+            'ogd': 'Oberste Geschossdecke',
+            'flachdach': 'Flachdachdämmung'
+        }[rType] || rType;
+
+        let uWertHinweis = `<strong>U-Wert vorher:</strong> ${uCalc.U_alt.toFixed(2)} W/(m²K) → <strong>U-Wert nachher:</strong> ${uCalc.U_neu.toFixed(2)} W/(m²K) (−${uCalc.verbesserung}%)<br>`
+            + `<span style="color:#666;">Bestand: ${roofData.name}<br>`
+            + `${verfahrenName} ${rThick} mm ${matData ? matData.label.split('–')[0].trim() : ''} (λ=${lambda})</span><br>`
+            + `<span style="color:${uCalc.U_neu <= targetU ? '#27ae60' : '#e67e22'};">${foerderHinweis}</span>`;
+
         // Solarpflicht bei Neueindeckung prüfen
         const solarPflichtBL = {
             bw: { name:'Baden-Württemberg', seit:'01/2023', anteil:'60% der Dachfläche', alt:'PV oder Solarthermie' },
@@ -2310,12 +2484,12 @@ function recalcCosts() {
         const solarInfo = solarPflichtBL[state.bundesland];
         let solarHinweis = '';
         if (isNeueindeckung && solarInfo) {
-            solarHinweis = `<br><span style="font-size:0.78rem; color:#c0392b;">⚠️ <strong>Solarpflicht in ${solarInfo.name}!</strong> Bei Neueindeckung müssen mind. ${solarInfo.anteil} mit ${solarInfo.alt} belegt werden (seit ${solarInfo.seit}). Planen Sie diese Kosten zusätzlich ein.</span>`;
-        } else if (isNeueindeckung) {
-            solarHinweis = `<br><span style="font-size:0.78rem; color:#7f8c8d;">ℹ️ In Ihrem Bundesland besteht aktuell keine Solarpflicht bei Dachsanierung. Prüfen Sie dennoch, ob eine PV-Anlage wirtschaftlich sinnvoll ist.</span>`;
+            solarHinweis = `<br><span style="font-size:0.78rem; color:#c0392b;">⚠️ <strong>Solarpflicht in ${solarInfo.name}!</strong> Bei Neueindeckung müssen mind. ${solarInfo.anteil} mit ${solarInfo.alt} belegt werden (seit ${solarInfo.seit}).</span>`;
         }
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.dach)} m² × ca. ${formatNumber(Math.round(basePrice * tMult))} €/m² = <strong>${formatCurrency(total)}</strong><br>
-            <span style="font-size:0.78rem;">${rType === 'aufsparren' ? 'Aufsparrendämmung inkl. Neueindeckung – teuerste aber effektivste Variante.' : rType === 'ogd' ? 'Oberste Geschossdecke – günstigste Variante wenn DG nicht ausgebaut.' : ''}</span>${solarHinweis}`;
+
+        const preview = document.getElementById('roof_cost_preview');
+        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.dach)} m² × ca. ${formatNumber(Math.round(basePrice * tMult))} €/m² = <strong>${formatCurrency(total)}</strong>
+            <div style="margin-top:0.5rem; padding:0.6rem; background:#f8f9fa; border-radius:6px; font-size:0.78rem;">${uWertHinweis}</div>${solarHinweis}`;
     }
 
     // Basement / Bodenplatte
@@ -2366,12 +2540,31 @@ function recalcCosts() {
             }
             html += `<br><br><strong style="font-size:1.05rem;">Gesamt: ${formatCurrency(total)}</strong>`;
         } else {
-            let hinweis = '';
-            if (bType === 'kellerdecke') hinweis = 'Günstigste und häufigste Variante. Dämmplatten von unten an die Kellerdecke geklebt/gedübelt.';
-            else if (bType === 'kellerdecke_oben') hinweis = 'Neuer Fußbodenaufbau im EG nötig. Nur wenn EG-Boden ohnehin erneuert wird.';
-            else if (bType === 'bodenplatte') hinweis = 'Druckfeste Dämmplatten auf der Bodenplatte + neuer Estrich + Bodenbelag. Raumhöhe verringert sich um ca. 8–14 cm.';
-            html = `<strong>Geschätzte Kosten:</strong> ${formatNumber(grundflaeche)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong><br>
-                <span style="font-size:0.78rem;">${hinweis}</span>`;
+            // U-Wert-Berechnung für Kellerdecke/Bodenplatte
+            const buildYear = document.getElementById('buildYear')?.value || '1957-1978';
+            const basementData = BASEMENT_BY_BUILDYEAR[buildYear];
+            const matData = BASEMENT_MATERIALS[bMat];
+            const lambda = matData ? matData.lambda : 0.035;
+            const uCalc = calcUValue(basementData.R_decke, bThick / 1000, lambda, false);
+
+            const targetU = 0.25; // BEG: U ≤ 0,25 für Kellerdecke/Bodenplatte
+            const foerderHinweis = uCalc.U_neu <= targetU
+                ? '✓ BEG-Anforderung (U ≤ 0,25) erfüllt!'
+                : `⚠ Für BEG mind. ${Math.ceil(lambda / (1/(Rsi + basementData.R_decke + Rse) - targetU) * 1000 / 10) * 10} mm empfohlen.`;
+
+            const verfahrenName = {
+                'kellerdecke': 'Kellerdeckendämmung von unten',
+                'kellerdecke_oben': 'Kellerdeckendämmung von oben',
+                'bodenplatte': 'Bodenplattendämmung'
+            }[bType] || bType;
+
+            let hinweis = `<strong>U-Wert vorher:</strong> ${uCalc.U_alt.toFixed(2)} W/(m²K) → <strong>U-Wert nachher:</strong> ${uCalc.U_neu.toFixed(2)} W/(m²K) (−${uCalc.verbesserung}%)<br>`
+                + `<span style="color:#666;">Bestand: ${basementData.name}<br>`
+                + `${verfahrenName} ${bThick} mm ${matData ? matData.label.split('–')[0].trim() : ''} (λ=${lambda})</span><br>`
+                + `<span style="color:${uCalc.U_neu <= targetU ? '#27ae60' : '#e67e22'};">${foerderHinweis}</span>`;
+
+            html = `<strong>Geschätzte Kosten:</strong> ${formatNumber(grundflaeche)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong>
+                <div style="margin-top:0.5rem; padding:0.6rem; background:#f8f9fa; border-radius:6px; font-size:0.78rem;">${hinweis}</div>`;
         }
         if (preview) preview.innerHTML = html;
     }
