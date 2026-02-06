@@ -1992,13 +1992,12 @@ const WALL_MATERIALS = {
     holzfaser045: { label: 'Holzfaserplatte – WLG 045, Standard', lambda: 0.045, types: ['wdvs', 'vhf'] },
     resol:        { label: 'Resolhartschaum – WLG 021, sehr schlank', lambda: 0.021, types: ['wdvs'] },
     resol023:     { label: 'Resolhartschaum – WLG 023', lambda: 0.023, types: ['wdvs'] },
-    // Kerndämmung-Materialien (Einblasdämmstoffe)
+    // Kerndämmung-Materialien (Einblasdämmstoffe) – Preise nach Dämmatlas
+    perlite:        { label: 'Perlite-Granulat – WLG 045, mineralisch', lambda: 0.045, types: ['kerndaemmung'] },
     eps_granulat:   { label: 'EPS-Granulat – WLG 033, hydrophob', lambda: 0.033, types: ['kerndaemmung'] },
-    mw_granulat:    { label: 'Mineralwolle-Granulat – WLG 040, nicht brennbar', lambda: 0.040, types: ['kerndaemmung'] },
     glaswolle_gran: { label: 'Glaswolle-Granulat (Supafil) – WLG 034', lambda: 0.034, types: ['kerndaemmung'] },
-    zellulose:      { label: 'Zellulose-Flocken – WLG 040, ökologisch', lambda: 0.040, types: ['kerndaemmung'] },
-    pur_schaum:     { label: 'PUR-Ortschaum – WLG 028, injiziert', lambda: 0.028, types: ['kerndaemmung'] },
-    perlite:        { label: 'Perlite-Granulat – WLG 045, mineralisch', lambda: 0.045, types: ['kerndaemmung'] }
+    mw_granulat:    { label: 'Mineralwolle-Granulat – WLG 040, nicht brennbar', lambda: 0.040, types: ['kerndaemmung'] },
+    pur_schaum:     { label: 'PUR-Ortschaum – WLG 028, injiziert', lambda: 0.028, types: ['kerndaemmung'] }
 };
 
 const BASEMENT_MATERIALS = {
@@ -2193,10 +2192,11 @@ function updateWallThicknessOptions() {
 // COST ESTIMATION FROM GEOMETRY + MATERIALS
 // ============================================================
 // Alle Preise BRUTTO (inkl. 19% MwSt) – das zahlt der Endkunde
+// Kerndämmung-Preise nach Dämmatlas (15-30 €/m², PUR-Schaum 100-130 €/m²)
 const PRICES = {
     wall: {
         wdvs:           { eps: 155, eps032: 170, mineralwolle: 179, mw032: 195, pur: 226, holzfaser: 214, holzfaser045: 195, resol: 262, resol023: 245 },
-        kerndaemmung:   { eps_granulat: 38, mw_granulat: 45, glaswolle_gran: 42, zellulose: 36, pur_schaum: 58, perlite: 32 },
+        kerndaemmung:   { perlite: 18, eps_granulat: 22, glaswolle_gran: 25, mw_granulat: 28, pur_schaum: 115 },
         vhf:            { mineralwolle: 262, mw032: 280, pur: 298, holzfaser: 286, holzfaser045: 268 },
         innendaemmung:  { eps: 107, eps032: 119, mineralwolle: 119, mw032: 131, pur: 155, holzfaser: 143 }
     },
