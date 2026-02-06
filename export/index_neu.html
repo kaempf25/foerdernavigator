@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AK Energy Consulting Fördernavigator - Energetische Sanierung</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Hidden visitor counter -->
+<div class="counter-z" id="counterZ">Z</div>
+<div class="counter-tooltip" id="counterTooltip">Seitenaufrufe: ...</div>
+
+<div class="hero">
+    <div class="hero-badge" id="validationBadge">Letzte Validierung: 01.02.2026 &middot; BEG / KfW / BAFA</div>
+    <h1>AK Energy Consulting<br>Fördernavigator</h1>
+    <p>Finden Sie in 4 Schritten die optimale Förderstrategie für Ihre energetische Sanierung</p>
+</div>
+
+<div class="stepper" id="stepper">
+    <div class="step-item active" data-step="1" onclick="goToStep(1)">
+        <div class="step-circle">1</div>
+        <span class="step-label">Gebäude</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-step="2" onclick="goToStep(2)">
+        <div class="step-circle">2</div>
+        <span class="step-label">Maßnahmen</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-step="3" onclick="goToStep(3)">
+        <div class="step-circle">3</div>
+        <span class="step-label">Details</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-step="4" onclick="goToStep(4)">
+        <div class="step-circle">4</div>
+        <span class="step-label">Ergebnis</span>
+    </div>
+</div>
+
+<div class="container">
+
+<!-- ===================== STEP 1: GEBÄUDE ===================== -->
+<div class="section active" id="section-1">
+    <div class="card">
+        <div class="card-title">Ihr Gebäude</div>
+        <div class="card-subtitle">Bitte geben Sie die Eckdaten Ihres Gebäudes ein</div>
+
+        <div class="field">
+            <label>Gebäudetyp</label>
+            <div class="option-grid">
+                <div class="option-card selected" data-field="buildingType" data-value="efh" onclick="selectOption(this)">
+                    <span class="option-icon">🏠</span>
+                    <span class="option-label">Einfamilienhaus</span>
+                </div>
+                <div class="option-card" data-field="buildingType" data-value="zfh" onclick="selectOption(this)">
+                    <span class="option-icon">🏡</span>
+                    <span class="option-label">Zweifamilienhaus</span>
+                </div>
+                <div class="option-card" data-field="buildingType" data-value="mfh" onclick="selectOption(this)">
+                    <span class="option-icon">🏢</span>
+                    <span class="option-label">Mehrfamilienhaus</span>
+                </div>
+                <div class="option-card" data-field="buildingType" data-value="denkmal" onclick="selectOption(this)">
+                    <span class="option-icon">🏛️</span>
+                    <span class="option-label">Denkmal</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="field" id="mfh-units-field" style="display:none;">
+            <label>Anzahl Wohneinheiten</label>
+            <input type="number" id="unitCount" value="4" min="3" max="100" onchange="updateState()">
+        </div>
+
+        <div class="field" id="ownership-field">
+            <label>Eigentumsverhältnis</label>
+            <div class="option-grid">
+                <div class="option-card selected" data-field="ownership" data-value="owner" onclick="selectOption(this)">
+                    <span class="option-icon">🔑</span>
+                    <span class="option-label">Selbstnutzend</span>
+                    <span class="option-desc">Eigentümer & Bewohner</span>
+                </div>
+                <div class="option-card" data-field="ownership" data-value="landlord" onclick="selectOption(this)">
+                    <span class="option-icon">📋</span>
+                    <span class="option-label">Vermieter</span>
+                    <span class="option-desc">Komplett vermietet</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="field" id="we-split-field" style="display:none;">
+            <label>Nutzungsaufteilung der Wohneinheiten</label>
+            <div class="grid-2col">
+                <div class="field">
+                    <label style="font-size:0.85rem;">Davon eigengenutzt</label>
+                    <div class="cost-input-group">
+                        <input type="number" id="weEigengenutzt" value="1" min="0" max="100" step="1" onchange="updateState()">
+                        <span class="cost-suffix">WE</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label style="font-size:0.85rem;">Davon vermietet</label>
+                    <div class="cost-input-group">
+                        <input type="number" id="weVermietet" value="1" min="0" max="100" step="1" onchange="updateState()">
+                        <span class="cost-suffix">WE</span>
+                    </div>
+                </div>
+            </div>
+            <div class="field-hint" id="we-split-hint">Boni (Klimageschwindigkeit, Einkommen) gelten nur für eigengenutzte WE.</div>
+        </div>
+
+        <div class="field">
+            <label>Baujahr des Gebäudes</label>
+            <select id="buildYear" onchange="updateState()">
+                <option value="pre1957">Vor 1957</option>
+                <option value="1957-1978" selected>1957 - 1978</option>
+                <option value="1979-1994">1979 - 1994</option>
+                <option value="1995-2001">1995 - 2001</option>
+                <option value="2002-2014">2002 - 2014</option>
+                <option value="post2014">Nach 2014</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Bundesland</label>
+            <select id="bundesland" onchange="updateState()">
+                <option value="bw">Baden-Württemberg</option>
+                <option value="by">Bayern</option>
+                <option value="be">Berlin</option>
+                <option value="bb">Brandenburg</option>
+                <option value="hb">Bremen</option>
+                <option value="hh">Hamburg</option>
+                <option value="he">Hessen</option>
+                <option value="mv">Mecklenburg-Vorpommern</option>
+                <option value="ni">Niedersachsen</option>
+                <option value="nw" selected>Nordrhein-Westfalen</option>
+                <option value="rp">Rheinland-Pfalz</option>
+                <option value="sl">Saarland</option>
+                <option value="sn">Sachsen</option>
+                <option value="st">Sachsen-Anhalt</option>
+                <option value="sh">Schleswig-Holstein</option>
+                <option value="th">Thüringen</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Bisherige energetische Sanierung</label>
+            <div class="option-grid">
+                <div class="option-card selected" data-field="priorRenovation" data-value="none" onclick="selectOption(this)">
+                    <span class="option-icon">❌</span>
+                    <span class="option-label">Unsaniert</span>
+                </div>
+                <div class="option-card" data-field="priorRenovation" data-value="partial" onclick="selectOption(this)">
+                    <span class="option-icon">🔧</span>
+                    <span class="option-label">Bereits (teil-)saniert</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Aktuelle Heizung</label>
+            <select id="currentHeating" onchange="updateState()">
+                <option value="oil">Ölheizung</option>
+                <option value="gas" selected>Gasheizung</option>
+                <option value="coal">Kohleheizung</option>
+                <option value="nightstorage">Nachtspeicherheizung</option>
+                <option value="biomass_old">Biomasse (> 20 Jahre)</option>
+                <option value="biomass_new">Biomasse (< 20 Jahre)</option>
+                <option value="heatpump">Wärmepumpe</option>
+                <option value="district">Fernwärme</option>
+            </select>
+        </div>
+
+        <div class="card-title" style="margin-top:1.5rem;">Gebäudeabmessungen</div>
+        <div class="card-subtitle">3 Angaben genügen – Flächen werden automatisch geschätzt.</div>
+
+        <div class="grid-3col">
+            <div class="field">
+                <label>Hausbreite</label>
+                <div class="cost-input-group">
+                    <input type="number" id="geoBreite" value="10" min="4" max="50" step="0.5" onchange="updateState()">
+                    <span class="cost-suffix">m</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Hauslänge</label>
+                <div class="cost-input-group">
+                    <input type="number" id="geoLaenge" value="12" min="4" max="50" step="0.5" onchange="updateState()">
+                    <span class="cost-suffix">m</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Geschosse</label>
+                <select id="geoGeschosse" onchange="updateState()">
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                    <option value="4">4+</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="geoEstimate" class="info-box" style="margin-top:0.6rem;"></div>
+
+        <div class="btn-group">
+            <div></div>
+            <button class="btn btn-primary" onclick="goToStep(2)">Weiter zu Maßnahmen →</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== STEP 2-4: Wird aus der Originaldatei übernommen ===================== -->
+<!-- Für die vollständige Version siehe index.html -->
+
+</div>
+
+<div class="footer">
+    <p><strong>Hinweis:</strong> Unverbindliche Orientierung. Bitte vor Antragstellung Energieberater konsultieren.</p>
+    <p style="margin-top:0.5rem;"><strong>Validierung:</strong> 01.02.2026</p>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
