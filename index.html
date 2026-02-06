@@ -853,6 +853,16 @@
             .container { padding: 0 0.6rem; }
         }
 
+        /* Schichtaufbau-Tabellen responsiv */
+        @media (max-width: 640px) {
+            #wall_cost_preview > div > div[style*="grid-template-columns"] {
+                display: block !important;
+            }
+            #wall_cost_preview > div > div[style*="grid-template-columns"] > div {
+                margin-bottom: 1rem;
+            }
+        }
+
         /* Print */
         @media print {
             .hero, .stepper, .btn-group, .footer { display: none !important; }
@@ -1992,12 +2002,10 @@ const WALL_MATERIALS = {
     holzfaser045: { label: 'Holzfaserplatte – WLG 045, Standard', lambda: 0.045, types: ['wdvs', 'vhf'] },
     resol:        { label: 'Resolhartschaum – WLG 021, sehr schlank', lambda: 0.021, types: ['wdvs'] },
     resol023:     { label: 'Resolhartschaum – WLG 023', lambda: 0.023, types: ['wdvs'] },
-    // Kerndämmung-Materialien (Einblasdämmstoffe) – Preise nach Dämmatlas
-    perlite:        { label: 'Perlite-Granulat – WLG 045, mineralisch', lambda: 0.045, types: ['kerndaemmung'] },
+    // Kerndämmung-Materialien (Einblasdämmstoffe) – nur λ ≤ 0,035 (BEG-förderfähig)
     eps_granulat:   { label: 'EPS-Granulat – WLG 033, hydrophob', lambda: 0.033, types: ['kerndaemmung'] },
     glaswolle_gran: { label: 'Glaswolle-Granulat (Supafil) – WLG 034', lambda: 0.034, types: ['kerndaemmung'] },
-    mw_granulat:    { label: 'Mineralwolle-Granulat – WLG 040, nicht brennbar', lambda: 0.040, types: ['kerndaemmung'] },
-    pur_schaum:     { label: 'PUR-Ortschaum – WLG 028, injiziert', lambda: 0.028, types: ['kerndaemmung'] }
+    pur_schaum:     { label: 'PUR-Ortschaum – WLG 028, beste Dämmwirkung', lambda: 0.028, types: ['kerndaemmung'] }
 };
 
 // ============================================================
@@ -2012,42 +2020,102 @@ const Rse = 0.04;  // Außenseite (horizontaler Wärmestrom)
 const WALL_BY_BUILDYEAR = {
     'pre1957': {
         name: 'Vollziegelmauerwerk 38 cm',
-        R_wand: 0.54,           // 0.38m / 0.70 W/(mK) ≈ 0.54 m²K/W
-        U_bestand: 1.41,        // 1/(0.13 + 0.54 + 0.04) = 1.41
-        beschreibung: 'Typisch: Vollziegel 38 cm, verputzt'
+        R_wand: 0.54,
+        U_bestand: 1.41,
+        beschreibung: 'Typisch: Vollziegel 38 cm, verputzt',
+        schichten: [
+            { name: 'Innenputz', dicke: 15, lambda: 0.70, R: 0.02 },
+            { name: 'Vollziegelmauerwerk', dicke: 380, lambda: 0.70, R: 0.54 },
+            { name: 'Außenputz', dicke: 20, lambda: 0.87, R: 0.02 }
+        ]
     },
     '1957-1978': {
         name: 'Zweischaliges Mauerwerk mit Luftschicht',
-        R_wand: 0.65,           // Klinker + Luftschicht + HLZ
-        R_luftschicht: 0.18,    // Ruhende Luftschicht 40-60mm
-        U_bestand: 1.22,        // Mit Luftschicht
-        beschreibung: 'Typisch: Klinker + 40-60mm Luftschicht + Hochlochziegel, verputzt'
+        R_wand: 0.65,
+        R_luftschicht: 0.18,
+        U_bestand: 1.22,
+        beschreibung: 'Typisch: Klinker + 40-60mm Luftschicht + Hochlochziegel, verputzt',
+        schichten: [
+            { name: 'Innenputz', dicke: 15, lambda: 0.70, R: 0.02 },
+            { name: 'Hochlochziegel (Innenschale)', dicke: 175, lambda: 0.50, R: 0.35 },
+            { name: 'Luftschicht (ungedämmt)', dicke: 50, lambda: null, R: 0.18 },
+            { name: 'Klinker-Vormauerwerk (Außenschale)', dicke: 115, lambda: 0.96, R: 0.12 }
+        ]
     },
     '1979-1994': {
         name: 'Mauerwerk mit leichter Dämmung',
-        R_wand: 1.10,           // Erste WSchV: Ansätze von Dämmung
+        R_wand: 1.10,
         U_bestand: 0.79,
-        beschreibung: 'Typisch: Mauerwerk + 40-60mm Dämmung (1. WSchV)'
+        beschreibung: 'Typisch: Mauerwerk + 40-60mm Dämmung (1. WSchV)',
+        schichten: [
+            { name: 'Innenputz', dicke: 15, lambda: 0.70, R: 0.02 },
+            { name: 'Hochlochziegel', dicke: 240, lambda: 0.50, R: 0.48 },
+            { name: 'Bestandsdämmung (PS/MW)', dicke: 50, lambda: 0.04, R: 1.25 },
+            { name: 'Putzträgerplatte + Außenputz', dicke: 15, lambda: 0.87, R: 0.02 }
+        ]
     },
     '1995-2001': {
         name: 'Mauerwerk mit Dämmung (2. WSchV)',
         R_wand: 1.85,
         U_bestand: 0.50,
-        beschreibung: 'Typisch: Mauerwerk + 80-100mm Dämmung (2. WSchV)'
+        beschreibung: 'Typisch: Mauerwerk + 80-100mm Dämmung (2. WSchV)',
+        schichten: [
+            { name: 'Innenputz', dicke: 15, lambda: 0.70, R: 0.02 },
+            { name: 'Hochlochziegel', dicke: 240, lambda: 0.50, R: 0.48 },
+            { name: 'Bestandsdämmung (EPS)', dicke: 80, lambda: 0.04, R: 2.00 },
+            { name: 'Armierungsschicht + Oberputz', dicke: 10, lambda: 0.87, R: 0.01 }
+        ]
     },
     '2002-2014': {
         name: 'Mauerwerk mit EnEV-Dämmung',
         R_wand: 2.70,
         U_bestand: 0.35,
-        beschreibung: 'Typisch: Mauerwerk + 120-140mm Dämmung (EnEV)'
+        beschreibung: 'Typisch: Mauerwerk + 120-140mm Dämmung (EnEV)',
+        schichten: [
+            { name: 'Innenputz', dicke: 15, lambda: 0.70, R: 0.02 },
+            { name: 'Hochlochziegel', dicke: 240, lambda: 0.50, R: 0.48 },
+            { name: 'Bestandsdämmung (EPS)', dicke: 120, lambda: 0.035, R: 3.43 },
+            { name: 'Armierungsschicht + Oberputz', dicke: 10, lambda: 0.87, R: 0.01 }
+        ]
     },
     'post2014': {
         name: 'Mauerwerk mit GEG-Dämmung',
         R_wand: 4.50,
         U_bestand: 0.21,
-        beschreibung: 'Typisch: Mauerwerk + 160-200mm Dämmung (EnEV 2016/GEG)'
+        beschreibung: 'Typisch: Mauerwerk + 160-200mm Dämmung (EnEV 2016/GEG)',
+        schichten: [
+            { name: 'Innenputz', dicke: 15, lambda: 0.70, R: 0.02 },
+            { name: 'Hochlochziegel', dicke: 240, lambda: 0.50, R: 0.48 },
+            { name: 'Bestandsdämmung (EPS 032)', dicke: 180, lambda: 0.032, R: 5.63 },
+            { name: 'Armierungsschicht + Oberputz', dicke: 10, lambda: 0.87, R: 0.01 }
+        ]
     }
 };
+
+// WDVS-Systemaufbau (zusätzliche Schichten bei Außendämmung)
+const WDVS_SYSTEM = [
+    { name: 'Klebemörtel', dicke: 5 },
+    { name: 'Dämmplatte', dicke: null }, // wird dynamisch gesetzt
+    { name: 'Armierungsgewebe + Armierungsmörtel', dicke: 5 },
+    { name: 'Oberputz (mineralisch/Silikonharz)', dicke: 3 }
+];
+
+// VHF-Systemaufbau (Vorgehängte hinterlüftete Fassade)
+const VHF_SYSTEM = [
+    { name: 'Unterkonstruktion (Alu/Holz)', dicke: 30 },
+    { name: 'Mineralwolle-Dämmung', dicke: null }, // wird dynamisch gesetzt
+    { name: 'Winddichtungsbahn', dicke: 1 },
+    { name: 'Hinterlüftung', dicke: 30 },
+    { name: 'Fassadenbekleidung (Faserzement/Holz/Metall)', dicke: 10 }
+];
+
+// Innendämmung-Systemaufbau
+const INNENDAEMMUNG_SYSTEM = [
+    { name: 'Klebemörtel', dicke: 3 },
+    { name: 'Calciumsilikat-/Holzfaserplatte', dicke: null }, // wird dynamisch gesetzt
+    { name: 'Feinspachtel + Armierung', dicke: 3 },
+    { name: 'Innenputz/Anstrich', dicke: 2 }
+];
 
 // Typische Dachaufbauten nach Baujahr
 const ROOF_BY_BUILDYEAR = {
@@ -2113,6 +2181,122 @@ function calcUValue(R_bestand, d_daemmung, lambda, isKerndaemmung = false, R_luf
         R_daemmung: Math.round(R_daemmung * 100) / 100,
         verbesserung: verbesserung
     };
+}
+
+// Hilfsfunktion: Schichtaufbau als HTML-Tabelle generieren
+function renderSchichtaufbau(schichten, titel, highlight = null) {
+    let html = `<div style="margin-bottom:0.8rem;"><strong>${titel}</strong></div>`;
+    html += `<table style="width:100%; border-collapse:collapse; font-size:0.75rem; margin-bottom:0.5rem;">`;
+    html += `<tr style="background:#e8f5e9;"><th style="padding:4px 6px; text-align:left; border:1px solid #ddd;">Schicht</th><th style="padding:4px 6px; text-align:right; border:1px solid #ddd;">Dicke</th><th style="padding:4px 6px; text-align:right; border:1px solid #ddd;">R-Wert</th></tr>`;
+
+    // Rsi (Wärmeübergang innen)
+    html += `<tr style="background:#f0f0f0;"><td style="padding:3px 6px; border:1px solid #ddd; font-style:italic;">Rsi (Wärmeübergang innen)</td><td style="padding:3px 6px; text-align:right; border:1px solid #ddd;">–</td><td style="padding:3px 6px; text-align:right; border:1px solid #ddd;">0,13</td></tr>`;
+
+    let R_summe = Rsi;
+    schichten.forEach((s, i) => {
+        const isHighlight = highlight && s.name.includes(highlight);
+        const bgColor = isHighlight ? '#fff3cd' : (i % 2 === 0 ? '#fff' : '#fafafa');
+        const R_val = s.R ? s.R.toFixed(2).replace('.', ',') : '–';
+        const dicke = s.dicke ? `${s.dicke} mm` : '–';
+        R_summe += s.R || 0;
+        html += `<tr style="background:${bgColor};${isHighlight ? 'font-weight:600;' : ''}">`;
+        html += `<td style="padding:3px 6px; border:1px solid #ddd;">${s.name}</td>`;
+        html += `<td style="padding:3px 6px; text-align:right; border:1px solid #ddd;">${dicke}</td>`;
+        html += `<td style="padding:3px 6px; text-align:right; border:1px solid #ddd;">${R_val}</td>`;
+        html += `</tr>`;
+    });
+
+    // Rse (Wärmeübergang außen)
+    html += `<tr style="background:#f0f0f0;"><td style="padding:3px 6px; border:1px solid #ddd; font-style:italic;">Rse (Wärmeübergang außen)</td><td style="padding:3px 6px; text-align:right; border:1px solid #ddd;">–</td><td style="padding:3px 6px; text-align:right; border:1px solid #ddd;">0,04</td></tr>`;
+    R_summe += Rse;
+
+    // Summenzeile
+    const U_wert = (1 / R_summe).toFixed(2).replace('.', ',');
+    html += `<tr style="background:#1a6b3c; color:white; font-weight:600;"><td style="padding:4px 6px; border:1px solid #ddd;">Gesamt</td><td style="padding:4px 6px; text-align:right; border:1px solid #ddd;"></td><td style="padding:4px 6px; text-align:right; border:1px solid #ddd;">R=${R_summe.toFixed(2).replace('.', ',')} → U=${U_wert}</td></tr>`;
+    html += `</table>`;
+    return html;
+}
+
+// Schichtaufbau nach Sanierung generieren
+function getSchichtenNachher(wallData, wType, wThick, matData, lambda) {
+    const bestandSchichten = wallData.schichten || [];
+    let neuSchichten = [];
+
+    if (wType === 'kerndaemmung') {
+        // Bei Kerndämmung: Luftschicht wird durch Dämmung ersetzt
+        bestandSchichten.forEach(s => {
+            if (s.name.includes('Luftschicht')) {
+                const cavity = parseInt(document.getElementById('wall_cavity')?.value) || 60;
+                const R_daemm = (cavity / 1000) / lambda;
+                neuSchichten.push({
+                    name: `Kerndämmung (${matData ? matData.label.split('–')[0].trim() : 'Dämmstoff'})`,
+                    dicke: cavity,
+                    lambda: lambda,
+                    R: R_daemm
+                });
+            } else {
+                neuSchichten.push({...s});
+            }
+        });
+    } else if (wType === 'wdvs') {
+        // WDVS: Komplettes System auf Außenseite
+        const R_daemm = (wThick / 1000) / lambda;
+        // Innere Schichten beibehalten (ohne Außenputz)
+        bestandSchichten.forEach((s, i) => {
+            if (i < bestandSchichten.length - 1) { // Letzter ist meist Außenputz
+                neuSchichten.push({...s});
+            }
+        });
+        // WDVS-Systemaufbau hinzufügen
+        neuSchichten.push({ name: 'Klebemörtel', dicke: 5, lambda: 0.87, R: 0.01 });
+        neuSchichten.push({
+            name: `Dämmplatte (${matData ? matData.label.split('–')[0].trim() : 'EPS'})`,
+            dicke: wThick,
+            lambda: lambda,
+            R: R_daemm
+        });
+        neuSchichten.push({ name: 'Armierungsgewebe + Armierungsmörtel', dicke: 5, lambda: 0.87, R: 0.01 });
+        neuSchichten.push({ name: 'Oberputz (mineralisch/Silikonharz)', dicke: 3, lambda: 0.87, R: 0.00 });
+    } else if (wType === 'vhf') {
+        // VHF: Vorgehängte hinterlüftete Fassade
+        const R_daemm = (wThick / 1000) / lambda;
+        bestandSchichten.forEach((s, i) => {
+            if (i < bestandSchichten.length - 1) {
+                neuSchichten.push({...s});
+            }
+        });
+        neuSchichten.push({ name: 'Unterkonstruktion (Alu/Holz)', dicke: 30, lambda: null, R: 0.00 });
+        neuSchichten.push({
+            name: `Mineralwolle-Dämmung (${matData ? matData.label.split('–')[0].trim() : 'MW'})`,
+            dicke: wThick,
+            lambda: lambda,
+            R: R_daemm
+        });
+        neuSchichten.push({ name: 'Winddichtungsbahn', dicke: 1, lambda: null, R: 0.00 });
+        neuSchichten.push({ name: 'Hinterlüftung (Luftschicht)', dicke: 30, lambda: null, R: 0.00 }); // bewegt, zählt nicht
+        neuSchichten.push({ name: 'Fassadenbekleidung', dicke: 10, lambda: null, R: 0.00 });
+    } else if (wType === 'innendaemmung') {
+        // Innendämmung: System auf Innenseite
+        const R_daemm = (wThick / 1000) / lambda;
+        // Erst Innendämmung, dann Bestand
+        neuSchichten.push({ name: 'Innenputz/Anstrich (neu)', dicke: 2, lambda: 0.70, R: 0.00 });
+        neuSchichten.push({ name: 'Feinspachtel + Armierung', dicke: 3, lambda: 0.87, R: 0.00 });
+        neuSchichten.push({
+            name: `Innendämmplatte (${matData ? matData.label.split('–')[0].trim() : 'CaSi'})`,
+            dicke: wThick,
+            lambda: lambda,
+            R: R_daemm
+        });
+        neuSchichten.push({ name: 'Klebemörtel', dicke: 3, lambda: 0.87, R: 0.00 });
+        // Bestand ohne alten Innenputz
+        bestandSchichten.forEach((s, i) => {
+            if (i > 0) { // Ersten (Innenputz) überspringen
+                neuSchichten.push({...s});
+            }
+        });
+    }
+
+    return neuSchichten;
 }
 
 // Dachdämmstoffe mit Lambda-Werten
@@ -2320,7 +2504,7 @@ function updateWallThicknessOptions() {
 const PRICES = {
     wall: {
         wdvs:           { eps: 155, eps032: 170, mineralwolle: 179, mw032: 195, pur: 226, holzfaser: 214, holzfaser045: 195, resol: 262, resol023: 245 },
-        kerndaemmung:   { perlite: 18, eps_granulat: 22, glaswolle_gran: 25, mw_granulat: 28, pur_schaum: 115 },
+        kerndaemmung:   { eps_granulat: 22, glaswolle_gran: 25, pur_schaum: 115 },
         vhf:            { mineralwolle: 262, mw032: 280, pur: 298, holzfaser: 286, holzfaser045: 268 },
         innendaemmung:  { eps: 107, eps032: 119, mineralwolle: 119, mw032: 131, pur: 155, holzfaser: 143 }
     },
@@ -2383,7 +2567,7 @@ function thicknessMultiplier(mm, base) {
 function recalcCosts() {
     const g = state.geo;
 
-    // Wall insulation – mit vollständiger U-Wert-Berechnung
+    // Wall insulation – mit vollständiger U-Wert-Berechnung und Schichtaufbau
     if (state.measures.includes('wall_insulation')) {
         const wType = document.getElementById('wall_type')?.value || 'wdvs';
         const wMat = document.getElementById('wall_material')?.value || 'mineralwolle';
@@ -2393,48 +2577,69 @@ function recalcCosts() {
         const matData = WALL_MATERIALS[wMat];
         const lambda = matData ? matData.lambda : 0.035;
 
-        let tMult, pricePerSqm, hinweis, uCalc;
+        let tMult, pricePerSqm, uCalc, wThick;
+        let schichtenVorher = wallData.schichten || [];
+        let schichtenNachher = [];
 
         if (wType === 'kerndaemmung') {
             const cavity = parseInt(document.getElementById('wall_cavity')?.value) || 60;
-            tMult = 1; // Kerndämmung: Preis unabhängig von Dicke (Einblasverfahren)
+            wThick = cavity;
+            tMult = 1;
             pricePerSqm = basePrice;
 
-            // U-Wert-Berechnung: Bei Kerndämmung wird Luftschicht durch Dämmung ersetzt
             const R_luftschicht = wallData.R_luftschicht || 0.18;
             uCalc = calcUValue(wallData.R_wand, cavity / 1000, lambda, true, R_luftschicht);
 
-            const foerderHinweis = uCalc.U_neu <= 0.20
-                ? '✓ BEG-Anforderung (U ≤ 0,20) erfüllt!'
-                : 'BEG fördert Kerndämmung trotzdem bei vollständiger Füllung.';
-
-            hinweis = `<strong>U-Wert vorher:</strong> ${uCalc.U_alt.toFixed(2)} W/(m²K) → <strong>U-Wert nachher:</strong> ${uCalc.U_neu.toFixed(2)} W/(m²K) (−${uCalc.verbesserung}%)<br>`
-                + `<span style="color:#666;">Bestand: ${wallData.beschreibung}<br>`
-                + `Kerndämmung ${cavity} mm ${matData ? matData.label.split('–')[0].trim() : ''} (λ=${lambda})</span><br>`
-                + `<span style="color:${uCalc.U_neu <= 0.20 ? '#27ae60' : '#e67e22'};">${foerderHinweis}</span>`;
+            // Schichten nachher: Luftschicht durch Dämmung ersetzen
+            schichtenNachher = getSchichtenNachher(wallData, wType, wThick, matData, lambda);
         } else {
-            const wThick = parseInt(document.getElementById('wall_thickness')?.value) || 160;
+            wThick = parseInt(document.getElementById('wall_thickness')?.value) || 160;
             tMult = thicknessMultiplier(wThick, 160);
             pricePerSqm = Math.round(basePrice * tMult);
 
-            // U-Wert-Berechnung: Dämmung wird von außen/innen aufgebracht
             uCalc = calcUValue(wallData.R_wand, wThick / 1000, lambda, false);
 
-            const foerderHinweis = uCalc.U_neu <= 0.20
-                ? '✓ BEG-Anforderung (U ≤ 0,20) erfüllt!'
-                : `⚠ Für BEG mind. ${Math.ceil(lambda / (1/(Rsi + wallData.R_wand + Rse) - 0.20) * 1000 / 10) * 10} mm erforderlich.`;
-
-            const verfahren = wType === 'vhf' ? 'VHF' : (wType === 'innendaemmung' ? 'Innendämmung' : 'WDVS');
-            hinweis = `<strong>U-Wert vorher:</strong> ${uCalc.U_alt.toFixed(2)} W/(m²K) → <strong>U-Wert nachher:</strong> ${uCalc.U_neu.toFixed(2)} W/(m²K) (−${uCalc.verbesserung}%)<br>`
-                + `<span style="color:#666;">Bestand: ${wallData.beschreibung}<br>`
-                + `${verfahren} ${wThick} mm ${matData ? matData.label.split('–')[0].trim() : ''} (λ=${lambda})</span><br>`
-                + `<span style="color:${uCalc.U_neu <= 0.20 ? '#27ae60' : '#e67e22'};">${foerderHinweis}</span>`;
+            // Schichten nachher: Dämmung hinzufügen
+            schichtenNachher = getSchichtenNachher(wallData, wType, wThick, matData, lambda);
         }
+
         const total = Math.round(g.fassade * pricePerSqm);
         state.costs.wall_insulation = total;
+
+        // Verfahrensname für Anzeige
+        const verfahrenNamen = {
+            'wdvs': 'Wärmedämmverbundsystem (WDVS)',
+            'vhf': 'Vorgehängte hinterlüftete Fassade (VHF)',
+            'kerndaemmung': 'Kerndämmung (Einblasdämmung)',
+            'innendaemmung': 'Innendämmung'
+        };
+
+        // Förderhinweis
+        const foerderHinweis = uCalc.U_neu <= 0.20
+            ? '<span style="color:#27ae60; font-weight:600;">✓ BEG-Anforderung (U ≤ 0,20) erfüllt!</span>'
+            : (wType === 'kerndaemmung'
+                ? '<span style="color:#e67e22;">BEG fördert Kerndämmung bei vollständiger Füllung.</span>'
+                : `<span style="color:#e67e22;">⚠ Für BEG mind. ${Math.ceil(lambda / (1/(Rsi + wallData.R_wand + Rse) - 0.20) * 1000 / 10) * 10} mm erforderlich.</span>`);
+
+        // HTML für Schichtaufbau-Anzeige
+        const schichtHtml = `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
+                <div>${renderSchichtaufbau(schichtenVorher, '🏠 Wandaufbau VORHER (Bestand)')}</div>
+                <div>${renderSchichtaufbau(schichtenNachher, '🔧 Wandaufbau NACHHER (saniert)', 'Dämmplatte')}</div>
+            </div>
+        `;
+
         const preview = document.getElementById('wall_cost_preview');
-        if (preview) preview.innerHTML = `<strong>Geschätzte Kosten:</strong> ${formatNumber(g.fassade)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong><br>
-            <div style="margin-top:0.5rem; padding:0.6rem; background:#f8f9fa; border-radius:6px; font-size:0.78rem;">${hinweis}</div>`;
+        if (preview) preview.innerHTML = `
+            <strong>Geschätzte Kosten:</strong> ${formatNumber(g.fassade)} m² × ca. ${formatNumber(pricePerSqm)} €/m² = <strong>${formatCurrency(total)}</strong>
+            <div style="margin-top:0.8rem; padding:0.8rem; background:linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%); border-radius:8px;">
+                <div style="font-size:0.85rem; margin-bottom:0.8rem;">
+                    <strong>Verfahren:</strong> ${verfahrenNamen[wType] || wType}<br>
+                    <strong>U-Wert:</strong> ${uCalc.U_alt.toFixed(2)} → <strong style="color:#1a6b3c;">${uCalc.U_neu.toFixed(2)} W/(m²K)</strong> <span style="color:#27ae60;">(−${uCalc.verbesserung}%)</span>
+                </div>
+                ${foerderHinweis}
+                ${schichtHtml}
+            </div>`;
     }
 
     // Roof – mit vollständiger U-Wert-Berechnung
