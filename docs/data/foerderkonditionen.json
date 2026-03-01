@@ -1,14 +1,22 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastValidated": "2026-02-01",
-    "nextValidation": "2026-03-01",
+    "lastValidated": "2026-03-01",
+    "nextValidation": "2026-04-01",
     "validatedBy": "automated",
-    "status": "current",
+    "status": "warnings",
     "changelog": [
       {
+        "date": "2026-03-01",
+        "changes": [
+          "Validierung mit 4 Warnung(en) – manuelle Prüfung empfohlen"
+        ]
+      },
+      {
         "date": "2026-02-01",
-        "changes": ["Initiale Erstellung mit allen Förderprogrammen Stand 01/2026"]
+        "changes": [
+          "Initiale Erstellung mit allen Förderprogrammen Stand 01/2026"
+        ]
       }
     ],
     "sources": [
@@ -17,18 +25,32 @@
       "https://www.gesetze-im-internet.de/estg/__35c.html"
     ]
   },
-
   "kfw261": {
     "name": "KfW 261 – Wohngebäude Kredit (Effizienzhaussanierung)",
     "type": "kredit_tilgungszuschuss",
     "maxCreditStandard": 120000,
     "maxCreditEE": 150000,
     "rates": {
-      "eh40":      { "base": 20, "ee": 25 },
-      "eh55":      { "base": 15, "ee": 20 },
-      "eh70":      { "base": 10, "ee": 15 },
-      "eh85":      { "base": 5,  "ee": 10 },
-      "ehDenkmal": { "base": 5,  "ee": 10 }
+      "eh40": {
+        "base": 20,
+        "ee": 25
+      },
+      "eh55": {
+        "base": 15,
+        "ee": 20
+      },
+      "eh70": {
+        "base": 10,
+        "ee": 15
+      },
+      "eh85": {
+        "base": 5,
+        "ee": 10
+      },
+      "ehDenkmal": {
+        "base": 5,
+        "ee": 10
+      }
     },
     "bonuses": {
       "isfp": 5,
@@ -41,7 +63,6 @@
       "rate": 50
     }
   },
-
   "kfw458": {
     "name": "KfW 458 – Heizungsförderung",
     "type": "zuschuss",
@@ -52,7 +73,13 @@
       "validUntil": "2028-12-31",
       "reductionAfter2028": 3,
       "reductionIntervalYears": 2,
-      "eligibleOldHeating": ["oil", "coal", "nightstorage", "biomass_old", "gas"]
+      "eligibleOldHeating": [
+        "oil",
+        "coal",
+        "nightstorage",
+        "biomass_old",
+        "gas"
+      ]
     },
     "einkommensbonus": {
       "rate": 30,
@@ -61,11 +88,13 @@
     },
     "effizienzbonus": {
       "rate": 5,
-      "appliesTo": ["ground_source_hp", "water_source_hp"]
+      "appliesTo": [
+        "ground_source_hp",
+        "water_source_hp"
+      ]
     },
     "maxTotalRate": 70
   },
-
   "bafaBegEM": {
     "name": "BAFA BEG EM – Einzelmaßnahmen",
     "type": "zuschuss",
@@ -79,7 +108,7 @@
         "rate": 15,
         "isfpRate": 20,
         "uValues": {
-          "aussenwand": 0.20,
+          "aussenwand": 0.2,
           "dach": 0.14,
           "fenster": 0.95,
           "kellerdecke": 0.25,
@@ -98,20 +127,26 @@
       }
     }
   },
-
   "isfp": {
     "name": "BAFA Energieberatung (iSFP)",
     "type": "zuschuss",
     "rate": 50,
-    "costNetto": { "efh": 1350, "zfh": 1350, "mfh": 2350 },
-    "costBrutto": { "efh": 1607, "zfh": 1607, "mfh": 2797 },
+    "costNetto": {
+      "efh": 1350,
+      "zfh": 1350,
+      "mfh": 2350
+    },
+    "costBrutto": {
+      "efh": 1607,
+      "zfh": 1607,
+      "mfh": 2797
+    },
     "maxFunding": {
       "efh": 650,
       "zfh": 650,
       "mfh": 850
     }
   },
-
   "baubegleitungEM": {
     "name": "Fachplanung & Baubegleitung (Einzelmaßnahmen)",
     "type": "zuschuss",
@@ -121,7 +156,6 @@
       "mfh": 2000
     }
   },
-
   "par35c": {
     "name": "§35c EStG – Steuerliche Förderung",
     "type": "steuerermäßigung",
@@ -140,18 +174,15 @@
       "validUntil": "2030-12-31"
     }
   },
-
   "kumulierung": {
     "maxPublicFundingRate": 60,
     "note": "Maximale Förderquote aus allen öffentlichen Mitteln: 60% für Privatpersonen."
   },
-
   "kfw358": {
     "name": "KfW 358/359 – Ergänzungskredit",
     "maxAmount": 120000,
     "minEffectiveRate": 0.01
   },
-
   "statePrograms": {
     "bw": {
       "name": "Baden-Württemberg",
