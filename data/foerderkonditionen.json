@@ -1,11 +1,17 @@
 {
   "meta": {
     "version": "1.0.0",
-    "lastValidated": "2026-05-01",
-    "nextValidation": "2026-06-01",
+    "lastValidated": "2026-06-01",
+    "nextValidation": "2026-07-01",
     "validatedBy": "automated",
     "status": "warnings",
     "changelog": [
+      {
+        "date": "2026-06-01",
+        "changes": [
+          "Validierung mit 4 Warnung(en) – manuelle Prüfung empfohlen"
+        ]
+      },
       {
         "date": "2026-05-01",
         "changes": [
